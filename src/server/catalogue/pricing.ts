@@ -5,4 +5,6 @@ export const packagePrices: Record<string, Money> = {
   NIVASA_COMPLETE: { amountMinor: 99900, currency: 'INR' },
   NIVASA_PRO: { amountMinor: 999900, currency: 'INR' },
 };
-export function getConfiguredPackagePrice(code: string): Money | undefined { return packagePrices[code]; }
+export function getConfiguredPackagePrice(code: string): Money | undefined {
+  return packagePrices[code];
+}

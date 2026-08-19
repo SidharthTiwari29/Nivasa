@@ -3,11 +3,15 @@ import type { VerifiedWebhook } from '@/server/payments/provider';
 
 export async function processVerifiedPaymentWebhook(event: VerifiedWebhook) {
   return prisma.$transaction(async (tx) => {
-    const existing = await tx.paymentEvent.findUnique({ where: { provider_eventId: { provider: event.provider, eventId: event.eventId } } });
+    const existing = await tx.paymentEvent.findUnique({
+      where: { provider_eventId: { provider: event.provider, eventId: event.eventId } },
+    });
     if (existing) return { duplicate: true, paymentEventId: existing.id };
 
     const payload = event.payload as Record<string, unknown>;
-    const paymentEntity = ((payload.payload as Record<string, unknown> | undefined)?.payment as Record<string, unknown> | undefined)?.entity as Record<string, unknown> | undefined;
+    const paymentEntity = (
+      (payload.payload as Record<string, unknown> | undefined)?.payment as Record<string, unknown> | undefined
+    )?.entity as Record<string, unknown> | undefined;
     const providerOrderId = typeof paymentEntity?.order_id === 'string' ? paymentEntity.order_id : undefined;
 
     const payment = providerOrderId

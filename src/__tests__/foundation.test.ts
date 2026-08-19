@@ -17,7 +17,9 @@ describe('Phase 0 business foundations', () => {
   });
 
   it('defines an atomic reservation transaction plan', () => {
-    expect(buildAtomicReservationPlan({ userId: 'u1', entitlementCode: 'render', quantity: 1, idempotencyKey: 'idem-1' })).toMatchObject({
+    expect(
+      buildAtomicReservationPlan({ userId: 'u1', entitlementCode: 'render', quantity: 1, idempotencyKey: 'idem-1' }),
+    ).toMatchObject({
       transactionRequired: true,
       idempotencyKey: 'idem-1',
       lock: 'entitlement_grant_row',
@@ -33,11 +35,19 @@ describe('Phase 0 business foundations', () => {
 
   it('calculates deterministic tax and estimates', () => {
     expect(calculateTax({ taxableAmountMinor: 10000, rateBps: 1800 })).toBe(1800);
-    expect(calculateEstimate([{ category: 'product', quantity: 2, unitAmountMinor: 5000 }], 1800)).toEqual({ subtotalMinor: 10000, taxMinor: 1800, totalMinor: 11800 });
+    expect(calculateEstimate([{ category: 'product', quantity: 2, unitAmountMinor: 5000 }], 1800)).toEqual({
+      subtotalMinor: 10000,
+      taxMinor: 1800,
+      totalMinor: 11800,
+    });
   });
 
   it('builds reproducible BOQ snapshots with pricing version', () => {
-    const snapshot = buildBoqSnapshot([{ sourceId: 'p1', description: 'Chair', category: 'product', quantity: 1, unitAmountMinor: 1000 }], 0, 'catalogue-2026-08');
+    const snapshot = buildBoqSnapshot(
+      [{ sourceId: 'p1', description: 'Chair', category: 'product', quantity: 1, unitAmountMinor: 1000 }],
+      0,
+      'catalogue-2026-08',
+    );
     expect(snapshot.pricingVersion).toBe('catalogue-2026-08');
     expect(snapshot.totals.totalMinor).toBe(1000);
   });

@@ -26,7 +26,12 @@ export class RazorpayProvider implements PaymentProvider {
         Authorization: `Basic ${Buffer.from(`${keyId}:${secret}`).toString('base64')}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ amount: request.amountMinor, currency: request.currency, receipt: request.purchaseId, notes: { idempotencyKey: request.idempotencyKey } }),
+      body: JSON.stringify({
+        amount: request.amountMinor,
+        currency: request.currency,
+        receipt: request.purchaseId,
+        notes: { idempotencyKey: request.idempotencyKey },
+      }),
     });
     if (!response.ok) throw new Error(`PAYMENT_PROVIDER_ERROR:${response.status}`);
     const order = (await response.json()) as { id: string };
