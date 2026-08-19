@@ -1,18 +1,54 @@
 name: CI
+
 on:
   pull_request:
   push:
     branches: [main]
+
+permissions:
+  contents: write
+
 jobs:
-  verify:
+  prepare-lockfile:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Generate deterministic npm lockfile
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Persist generated lockfile on non-fork branches
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "chore: generate npm lockfile"
+          git push
+
+  verify:
+    needs: prepare-lockfile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
       - run: npm run typecheck
       - run: npm test
       - run: npx prisma validate
