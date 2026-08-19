@@ -1,7 +1,7 @@
 generator client { provider = "prisma-client-js" }
 datasource db { provider = "postgresql" url = env("DATABASE_URL") }
 
-enum Role { USER ADMIN SUPER_ADMIN }
+enum Role { USER DESIGNER ADMIN SUPER_ADMIN }
 enum LifecycleStatus { DRAFT ACTIVE ARCHIVED DELETED }
 enum SourceKind { AI_ESTIMATED USER_CONFIRMED SYSTEM_IMPORTED }
 enum JobStatus { QUEUED RUNNING SUCCEEDED FAILED CANCELLED }
@@ -9,7 +9,10 @@ enum PaymentStatus { CREATED PENDING AUTHORIZED CAPTURED FAILED REFUNDED }
 enum PurchaseStatus { CREATED PAYMENT_PENDING ACTIVE CANCELLED EXPIRED REFUNDED }
 enum AssetKind { IMAGE PANORAMA SCENE_3D WALKTHROUGH VIDEO JSON PDF }
 
-model User { id String @id @default(cuid()) email String @unique name String? role Role @default(USER) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt properties Property[] projects DesignProject[] purchases Purchase[] usageRecords UsageRecord[] entitlementGrants EntitlementGrant[] analyticsEvents AnalyticsEvent[] }
+model User { id String @id @default(cuid()) email String @unique name String? image String? emailVerified DateTime? role Role @default(USER) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt properties Property[] projects DesignProject[] purchases Purchase[] usageRecords UsageRecord[] entitlementGrants EntitlementGrant[] analyticsEvents AnalyticsEvent[] accounts Account[] sessions Session[] }
+model Account { id String @id @default(cuid()) userId String type String provider String providerAccountId String refresh_token String? access_token String? expires_at Int? token_type String? scope String? id_token String? session_state String? user User @relation(fields:[userId], references:[id], onDelete:Cascade) @@unique([provider,providerAccountId]) @@index([userId]) }
+model Session { id String @id @default(cuid()) sessionToken String @unique userId String expires DateTime user User @relation(fields:[userId], references:[id], onDelete:Cascade) @@index([userId]) }
+model VerificationToken { identifier String token String @unique expires DateTime @@unique([identifier,token]) }
 model AdminUser { id String @id @default(cuid()) userId String @unique role Role @default(ADMIN) createdAt DateTime @default(now()) user User @relation(fields:[userId], references:[id]) }
 model Property { id String @id @default(cuid()) ownerId String name String address Json? status LifecycleStatus @default(ACTIVE) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt owner User @relation(fields:[ownerId], references:[id]) documents PropertyDocument[] floorPlans FloorPlan[] projects DesignProject[] @@index([ownerId]) }
 model PropertyDocument { id String @id @default(cuid()) propertyId String storageKey String contentType String purpose String status LifecycleStatus @default(ACTIVE) createdAt DateTime @default(now()) property Property @relation(fields:[propertyId], references:[id]) @@index([propertyId]) }
@@ -53,5 +56,5 @@ model Coupon { id String @id @default(cuid()) code String @unique discount Disco
 model Discount { id String @id @default(cuid()) couponId String @unique type String value Int maxAmountMinor Int? coupon Coupon @relation(fields:[couponId], references:[id]) }
 model AuditLog { id String @id @default(cuid()) actorUserId String? action String entityType String entityId String? metadata Json? createdAt DateTime @default(now()) @@index([entityType,entityId]) }
 model AIUsage { id String @id @default(cuid()) userId String? jobId String? provider String model String capability String inputTokens Int? outputTokens Int? costMinor Int? currency String? createdAt DateTime @default(now()) }
-model AIJob { id String @id @default(cuid()) userId String? projectId String? capability String provider String? providerJobId String? status JobStatus @default(QUEUED) input Json result Json? error Json? idempotencyKey String @unique createdAt DateTime @default(now()) updatedAt DateTime @updatedAt @@index([status,capability]) }
+model AIJob { id String @id @default(cuid()) userId String? projectId String? capability String provider String? providerJobId String? status JobStatus @default(QUEUED) input Json result Json? error Json? idempotencyKey String @unique retryCount Int @default(0) lastAttemptAt DateTime? completedAt DateTime? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt @@index([status,capability]) }
 model AnalyticsEvent { id String @id @default(cuid()) userId String? sessionId String? name String properties Json? occurredAt DateTime @default(now()) user User? @relation(fields:[userId], references:[id]) @@index([name,occurredAt]) }
