@@ -1,6 +1,6 @@
-import { auth } from '@/server/auth';
+import { edgeAuth } from '@/server/auth/edge';
 
-export default auth((request) => {
+export default edgeAuth((request) => {
   const pathname = request.nextUrl.pathname;
   const protectedRoute = pathname.startsWith('/app') || pathname.startsWith('/api/protected');
   if (protectedRoute && !request.auth?.user) {
