@@ -1,4 +1,4 @@
-import { S3Client, DeleteObjectCommand, HeadObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { ObjectStorageProvider, SignedUrlRequest } from './objectStorage';
 
@@ -27,9 +27,8 @@ export class S3ObjectStorageProvider implements ObjectStorageProvider {
   }
 
   async createReadUrl(key: string, expiresInSeconds: number) {
-    const command = new HeadObjectCommand({ Bucket: this.bucket, Key: key });
-    await this.client.send(command);
-    return getSignedUrl(this.client, new PutObjectCommand({ Bucket: this.bucket, Key: key }), { expiresIn: expiresInSeconds });
+    const command = new GetObjectCommand({ Bucket: this.bucket, Key: key });
+    return getSignedUrl(this.client, command, { expiresIn: expiresInSeconds });
   }
 
   async deleteObject(key: string) {
