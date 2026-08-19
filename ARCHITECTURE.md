@@ -1,28 +1,41 @@
-# Architecture
+# Nivasa architecture — Phase 0.1
 
-Nivasa Phase 0 is organized around server-authoritative boundaries.
+Nivasa is a server-authoritative platform for turning a user's actual property and floor plan into a revision-controlled interior design, catalogue/cost/BOQ model, and eventually 3D/360/walkthrough/cinematic output.
 
-## Frontend
-The Next.js app shell is minimal and exists to verify the React/TypeScript foundation. Catalogue, package prices, entitlements, payments, costing, and BOQ data must come from backend APIs rather than hard-coded components.
+## Boundaries
 
-## Backend/API conventions
-API responses use a structured `{ ok, data }` or `{ ok, error }` convention. Runtime configuration is validated with Zod. Authentication and RBAC foundations separate user roles from permissions.
+- `src/app/` contains UI and route handlers only.
+- `src/server/` owns authentication, authorization, validation, repositories, services and provider adapters.
+- Prisma is accessed through server modules only; React components never import Prisma.
+- External input is validated with Zod.
+- API responses use `{ ok: true, data }` and `{ ok: false, error }`.
 
-## Providers
-Object storage, AI, rendering, and payment modules expose provider-neutral interfaces. AI capabilities include vision analysis, design specification generation, image generation, rendering, future 3D, and video. Render outputs are typed as images, panoramas, 3D scenes, walkthroughs, video, JSON, or PDF so the asset model is not image-only.
+## Authentication
+
+Auth.js uses database sessions with Prisma. Google OAuth and email sign-in are enabled only when their server-side credentials exist. Missing credentials are surfaced as `NOT_CONFIGURED`; no fake login is generated. Roles are `USER`, `DESIGNER`, `ADMIN`, and `SUPER_ADMIN` with server-side permission checks.
 
 ## Async jobs
-`AIJob` stores idempotent asynchronous work, provider job identifiers, status, input, result, and error payloads. `AIUsage` records provider/model/capability usage and cost metadata.
 
-## Entitlements
-The intended execution path is authenticate, load active purchase entitlement grants, atomically reserve usage with an idempotency key in a database transaction that locks the entitlement grant row, execute work, then confirm or release the reservation. Frontend success pages never activate entitlements.
+BullMQ + Redis provides the queue boundary. Job IDs are idempotency keys, retries use exponential backoff, and the Prisma `AIJob` model persists provider IDs, status, retry metadata and terminal timestamps. A missing `REDIS_URL` is an explicit configuration error.
 
-## Payments
-The intended flow is package selection, backend payment order creation, provider confirmation, verified idempotent webhook processing, purchase activation, entitlement activation, and invoice issuance.
+Supported job classes include floor-plan processing/understanding, AI design generation, image/panorama/3D/walkthrough/video rendering, BOQ generation and notifications.
 
-## Costing and BOQ
-Financial arithmetic is deterministic backend logic. BOQ versions snapshot pricing, tax, labour assumptions, and totals so historical estimates remain reproducible.
+## Storage
 
+`ObjectStorageProvider` is the application boundary. `S3ObjectStorageProvider` supports AWS S3 and S3-compatible endpoints such as Cloudflare R2 with private signed upload/download URLs. Credentials are server-only.
 
-## Commercial configuration
-The four Phase 0 package definitions are backend-owned configuration and are represented by the `Package`, `PackageFeature`, and `PackageEntitlement` models. `prisma/seed.ts` contains only the required package price configuration and does not create fake catalogue or usage data.
+## AI and rendering
+
+AI and rendering are provider-neutral. Interfaces preserve vision, floor-plan understanding, room/measurement/style extraction, design specification, image generation, BOQ assistance, 3D, 360, walkthrough and cinematic video capabilities. No provider is treated as successful without a real external result.
+
+## Payments and entitlements
+
+Razorpay is the India-first payment adapter with future Stripe compatibility. Verified webhooks are idempotent using `(provider,eventId)` and only server-side payment state can activate a purchase. Entitlements use `RESERVE → EXECUTE → CONFIRM` or `RESERVE → FAILURE → RELEASE`; reservation is atomic and concurrency-safe.
+
+## Data integrity
+
+Money is stored as integer minor units. Design versions and BOQ versions preserve snapshots. AI jobs and payment events have idempotency keys. Audit and analytics records remain backend-owned.
+
+## Product north star
+
+`PROPERTY → FLOOR PLAN → ROOM UNDERSTANDING → DESIGN → REVISIONS → CATALOGUE → COSTING → BOQ → ACTUAL-APARTMENT VISUALIZATION → 3D → 360° → WALKTHROUGH → CINEMATIC VIDEO → PURCHASE → EXECUTION`
