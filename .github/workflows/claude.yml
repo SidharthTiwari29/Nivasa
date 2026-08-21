@@ -1,5 +1,4 @@
 name: Claude Bedrock Code Assistant
-
 on:
   issue_comment:
     types: [created]
@@ -7,9 +6,9 @@ on:
     types: [created]
 
 permissions:
-  id-token: write
-  contents: write
-  pull-requests: write
+  id-token: write      # Required for requesting the AWS OIDC JWT
+  contents: write      # Required for Claude to see code and make edits
+  pull-requests: write # Required for posting comments on PRs
   issues: write
 
 jobs:
@@ -20,16 +19,20 @@ jobs:
       - name: Checkout Repository Code
         uses: actions/checkout@v4
 
+      # Explicitly set up a stable Node runtime without forcing a lockfile check
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24' # Aligns natively with the updated GitHub Action runners
+
       - name: Authenticate to AWS via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::109674077490:role/GitHubClaudeBedrockRole
-          aws-region: eu-north-1
+          aws-region: us-east-1
 
       - name: Invoke Claude Code Action via Bedrock
         uses: anthropics/claude-code-action@v2
         with:
-          role-to-assume: arn:aws:iam::109674077490:role/GitHubClaudeBedrockRole
-          aws-region: eu-north-1
           use_bedrock: "true"
           trigger_phrase: "@claude"
