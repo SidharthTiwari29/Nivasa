@@ -1,6 +1,0 @@
-# Generated and dependency-managed files
-node_modules/
-.next/
-coverage/
-*.lock
-package-lock.json
