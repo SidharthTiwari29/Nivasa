@@ -23,7 +23,7 @@ jobs:
       - name: Authenticate to AWS via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::109674077404:role/GitHubClaudeBedrockRole
+          role-to-assume: arn:aws:iam::109674077490:role/GitHubClaudeBedrockRole
           aws-region: us-east-1
 
       - name: Invoke Claude Code Action via Bedrock
