@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/nivasa
+      AUTH_SECRET: ci-secret-that-is-long-enough-for-validation-123456
+      AUTH_URL: http://localhost:3000
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nivasa
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U postgres -d nivasa"
+          --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npx prisma generate
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx prisma validate
+      - run: npm run build
+      - run: git diff --check
