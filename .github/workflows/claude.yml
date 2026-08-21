@@ -19,16 +19,17 @@ jobs:
       - name: Checkout Repository Code
         uses: actions/checkout@v4
 
-      # Explicitly set up a stable Node runtime without forcing a lockfile check
+      # Installs Node without validating project dependencies
       - name: Setup Node.js Runtime
         uses: actions/setup-node@v4
         with:
-          node-version: '24' # Aligns natively with the updated GitHub Action runners
+          node-version: '24'
+          cache: npm
 
       - name: Authenticate to AWS via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::109674077490:role/GitHubClaudeBedrockRole
+          role-to-assume: arn:aws:iam::109674077404:role/GitHubClaudeBedrockRole
           aws-region: us-east-1
 
       - name: Invoke Claude Code Action via Bedrock
