@@ -72,7 +72,8 @@ function presign(
   const shortDate = amzDate.slice(0, 8);
   const host = endpoint.host;
   const signedHeaders = contentType ? "content-type;host" : "host";
-  const credential = `${accessKeyId}/${shortDate}/${region}/${SERVICE}/aws4_request`;
+  const credential =
+    `${accessKeyId}/${shortDate}/${region}/${SERVICE}/aws4_request`;
   const query: Record<string, string> = {
     "X-Amz-Algorithm": "AWS4-HMAC-SHA256",
     "X-Amz-Credential": credential,
