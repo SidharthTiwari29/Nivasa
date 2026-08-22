@@ -2,6 +2,8 @@ name: debug-prettier
 on:
   pull_request:
     types: [synchronize]
+permissions:
+  contents: write
 jobs:
   format:
     runs-on: ubuntu-latest
@@ -11,11 +13,16 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - name: Print Prettier output
+      - name: Canonicalize test formatting
+        run: npx prettier --write src/server/services/propertyService.test.ts src/server/services/roomService.test.ts
+      - name: Commit canonical formatting
         run: |
-          npx prettier src/server/services/propertyService.test.ts > /tmp/property.txt
-          npx prettier src/server/services/roomService.test.ts > /tmp/room.txt
-          echo '--- PROPERTY ---'
-          cat /tmp/property.txt
-          echo '--- ROOM ---'
-          cat /tmp/room.txt
+          if git diff --quiet -- src/server/services/propertyService.test.ts src/server/services/roomService.test.ts; then
+            echo "Already formatted"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/server/services/propertyService.test.ts src/server/services/roomService.test.ts
+          git commit -m "fix: apply canonical prettier formatting"
+          git push origin HEAD:${{ github.head_ref }}
