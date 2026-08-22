@@ -36,7 +36,9 @@ describe("S3-compatible storage provider", () => {
     );
     expect(url.searchParams.get("X-Amz-Algorithm")).toBe("AWS4-HMAC-SHA256");
     expect(url.searchParams.get("X-Amz-Expires")).toBe("900");
-    expect(url.searchParams.get("X-Amz-SignedHeaders")).toBe("content-type;host");
+    expect(url.searchParams.get("X-Amz-SignedHeaders")).toBe(
+      "content-type;host",
+    );
     expect(url.searchParams.get("X-Amz-Signature")).toMatch(/^[a-f0-9]{64}$/);
     expect(grant.expiresAt.getTime()).toBeGreaterThan(Date.now());
   });
@@ -50,7 +52,9 @@ describe("S3-compatible storage provider", () => {
       ),
     );
 
-    expect(url.pathname).toContain("/nivasa/users/user-a/properties/property-1/assets/asset-1");
+    expect(url.pathname).toContain(
+      "/nivasa/users/user-a/properties/property-1/assets/asset-1",
+    );
     expect(url.searchParams.get("X-Amz-SignedHeaders")).toBe("host");
     expect(url.searchParams.get("X-Amz-Signature")).toMatch(/^[a-f0-9]{64}$/);
   });
