@@ -6,20 +6,23 @@ Nivasa is an AI-native home interior platform for India. The architecture is bui
 
 ## Production foundation
 
-Phase 0 / Phase 0.1 establishes the production foundation for subsequent product phases. The foundation provides:
+The current `main` branch contains the Phase 0 / Phase 0.1 production foundation. The foundation provides:
 
 - Next.js application and server-authoritative architecture.
-- Auth.js authentication with persisted roles: `USER`, `DESIGNER`, `ADMIN`, `SUPER_ADMIN`.
+- Auth.js authentication with Google/email provider boundaries and persisted roles: `USER`, `DESIGNER`, `ADMIN`, `SUPER_ADMIN`.
 - Zod validation, repository/service boundaries and consistent API error handling.
 - Property, room and floor-plan persistence with owner-scoped authorization.
-- Canonical asset ownership checks and S3-compatible signed upload/download boundaries.
-- Durable AI/job state contracts with explicit retry/failure semantics and provider-neutral interfaces.
-- Server-side administrator and super-administrator authorization, including privileged user-management boundaries.
-- Security, environment validation, auditability, tests and GitHub Actions verification.
+- Canonical asset ownership checks and a real S3-compatible signed upload/download implementation.
+- Server-side administrator and super-administrator authorization boundaries, including privilege-escalation prevention (an `ADMIN` cannot grant `ADMIN`/`SUPER_ADMIN` access; only a `SUPER_ADMIN` can).
+- Security, environment validation, auditability, tests and GitHub Actions verification for the above.
 
-The foundation does **not** mean that all product integrations are live. Payment provider execution, payment webhooks, external AI/rendering providers, real catalogue data, production job workers and end-to-end product workflows are implemented in later phases. Unconfigured providers must fail explicitly; tests must not fabricate successful external side effects.
+**Not yet implemented** (these have typed, fail-closed interface boundaries per `ARCHITECTURE.md`, but no working provider behind them yet):
 
-The architecture deliberately preserves the complete Nivasa north star: property → floor plan → room understanding → design → revisions → catalogue → costing/BOQ → actual-apartment visualization → 3D/360/walkthrough/video → purchase/execution.
+- AI generation, rendering, and job-worker execution — `AIProvider`/`StorageProvider`-style interfaces exist and throw explicitly when unconfigured; no real provider is wired in, and there is no BullMQ worker consuming jobs yet.
+- Payments — no Razorpay implementation, no webhook route, no signature verification exists yet. `PaymentProvider` is a throw-if-unconfigured stub.
+- Credit reservation/confirmation/release logic exists and is tested in isolation, but is not yet wired to any job submission or payment flow.
+
+The architecture deliberately preserves the complete Nivasa north star: property → floor plan → room understanding → design → revisions → catalogue → costing/BOQ → actual-apartment visualization → 3D/360/walkthrough/video → purchase/execution. See `ARCHITECTURE.md` for how the current contracts support that pipeline without weakening it.
 
 ## Local development
 

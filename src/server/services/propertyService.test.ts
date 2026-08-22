@@ -50,9 +50,9 @@ describe("propertyService", () => {
 
   it("returns the fresh property after an owned update", async () => {
     repository.updateForOwner.mockResolvedValue({ count: 1 });
-    repository.findByIdForOwner.mockResolvedValue(
-      { id: "property-1" } as never,
-    );
+    repository.findByIdForOwner.mockResolvedValue({
+      id: "property-1",
+    } as never);
 
     const result = await propertyService.update("property-1", "user-1", {
       address: "New address",
