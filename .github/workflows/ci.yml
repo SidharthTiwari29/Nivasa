@@ -31,13 +31,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Debug Prettier output for PR #15
-        if: github.event_name == 'pull_request' && github.event.pull_request.number == 15
-        continue-on-error: true
-        run: |
-          npx prettier --write src/server/services/propertyService.test.ts src/server/services/roomService.test.ts
-          echo '--- PRETTIER DIFF ---'
-          git diff -- src/server/services/propertyService.test.ts src/server/services/roomService.test.ts
       - run: npm run format:check
       - run: npm run lint
       - run: npx prisma generate
