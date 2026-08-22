@@ -1,17 +1,9 @@
+import { JobType } from "@prisma/client";
 import { Queue } from "bullmq";
 import IORedis from "ioredis";
 
 export const NivasaJobQueue = "nivasa-jobs";
-export type QueueJobType =
-  | "ROOM_UNDERSTANDING"
-  | "DESIGN_GENERATION"
-  | "DESIGN_REVISION"
-  | "THREE_D_SCENE"
-  | "PANORAMA"
-  | "WALKTHROUGH"
-  | "VIDEO"
-  | "BOQ_GENERATION"
-  | "NOTIFICATION";
+export type QueueJobType = JobType | "BOQ_GENERATION" | "NOTIFICATION";
 
 let queue: Queue | undefined;
 
