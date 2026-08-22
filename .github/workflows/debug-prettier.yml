@@ -1,0 +1,21 @@
+name: debug-prettier
+on:
+  pull_request:
+    types: [synchronize]
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Print Prettier output
+        run: |
+          npx prettier src/server/services/propertyService.test.ts > /tmp/property.txt
+          npx prettier src/server/services/roomService.test.ts > /tmp/room.txt
+          echo '--- PROPERTY ---'
+          cat /tmp/property.txt
+          echo '--- ROOM ---'
+          cat /tmp/room.txt
