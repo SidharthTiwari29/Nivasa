@@ -8,7 +8,10 @@ import type {
 
 export const roomService = {
   async list(propertyId: string, ownerId: string) {
-    const property = await propertyRepository.findByIdForOwner(propertyId, ownerId);
+    const property = await propertyRepository.findByIdForOwner(
+      propertyId,
+      ownerId,
+    );
     if (!property) throw new NotFoundError("Property");
     return roomRepository.listForOwner(ownerId, propertyId);
   },
@@ -20,7 +23,10 @@ export const roomService = {
   },
 
   async create(ownerId: string, input: CreateRoomInput) {
-    const property = await propertyRepository.findByIdForOwner(input.propertyId, ownerId);
+    const property = await propertyRepository.findByIdForOwner(
+      input.propertyId,
+      ownerId,
+    );
     if (!property) throw new NotFoundError("Property");
     return roomRepository.create(ownerId, input);
   },
