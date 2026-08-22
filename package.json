@@ -2,8 +2,45 @@
   "name": "nivasa",
   "version": "0.1.0",
   "private": true,
-  "scripts": {"dev":"next dev","build":"next build","start":"next start","lint":"eslint .","typecheck":"tsc --noEmit","test":"vitest run","format:check":"prettier --check .","format":"prettier --write .","prisma:validate":"prisma validate","prisma:generate":"prisma generate"},
-  "engines": {"node": ">=22.12.0"},
-  "dependencies": {"@auth/prisma-adapter":"latest","@prisma/client":"latest","bullmq":"latest","ioredis":"latest","next":"latest","next-auth":"latest","react":"latest","react-dom":"latest","zod":"latest"},
-  "devDependencies": {"@types/node":"latest","@types/react":"latest","@types/react-dom":"latest","eslint":"latest","eslint-config-next":"latest","prettier":"latest","prisma":"latest","typescript":"latest","vitest":"latest"}
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "prisma:validate": "prisma validate",
+    "prisma:generate": "prisma generate"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@auth/prisma-adapter": "latest",
+    "@prisma/adapter-pg": "7.9.1",
+    "@prisma/client": "7.9.1",
+    "bullmq": "latest",
+    "ioredis": "latest",
+    "next": "latest",
+    "next-auth": "^5.0.0-beta.32",
+    "nodemailer": "^7.0.13",
+    "pg": "8.23.0",
+    "react": "latest",
+    "react-dom": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/pg": "^8.23.1",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "prettier": "latest",
+    "prisma": "7.9.1",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
 }
