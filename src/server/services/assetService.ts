@@ -1,10 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { ForbiddenError, NotFoundError } from "@/server/errors/AppError";
-import {
-  assertAssetOwner,
-  buildAssetObjectKey,
-} from "./assetAuthorization";
+import { assertAssetOwner, buildAssetObjectKey } from "./assetAuthorization";
 import { assetRepository } from "@/server/repositories/assetRepository";
 import { getStorageProvider } from "@/server/storage/provider";
 import type { CreateAssetInput } from "@/server/validators/asset";
