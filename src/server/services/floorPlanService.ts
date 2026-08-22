@@ -1,5 +1,6 @@
-import { ForbiddenError, NotFoundError } from "@/server/errors/AppError";
 import { floorPlanRepository } from "@/server/repositories/floorPlanRepository";
+import { assertAssetOwner } from "./assetAuthorization";
+import { NotFoundError } from "@/server/errors/AppError";
 import type { CreateFloorPlanInput } from "@/server/validators/floorPlan";
 
 export const floorPlanService = {
@@ -25,11 +26,7 @@ export const floorPlanService = {
     );
     if (!property) throw new NotFoundError("Property");
 
-    const asset = await floorPlanRepository.findAssetForOwner(
-      input.assetId,
-      ownerId,
-    );
-    if (!asset) throw new ForbiddenError();
+    await assertAssetOwner(input.assetId, ownerId);
 
     const latest = await floorPlanRepository.findLatestVersion(
       input.propertyId,

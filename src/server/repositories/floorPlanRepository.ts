@@ -24,16 +24,6 @@ export const floorPlanRepository = {
     });
   },
 
-  findAssetForOwner(assetId: string, ownerId: string) {
-    return prisma.asset.findFirst({
-      where: {
-        id: assetId,
-        objectKey: { startsWith: `users/${ownerId}/` },
-      },
-      select: { id: true },
-    });
-  },
-
   findLatestVersion(propertyId: string) {
     return prisma.floorPlan.findFirst({
       where: { propertyId },
