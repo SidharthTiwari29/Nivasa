@@ -68,7 +68,9 @@ describe("roomService", () => {
   });
 
   it("creates a room after verifying property ownership", async () => {
-    properties.findByIdForOwner.mockResolvedValue({ id: "property-1" } as never);
+    properties.findByIdForOwner.mockResolvedValue(
+      { id: "property-1" } as never,
+    );
     repository.create.mockResolvedValue({ id: "room-1" } as never);
 
     const input = {
