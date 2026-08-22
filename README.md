@@ -2,37 +2,39 @@
 
 **Your home. Designed your way.**
 
-Nivasa is an AI-native home interior platform for India. The architecture is built around the user's real property, rooms, floor plans, designs, catalogue, costing, BOQ and final-apartment visualization—not isolated image generation.
+Nivasa is an AI-native home interior platform for India. The production architecture is built around the user's real property, rooms, floor plans, designs, revisions, catalogue, costing, BOQ, actual-apartment visualization, rendering, commercial packages and entitlement enforcement.
 
-## Production foundation
+## Phase 0.1 production foundation
 
-The current `main` branch contains the Phase 0 / Phase 0.1 production foundation. The foundation provides:
+Phase 0.1 establishes the complete server-side production foundation required by the product contract:
 
-- Next.js application and server-authoritative architecture.
-- Auth.js authentication with Google/email provider boundaries and persisted roles: `USER`, `DESIGNER`, `ADMIN`, `SUPER_ADMIN`.
-- Zod validation, repository/service boundaries and consistent API error handling.
-- Property, room and floor-plan persistence with owner-scoped authorization.
-- Canonical asset ownership checks and a real S3-compatible signed upload/download implementation.
-- Server-side administrator and super-administrator authorization boundaries, including privilege-escalation prevention (an `ADMIN` cannot grant `ADMIN`/`SUPER_ADMIN` access; only a `SUPER_ADMIN` can).
-- Security, environment validation, auditability, tests and GitHub Actions verification for the above.
+- Auth.js authentication boundaries with persisted `USER`, `DESIGNER`, `ADMIN`, `SUPER_ADMIN` roles and server-side authorization.
+- Zod validation, repository/service boundaries, structured API errors, environment validation and audit logging.
+- Owner-scoped property, room and floor-plan persistence and secure S3-compatible signed storage.
+- Design project → version → revision lifecycle with persisted revision instructions and concurrency-safe version numbering.
+- Durable AI job state with idempotency keys, BullMQ/Redis queue configuration, retries/backoff and a worker lifecycle that never fabricates provider success.
+- Provider-neutral AI contracts for floor-plan analysis, design generation/revision, BOQ assistance and walkthrough prompting.
+- Provider-neutral rendering contracts for design images, panorama, 3D, walkthrough, video and before/after output.
+- Backend-owned commercial packages, server-created payment orders, Razorpay webhook signature verification, idempotent purchase activation and entitlement provisioning.
+- Transactional entitlement reserve/confirm/release semantics with idempotency and concurrency protection.
+- Catalogue and deterministic BOQ/costing services using persisted catalogue prices rather than hardcoded fake catalogue results.
+- Security headers, safe failure behaviour, operational documentation and CI verification through production build.
 
-**Not yet implemented** (these have typed, fail-closed interface boundaries per `ARCHITECTURE.md`, but no working provider behind them yet):
+### Provider configuration
 
-- AI generation, rendering, and job-worker execution — `AIProvider`/`StorageProvider`-style interfaces exist and throw explicitly when unconfigured; no real provider is wired in, and there is no BullMQ worker consuming jobs yet.
-- Payments — no Razorpay implementation, no webhook route, no signature verification exists yet. `PaymentProvider` is a throw-if-unconfigured stub.
-- Credit reservation/confirmation/release logic exists and is tested in isolation, but is not yet wired to any job submission or payment flow.
+Provider integrations are real boundaries, not fake successes. When credentials are absent the application fails explicitly with configuration errors. Razorpay is implemented as the India payment adapter; AI and rendering adapters remain provider-neutral until a concrete provider is configured. BullMQ/Redis is required when asynchronous jobs are submitted or a worker is started.
 
-The architecture deliberately preserves the complete Nivasa north star: property → floor plan → room understanding → design → revisions → catalogue → costing/BOQ → actual-apartment visualization → 3D/360/walkthrough/video → purchase/execution. See `ARCHITECTURE.md` for how the current contracts support that pipeline without weakening it.
+The architecture preserves the full Nivasa north star: property → floor plan → room understanding → design → user-controlled revisions → catalogue → costing/BOQ → actual-apartment visualization → 3D/360/walkthrough/video → purchase/execution.
 
 ## Local development
 
 1. Copy `.env.example` to `.env`.
-2. Provide the environment-specific database/auth/provider values required for the capability you are exercising.
-3. Install from the committed lockfile with `npm ci`.
-4. Generate Prisma client with `npx prisma generate`.
-5. Run the development server with `npm run dev`.
+2. Install from the committed lockfile with `npm ci`.
+3. Provide PostgreSQL, Auth.js and any provider credentials required for the capability being exercised.
+4. Run `npx prisma generate` and `npx prisma migrate deploy` against a development database.
+5. Run `npm run dev`.
 
-External providers are optional during deterministic CI. Missing provider credentials must surface as explicit configuration failures; tests must not simulate successful external side effects.
+For background jobs, run a Redis instance and start a process that calls `createNivasaWorker()` from `src/server/jobs/worker.ts`. Do not start workers without `REDIS_URL`.
 
 ## Verification
 
@@ -42,7 +44,7 @@ The authoritative CI chain is:
 format check → lint → Prisma generate → typecheck → tests → Prisma validate → production build → diff check
 ```
 
-Run the same checks locally when changing production code:
+Run:
 
 ```bash
 npm ci
@@ -58,6 +60,6 @@ git diff --check
 
 ## Operations
 
-Production assumptions, required environment variables, deployment boundaries, provider configuration, database migration expectations, background-job operation and security practices are documented in `docs/OPERATIONS.md`.
+See `ARCHITECTURE.md`, `DEVELOPMENT.md` and `docs/OPERATIONS.md` for provider configuration, migration policy, queue/worker operation, payment webhook handling, security requirements, deployment assumptions and failure behaviour.
 
-Real production credentials are never committed to the repository.
+Never commit production credentials or activate paid entitlements from a frontend success callback. Webhooks and server-side state are authoritative.
