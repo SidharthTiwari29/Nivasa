@@ -6,6 +6,20 @@ export const assetRepository = {
     return prisma.asset.findUnique({ where: { id } });
   },
 
+  findDesignVersionContext(id: string) {
+    return prisma.designVersion.findUnique({
+      where: { id },
+      select: { project: { select: { ownerId: true, propertyId: true } } },
+    });
+  },
+
+  findJobContext(id: string) {
+    return prisma.aIJob.findUnique({
+      where: { id },
+      select: { project: { select: { ownerId: true, propertyId: true } } },
+    });
+  },
+
   createForDesignVersion(input: {
     designVersionId: string;
     type: Prisma.AssetCreateInput["type"];
