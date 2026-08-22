@@ -4,13 +4,17 @@ import { ForbiddenError, UnauthorizedError } from "@/server/errors/AppError";
 
 export const ADMIN_ROLES: readonly Role[] = ["ADMIN", "SUPER_ADMIN"];
 
-export function assertAdminRole(role: Role | null | undefined): asserts role is "ADMIN" | "SUPER_ADMIN" {
+export function assertAdminRole(
+  role: Role | null | undefined,
+): asserts role is "ADMIN" | "SUPER_ADMIN" {
   if (!role || !ADMIN_ROLES.includes(role)) {
     throw new ForbiddenError("Administrator access required");
   }
 }
 
-export function assertSuperAdminRole(role: Role | null | undefined): asserts role is "SUPER_ADMIN" {
+export function assertSuperAdminRole(
+  role: Role | null | undefined,
+): asserts role is "SUPER_ADMIN" {
   if (role !== "SUPER_ADMIN") {
     throw new ForbiddenError("Super administrator access required");
   }
