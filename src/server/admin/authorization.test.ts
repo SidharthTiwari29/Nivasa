@@ -1,4 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("@/auth", () => ({
+  auth: vi.fn(),
+}));
+
 import { assertAdminRole, assertSuperAdminRole } from "./authorization";
 
 describe("admin authorization", () => {
