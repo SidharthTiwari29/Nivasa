@@ -1,0 +1,57 @@
+name: One-time formatting and audit
+
+on:
+  push:
+    branches:
+      - codex/property-api-foundation
+
+permissions:
+  contents: write
+
+jobs:
+  format_and_audit:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/property-api-foundation
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Report Prettier version from lockfile install
+        run: npx --no-install prettier --version
+
+      - name: Format with repository Prettier
+        run: npx --no-install prettier --write .
+
+      - name: Audit production dependencies
+        shell: bash
+        run: |
+          set +e
+          npm audit --omit=dev 2>&1 | tee npm-audit-omit-dev.txt
+          status=${PIPESTATUS[0]}
+          echo "npm audit exit code: ${status}"
+          exit 0
+
+      - name: Commit formatting changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No formatting changes required."
+            exit 0
+          fi
+          git commit -m "chore: format property API changes"
+          git push origin HEAD:codex/property-api-foundation
