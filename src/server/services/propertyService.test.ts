@@ -20,9 +20,9 @@ describe("propertyService", () => {
 
   it("rejects get for an unowned property", async () => {
     repository.findByIdForOwner.mockResolvedValue(null);
-    await expect(propertyService.get("property-1", "user-1")).rejects.toBeInstanceOf(
-      NotFoundError,
-    );
+    await expect(
+      propertyService.get("property-1", "user-1"),
+    ).rejects.toBeInstanceOf(NotFoundError);
   });
 
   it("rejects update for an unowned property", async () => {
