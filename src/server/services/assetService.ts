@@ -1,9 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { ForbiddenError, NotFoundError } from "@/server/errors/AppError";
-import { assertAssetOwner } from "./assetAuthorization";
+import {
+  assertAssetOwner,
+  buildAssetObjectKey,
+} from "./assetAuthorization";
 import { assetRepository } from "@/server/repositories/assetRepository";
-import { buildAssetObjectKey } from "./assetAuthorization";
 import { getStorageProvider } from "@/server/storage/provider";
 import type { CreateAssetInput } from "@/server/validators/asset";
 
@@ -32,18 +34,17 @@ export const assetService = {
 
     if (ownerId !== userId) throw new ForbiddenError();
 
-    const objectKey = buildAssetObjectKey(
-      userId,
-      propertyId,
-      randomUUID(),
-    );
+    const storage = getStorageProvider();
+    const objectKey = buildAssetObjectKey(userId, propertyId, randomUUID());
     const metadata = input.metadata as Prisma.InputJsonValue | undefined;
+    const sizeBytes =
+      input.sizeBytes === undefined ? undefined : BigInt(input.sizeBytes);
     const asset = input.designVersionId
       ? await assetRepository.createForDesignVersion({
           designVersionId: input.designVersionId,
           type: input.type,
           contentType: input.contentType,
-          sizeBytes: input.sizeBytes === undefined ? undefined : BigInt(input.sizeBytes),
+          sizeBytes,
           checksum: input.checksum,
           metadata,
           objectKey,
@@ -52,13 +53,13 @@ export const assetService = {
           jobId: input.jobId!,
           type: input.type,
           contentType: input.contentType,
-          sizeBytes: input.sizeBytes === undefined ? undefined : BigInt(input.sizeBytes),
+          sizeBytes,
           checksum: input.checksum,
           metadata,
           objectKey,
         });
 
-    const grant = await getStorageProvider().createUploadGrant({
+    const grant = await storage.createUploadGrant({
       objectKey: asset.objectKey,
       contentType: asset.contentType,
       expiresInSeconds: SIGNED_URL_TTL_SECONDS,
