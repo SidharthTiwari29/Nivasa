@@ -6,19 +6,18 @@ Nivasa is an AI-native home interior platform for India. The architecture is bui
 
 ## Production foundation
 
-The current `main` branch contains the completed Phase 0 / Phase 0.1 foundation. The foundation provides:
+Phase 0 / Phase 0.1 establishes the production foundation for subsequent product phases. The foundation provides:
 
 - Next.js application and server-authoritative architecture.
-- Auth.js authentication with Google/email provider boundaries and persisted roles: `USER`, `DESIGNER`, `ADMIN`, `SUPER_ADMIN`.
+- Auth.js authentication with persisted roles: `USER`, `DESIGNER`, `ADMIN`, `SUPER_ADMIN`.
 - Zod validation, repository/service boundaries and consistent API error handling.
 - Property, room and floor-plan persistence with owner-scoped authorization.
 - Canonical asset ownership checks and S3-compatible signed upload/download boundaries.
-- Durable AI/job state contracts with idempotency and explicit retry/failure semantics.
-- Provider-neutral AI and rendering interfaces; unconfigured providers fail explicitly rather than returning fabricated results.
-- Razorpay-ready payment boundaries, webhook verification/idempotency and server-authoritative entitlements.
-- Transactional credit reservation/confirmation/release semantics.
-- Server-side administrator and super-administrator authorization boundaries.
+- Durable AI/job state contracts with explicit retry/failure semantics and provider-neutral interfaces.
+- Server-side administrator and super-administrator authorization, including privileged user-management boundaries.
 - Security, environment validation, auditability, tests and GitHub Actions verification.
+
+The foundation does **not** mean that all product integrations are live. Payment provider execution, payment webhooks, external AI/rendering providers, real catalogue data, production job workers and end-to-end product workflows are implemented in later phases. Unconfigured providers must fail explicitly; tests must not fabricate successful external side effects.
 
 The architecture deliberately preserves the complete Nivasa north star: property → floor plan → room understanding → design → revisions → catalogue → costing/BOQ → actual-apartment visualization → 3D/360/walkthrough/video → purchase/execution.
 
