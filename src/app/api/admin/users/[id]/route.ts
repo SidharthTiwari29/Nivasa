@@ -22,11 +22,7 @@ export const PATCH = withErrorHandling(
     const actor = await requireAdmin();
     const params = parseOrThrow(adminUserIdParamSchema, await context.params);
     const body = parseOrThrow(updateAdminUserSchema, await request.json());
-    const user = await adminUserService.updateRole(
-      actor.role,
-      params.id,
-      body.role,
-    );
+    const user = await adminUserService.updateRole(actor.role, params.id, body.role);
     return NextResponse.json({ user });
   },
 );
