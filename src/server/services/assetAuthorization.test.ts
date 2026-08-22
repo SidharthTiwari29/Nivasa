@@ -30,7 +30,9 @@ describe("asset ownership authorization", () => {
     } as never);
 
     await expect(resolveAssetOwnerId("asset-1")).resolves.toBe("user-a");
-    await expect(assertAssetOwner("asset-1", "user-a")).resolves.toBeUndefined();
+    await expect(
+      assertAssetOwner("asset-1", "user-a"),
+    ).resolves.toBeUndefined();
   });
 
   it("denies a different user", async () => {
@@ -77,12 +79,15 @@ describe("asset object keys", () => {
     );
   });
 
-  it.each(["../secret", "users/../secret", "/absolute/path", "\\absolute\\path", "C:\\secret"]) (
-    "rejects unsafe object key %s",
-    (objectKey) => {
-      expect(() => validateAssetObjectKey(objectKey)).toThrow(
-        "Request validation failed",
-      );
-    },
-  );
+  it.each([
+    "../secret",
+    "users/../secret",
+    "/absolute/path",
+    "\\absolute\\path",
+    "C:\\secret",
+  ])("rejects unsafe object key %s", (objectKey) => {
+    expect(() => validateAssetObjectKey(objectKey)).toThrow(
+      "Request validation failed",
+    );
+  });
 });
