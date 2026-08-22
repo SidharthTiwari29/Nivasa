@@ -15,7 +15,7 @@ export const adminUserService = {
     return user;
   },
 
-  async updateRole(actorRole: "ADMIN" | "SUPER_ADMIN", id: string, role: Role) {
+  async updateRole(actorRole: Role, id: string, role: Role) {
     if (actorRole !== "SUPER_ADMIN" && PRIVILEGED_ROLES.includes(role)) {
       throw new ForbiddenError(
         "Only a super administrator can grant administrator access",
