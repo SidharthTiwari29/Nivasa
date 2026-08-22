@@ -1,16 +1,22 @@
+import type { JobType } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
-import { enqueueJob, type QueueJobType } from "./queue";
+import { enqueueJob } from "./queue";
 
 const terminal = new Set(["SUCCEEDED", "FAILED", "CANCELLED"]);
 
 export async function createAndEnqueueJob(input: {
   projectId: string;
-  type: QueueJobType;
+  type: JobType;
   idempotencyKey: string;
   payload: Record<string, unknown>;
 }) {
   const existing = await prisma.aIJob.findUnique({
-    where: { projectId_idempotencyKey: { projectId: input.projectId, idempotencyKey: input.idempotencyKey } },
+    where: {
+      projectId_idempotencyKey: {
+        projectId: input.projectId,
+        idempotencyKey: input.idempotencyKey,
+      },
+    },
   });
   if (existing) return existing;
 
@@ -26,7 +32,15 @@ export async function createAndEnqueueJob(input: {
     await enqueueJob({ jobId: job.id, type: input.type, payload: input.payload });
     return job;
   } catch (error) {
-    await prisma.aIJob.update({ where: { id: job.id }, data: { status: "FAILED", errorCode: "QUEUE_UNAVAILABLE", errorMessage: error instanceof Error ? error.message : "Queue unavailable", completedAt: new Date() } });
+    await prisma.aIJob.update({
+      where: { id: job.id },
+      data: {
+        status: "FAILED",
+        errorCode: "QUEUE_UNAVAILABLE",
+        errorMessage: error instanceof Error ? error.message : "Queue unavailable",
+        completedAt: new Date(),
+      },
+    });
     throw error;
   }
 }
