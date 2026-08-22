@@ -31,7 +31,9 @@ export const floorPlanService = {
     );
     if (!asset) throw new ForbiddenError();
 
-    const latest = await floorPlanRepository.findLatestVersion(input.propertyId);
+    const latest = await floorPlanRepository.findLatestVersion(
+      input.propertyId,
+    );
     return floorPlanRepository.create(input, (latest?.version ?? 0) + 1);
   },
 };
