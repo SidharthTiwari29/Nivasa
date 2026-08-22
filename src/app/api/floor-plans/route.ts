@@ -10,7 +10,12 @@ export const GET = withErrorHandling(async (request: Request) => {
   const propertyId = new URL(request.url).searchParams.get("propertyId");
   if (!propertyId) {
     return NextResponse.json(
-      { error: { code: "VALIDATION_ERROR", message: "propertyId is required" } },
+      {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "propertyId is required",
+        },
+      },
       { status: 422 },
     );
   }
