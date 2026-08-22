@@ -43,14 +43,16 @@ describe("propertyService", () => {
   it("creates a property scoped to the caller", async () => {
     repository.create.mockResolvedValue({ id: "property-1" } as never);
     await propertyService.create("user-1", { name: "Home" });
-    expect(repository.create).toHaveBeenCalledWith("user-1", { name: "Home" });
+    expect(repository.create).toHaveBeenCalledWith("user-1", {
+      name: "Home",
+    });
   });
 
   it("returns the fresh property after an owned update", async () => {
     repository.updateForOwner.mockResolvedValue({ count: 1 });
-    repository.findByIdForOwner.mockResolvedValue(
-      { id: "property-1" } as never,
-    );
+    repository.findByIdForOwner.mockResolvedValue({
+      id: "property-1",
+    } as never);
 
     const result = await propertyService.update("property-1", "user-1", {
       address: "New address",
