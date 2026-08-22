@@ -1,6 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
-import type { CreateRoomInput, UpdateRoomInput } from "@/server/validators/room";
+import type {
+  CreateRoomInput,
+  UpdateRoomInput,
+} from "@/server/validators/room";
 
 export const roomRepository = {
   listForOwner(ownerId: string, propertyId: string) {
