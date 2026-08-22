@@ -8,13 +8,21 @@ describe("admin authorization", () => {
   });
 
   it("rejects ordinary users and designers", () => {
-    expect(() => assertAdminRole("USER")).toThrow("Administrator access required");
-    expect(() => assertAdminRole("DESIGNER")).toThrow("Administrator access required");
+    expect(() => assertAdminRole("USER")).toThrow(
+      "Administrator access required",
+    );
+    expect(() => assertAdminRole("DESIGNER")).toThrow(
+      "Administrator access required",
+    );
   });
 
   it("restricts super-admin operations to SUPER_ADMIN", () => {
     expect(() => assertSuperAdminRole("SUPER_ADMIN")).not.toThrow();
-    expect(() => assertSuperAdminRole("ADMIN")).toThrow("Super administrator access required");
-    expect(() => assertSuperAdminRole("USER")).toThrow("Super administrator access required");
+    expect(() => assertSuperAdminRole("ADMIN")).toThrow(
+      "Super administrator access required",
+    );
+    expect(() => assertSuperAdminRole("USER")).toThrow(
+      "Super administrator access required",
+    );
   });
 });
