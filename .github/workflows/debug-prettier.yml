@@ -1,5 +1,8 @@
 name: debug-prettier
 on:
+  push:
+    branches:
+      - codex/phase-0-1-closeout-hardening
   pull_request:
     types: [synchronize]
 jobs:
