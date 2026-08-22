@@ -204,6 +204,7 @@ model DesignProject {
   property   Property        @relation(fields: [propertyId], references: [id])
   room       Room?           @relation(fields: [roomId], references: [id])
   versions   DesignVersion[]
+  revisions  DesignRevision[]
   jobs       AIJob[]
   boqs       Boq[]
 
@@ -223,6 +224,20 @@ model DesignVersion {
 
   @@unique([projectId, version])
   @@index([projectId])
+}
+
+model DesignRevision {
+  id             String        @id @default(cuid())
+  projectId      String
+  baseVersionId  String
+  revisionNumber Int
+  instruction    String        @db.Text
+  parameters     Json?
+  createdAt      DateTime      @default(now())
+  project        DesignProject @relation(fields: [projectId], references: [id])
+
+  @@unique([projectId, revisionNumber])
+  @@index([projectId, createdAt])
 }
 
 model Asset {
@@ -300,21 +315,21 @@ model Boq {
   version       Int           @default(1)
   status        BoqStatus     @default(DRAFT)
   currency      String        @default("INR")
-  subtotalMinor BigInt        @default(0)
-  taxMinor      BigInt        @default(0)
-  discountMinor BigInt        @default(0)
-  wastageMinor  BigInt        @default(0)
-  totalMinor    BigInt        @default(0)
+  subtotalMinor BigInt         @default(0)
+  taxMinor      BigInt         @default(0)
+  discountMinor BigInt         @default(0)
+  wastageMinor  BigInt         @default(0)
+  totalMinor    BigInt         @default(0)
   snapshot      Json
-  createdAt     DateTime      @default(now())
-  project       DesignProject @relation(fields: [projectId], references: [id])
+  createdAt     DateTime       @default(now())
+  project       DesignProject  @relation(fields: [projectId], references: [id])
   lines         BoqLine[]
 
   @@unique([projectId, version])
 }
 
 model BoqLine {
-  id              String         @id @default(cuid())
+  id              String         @id
   boqId           String
   catalogueItemId String?
   description     String
@@ -337,7 +352,7 @@ model Package {
   id           String        @id @default(cuid())
   code         String        @unique
   name         String
-  priceMinor   BigInt
+  priceMinor   BigInt        
   currency     String        @default("INR")
   credits      Int
   active       Boolean       @default(true)
@@ -386,7 +401,7 @@ model Entitlement {
   userId             String
   purchaseId         String?
   packageId          String
-  status             EntitlementStatus   @default(ACTIVE)
+  status              EntitlementStatus   @default(ACTIVE)
   creditsTotal       Int
   creditsReserved    Int                 @default(0)
   creditsConsumed    Int                 @default(0)
@@ -403,8 +418,6 @@ model Entitlement {
   @@index([userId, status])
 }
 
-/// A reservation records one idempotent credit hold. State transitions must use
-/// conditional updates so only a RESERVED reservation can be confirmed or released.
 model CreditReservation {
   id             String            @id @default(cuid())
   entitlementId  String
