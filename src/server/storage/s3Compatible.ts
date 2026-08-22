@@ -1,4 +1,4 @@
-import { createHmac, createHash } from "node:crypto";
+import { createHash, createHmac } from "node:crypto";
 import { getEnv } from "@/server/config/env";
 import type { StorageProvider, UploadGrant } from "./provider";
 
@@ -19,7 +19,11 @@ function encode(value: string): string {
   );
 }
 
-function canonicalPath(endpoint: URL, bucket: string, objectKey: string): string {
+function canonicalPath(
+  endpoint: URL,
+  bucket: string,
+  objectKey: string,
+): string {
   const prefix = endpoint.pathname.replace(/\/$/, "");
   return `${prefix}/${encode(bucket)}/${objectKey
     .split("/")
@@ -56,9 +60,15 @@ function presign(
   expiresInSeconds: number,
   contentType?: string,
 ): string {
-  const expires = Math.min(Math.max(Math.floor(expiresInSeconds), 1), MAX_EXPIRES_SECONDS);
+  const expires = Math.min(
+    Math.max(Math.floor(expiresInSeconds), 1),
+    MAX_EXPIRES_SECONDS,
+  );
   const now = new Date();
-  const amzDate = now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+  const amzDate = now
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}Z$/, "Z");
   const shortDate = amzDate.slice(0, 8);
   const host = endpoint.host;
   const signedHeaders = contentType ? "content-type;host" : "host";
@@ -88,13 +98,18 @@ function presign(
     scope,
     sha256(canonicalRequest),
   ].join("\n");
-  const signature = createHmac("sha256", signingKey(secretAccessKey, shortDate, region))
+  const signature = createHmac(
+    "sha256",
+    signingKey(secretAccessKey, shortDate, region),
+  )
     .update(stringToSign)
     .digest("hex");
 
   const url = new URL(endpoint.toString());
   url.pathname = canonicalPath(endpoint, bucket, objectKey);
-  for (const [key, value] of Object.entries(query)) url.searchParams.set(key, value);
+  for (const [key, value] of Object.entries(query)) {
+    url.searchParams.set(key, value);
+  }
   url.searchParams.set("X-Amz-Signature", signature);
   return url.toString();
 }
@@ -144,11 +159,17 @@ export class S3CompatibleStorageProvider implements StorageProvider {
     return {
       objectKey: input.objectKey,
       uploadUrl,
-      expiresAt: new Date(Date.now() + Math.min(input.expiresInSeconds, MAX_EXPIRES_SECONDS) * 1000),
+      expiresAt: new Date(
+        Date.now() +
+          Math.min(input.expiresInSeconds, MAX_EXPIRES_SECONDS) * 1000,
+      ),
     };
   }
 
-  async createDownloadUrl(objectKey: string, expiresInSeconds: number): Promise<string> {
+  async createDownloadUrl(
+    objectKey: string,
+    expiresInSeconds: number,
+  ): Promise<string> {
     return presign(
       "GET",
       this.endpoint,
