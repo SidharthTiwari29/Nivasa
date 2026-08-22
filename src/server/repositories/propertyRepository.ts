@@ -1,5 +1,8 @@
 import { prisma } from "@/server/db/prisma";
-import type { CreatePropertyInput, UpdatePropertyInput } from "@/server/validators/property";
+import type {
+  CreatePropertyInput,
+  UpdatePropertyInput,
+} from "@/server/validators/property";
 
 export const propertyRepository = {
   listForOwner(ownerId: string) {

@@ -10,7 +10,13 @@ export function withErrorHandling<Args extends unknown[]>(
     } catch (error) {
       if (error instanceof AppError) {
         return NextResponse.json(
-          { error: { code: error.code, message: error.message, details: error.details } },
+          {
+            error: {
+              code: error.code,
+              message: error.message,
+              details: error.details,
+            },
+          },
           { status: error.status },
         );
       }

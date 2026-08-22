@@ -1,6 +1,9 @@
 import { propertyRepository } from "@/server/repositories/propertyRepository";
 import { NotFoundError } from "@/server/errors/AppError";
-import type { CreatePropertyInput, UpdatePropertyInput } from "@/server/validators/property";
+import type {
+  CreatePropertyInput,
+  UpdatePropertyInput,
+} from "@/server/validators/property";
 
 export const propertyService = {
   list(ownerId: string) {
