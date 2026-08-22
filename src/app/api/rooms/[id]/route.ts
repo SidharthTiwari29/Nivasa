@@ -2,11 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { withErrorHandling } from "@/server/errors/handler";
 import { parseOrThrow } from "@/server/validators/parse";
-import {
-  propertyIdParamSchema,
-  updateRoomSchema,
-  roomIdParamSchema,
-} from "@/server/validators/room";
+import { updateRoomSchema, roomIdParamSchema } from "@/server/validators/room";
 import { roomService } from "@/server/services/roomService";
 
 type RouteParams = { params: Promise<{ id: string }> };
