@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-const objectKeySegmentSchema = z
-  .string()
-  .trim()
-  .min(1)
-  .max(256)
-  .refine((value) => !value.includes(".."), "Path traversal is not allowed")
-  .refine((value) => !value.startsWith("/") && !value.startsWith("\\"), "Absolute paths are not allowed")
-  .refine((value) => !/^[A-Za-z]:[\\/]/.test(value), "Absolute paths are not allowed");
-
 export const createAssetSchema = z
   .object({
     type: z.enum([
@@ -27,7 +18,6 @@ export const createAssetSchema = z
     metadata: z.record(z.string(), z.unknown()).optional(),
     designVersionId: z.string().cuid().optional(),
     jobId: z.string().cuid().optional(),
-    objectKeySegment: objectKeySegmentSchema.optional(),
   })
   .refine(
     (input) => Boolean(input.designVersionId) !== Boolean(input.jobId),
