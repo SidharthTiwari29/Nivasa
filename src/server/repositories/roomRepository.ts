@@ -1,8 +1,6 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
-import type {
-  CreateRoomInput,
-  UpdateRoomInput,
-} from "@/server/validators/room";
+import type { CreateRoomInput, UpdateRoomInput } from "@/server/validators/room";
 
 export const roomRepository = {
   listForOwner(ownerId: string, propertyId: string) {
@@ -25,16 +23,25 @@ export const roomRepository = {
         type: input.type,
         name: input.name,
         areaSqFt: input.areaSqFt,
-        metadata: input.metadata,
+        metadata: input.metadata as Prisma.InputJsonValue | undefined,
       },
       include: { property: true },
     });
   },
 
   updateForOwner(id: string, ownerId: string, input: UpdateRoomInput) {
+    const { metadata, ...rest } = input;
     return prisma.room.updateMany({
       where: { id, property: { ownerId } },
-      data: input,
+      data: {
+        ...rest,
+        ...(metadata !== undefined && {
+          metadata:
+            metadata === null
+              ? Prisma.JsonNull
+              : (metadata as Prisma.InputJsonValue),
+        }),
+      },
     });
   },
 
