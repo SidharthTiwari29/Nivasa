@@ -47,9 +47,9 @@ describe("roomService", () => {
 
   it("rejects get for an unowned room", async () => {
     repository.findByIdForOwner.mockResolvedValue(null);
-    await expect(
-      roomService.get("room-1", "user-1"),
-    ).rejects.toBeInstanceOf(NotFoundError);
+    await expect(roomService.get("room-1", "user-1")).rejects.toBeInstanceOf(
+      NotFoundError,
+    );
   });
 
   it("rejects update for an unowned room", async () => {
@@ -62,15 +62,15 @@ describe("roomService", () => {
 
   it("rejects delete for an unowned room", async () => {
     repository.deleteForOwner.mockResolvedValue({ count: 0 });
-    await expect(
-      roomService.remove("room-1", "user-1"),
-    ).rejects.toBeInstanceOf(NotFoundError);
+    await expect(roomService.remove("room-1", "user-1")).rejects.toBeInstanceOf(
+      NotFoundError,
+    );
   });
 
   it("creates a room after verifying property ownership", async () => {
-    properties.findByIdForOwner.mockResolvedValue(
-      { id: "property-1" } as never,
-    );
+    properties.findByIdForOwner.mockResolvedValue({
+      id: "property-1",
+    } as never);
     repository.create.mockResolvedValue({ id: "room-1" } as never);
 
     const input = {
