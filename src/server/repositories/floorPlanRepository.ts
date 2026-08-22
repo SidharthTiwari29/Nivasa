@@ -28,7 +28,7 @@ export const floorPlanRepository = {
     return prisma.asset.findFirst({
       where: {
         id: assetId,
-        floorPlans: { every: { property: { ownerId } } },
+        objectKey: { startsWith: `users/${ownerId}/` },
       },
       select: { id: true },
     });
