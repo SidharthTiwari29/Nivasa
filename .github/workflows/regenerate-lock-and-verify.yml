@@ -1,0 +1,79 @@
+name: Regenerate Lockfile and Verify Prisma Fix
+
+on:
+  push:
+    branches:
+      - codex/property-api-foundation
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/nivasa
+      AUTH_SECRET: ci-secret-that-is-long-enough-for-validation-123456
+      AUTH_URL: http://localhost:3000
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nivasa
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U postgres -d nivasa"
+          --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/property-api-foundation
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies and regenerate lockfile
+        run: npm install
+
+      - name: Report Prettier version
+        run: npx --no-install prettier --version
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Prisma generate
+        run: npx prisma generate
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+      - name: Prisma validate
+        run: npx prisma validate
+
+      - name: Build
+        run: npm run build
+
+      - name: Git diff check
+        run: git diff --check
+
+      - name: Persist generated lockfile and remove temporary workflow
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git rm -f .github/workflows/regenerate-lock-and-verify.yml
+          git commit -m "chore: regenerate lockfile for pinned Prisma" || true
+          git push origin codex/property-api-foundation
