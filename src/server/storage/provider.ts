@@ -1,8 +1,11 @@
+import { getS3CompatibleStorageProvider } from "./s3Compatible";
+
 export type UploadGrant = {
   objectKey: string;
   uploadUrl: string;
   expiresAt: Date;
 };
+
 export interface StorageProvider {
   createUploadGrant(input: {
     objectKey: string;
@@ -14,6 +17,7 @@ export interface StorageProvider {
     expiresInSeconds: number,
   ): Promise<string>;
 }
+
 export function getStorageProvider(): StorageProvider {
-  throw new Error("STORAGE_PROVIDER_NOT_CONFIGURED");
+  return getS3CompatibleStorageProvider();
 }
