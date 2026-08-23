@@ -2,7 +2,7 @@ name: Prettier Probe
 on:
   push:
     branches:
-      - codex/prettier-probe
+      - codex/phase-1-architecture-freeze
 permissions:
   contents: read
 jobs:
