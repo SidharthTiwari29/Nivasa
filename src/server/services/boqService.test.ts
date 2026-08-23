@@ -19,7 +19,7 @@ vi.mock("./costing", () => ({
   }),
 }));
 
-const db = vi.mocked(prisma);
+const db = vi.mocked(prisma, { deep: true });
 
 describe("boqService", () => {
   beforeEach(() => vi.clearAllMocks());
