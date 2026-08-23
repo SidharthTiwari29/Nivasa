@@ -58,18 +58,21 @@ describe("designProjectService", () => {
     });
   });
 
-  it("rejects a revision whose base version is not owned by the project", async () => {
-    db.designProject.findFirst.mockResolvedValue({ id: "project-1" } as never);
-    db.designVersion.findFirst.mockResolvedValue(null);
+  it(
+    "rejects a revision whose base version is not owned by the project",
+    async () => {
+      db.designProject.findFirst.mockResolvedValue({ id: "project-1" } as never);
+      db.designVersion.findFirst.mockResolvedValue(null);
 
-    await expect(
-      createDesignRevision({
-        ownerId: "user-1",
-        projectId: "project-1",
-        baseVersionId: "version-1",
-        instruction: "make it brighter",
-      }),
-    ).rejects.toThrow("VERSION_NOT_FOUND");
-    expect(db.designRevision.create).not.toHaveBeenCalled();
-  });
+      await expect(
+        createDesignRevision({
+          ownerId: "user-1",
+          projectId: "project-1",
+          baseVersionId: "version-1",
+          instruction: "make it brighter",
+        }),
+      ).rejects.toThrow("VERSION_NOT_FOUND");
+      expect(db.designRevision.create).not.toHaveBeenCalled();
+    },
+  );
 });
