@@ -120,7 +120,11 @@ export const homeIntelligenceRepository = {
     });
   },
 
-  async createHomeDna(propertyId: string, ownerId: string, input: HomeDnaInput) {
+  async createHomeDna(
+    propertyId: string,
+    ownerId: string,
+    input: HomeDnaInput,
+  ) {
     const property = await prisma.property.findFirst({
       where: { id: propertyId, ownerId },
       select: {
