@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 
 export async function createDesignProject(input: {
@@ -41,7 +42,7 @@ export async function createDesignVersion(input: {
       projectId: input.projectId,
       version: (latest?.version ?? 0) + 1,
       prompt: input.prompt,
-      parameters: input.parameters,
+      parameters: input.parameters as Prisma.InputJsonValue | undefined,
     },
   });
 }
@@ -71,7 +72,7 @@ export async function createDesignRevision(input: {
       baseVersionId: input.baseVersionId,
       revisionNumber: (latest?.revisionNumber ?? 0) + 1,
       instruction: input.instruction,
-      parameters: input.parameters,
+      parameters: input.parameters as Prisma.InputJsonValue | undefined,
     },
   });
 }
