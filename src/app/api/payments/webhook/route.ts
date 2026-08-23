@@ -2,8 +2,29 @@ import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getPaymentProvider } from "@/server/payments/provider";
 import { activatePaidPurchase } from "@/server/payments/purchaseService";
+import { consumeRateLimit } from "@/server/security/rateLimit";
 
 export async function POST(request: Request) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  const clientIp = forwardedFor?.split(",")[0]?.trim() || "unknown";
+  try {
+    const rate = await consumeRateLimit({
+      key: `payment-webhook:${clientIp}`,
+      limit: 120,
+      windowSeconds: 60,
+    });
+    if (!rate.allowed)
+      return NextResponse.json(
+        { ok: false, error: "RATE_LIMITED" },
+        { status: 429 },
+      );
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: "RATE_LIMIT_UNAVAILABLE" },
+      { status: 503 },
+    );
+  }
+
   const rawBody = await request.text();
   const signature = request.headers.get("x-razorpay-signature");
   if (!signature)
