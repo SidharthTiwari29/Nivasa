@@ -1,4 +1,3 @@
-import type { Prisma } from "@prisma/client";
 import { Worker, type Job } from "bullmq";
 import IORedis from "ioredis";
 import { getAIProvider, type AIRequest } from "@/server/ai/provider";
@@ -24,13 +23,6 @@ function providerMethod(type: string) {
   }
 }
 
-function toWorkerPayload(data: Prisma.JsonValue): WorkerPayload {
-  if (data !== null && typeof data === "object" && !Array.isArray(data)) {
-    return data as WorkerPayload;
-  }
-  return { value: data };
-}
-
 export function createNivasaWorker() {
   const url = process.env.REDIS_URL;
   if (!url) throw new Error("REDIS_NOT_CONFIGURED");
@@ -50,7 +42,7 @@ export function createNivasaWorker() {
               : method === "createWalkthroughPrompt"
                 ? "WALKTHROUGH_PROMPT"
                 : (job.name as AIRequest["type"]),
-          input: toWorkerPayload(job.data),
+          input: job.data,
         };
         const result = await provider[method](request);
         await transitionJob({
@@ -58,7 +50,7 @@ export function createNivasaWorker() {
           status: "SUCCEEDED",
           provider: process.env.AI_PROVIDER,
           providerJobId: result.providerJobId,
-          output: result.output as Prisma.InputJsonValue,
+          output: result.output,
         });
         return result.output;
       } catch (error) {
