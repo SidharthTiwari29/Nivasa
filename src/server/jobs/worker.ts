@@ -24,6 +24,13 @@ function providerMethod(type: string) {
   }
 }
 
+function toWorkerPayload(data: Prisma.JsonValue): WorkerPayload {
+  if (data !== null && typeof data === "object" && !Array.isArray(data)) {
+    return data as WorkerPayload;
+  }
+  return { value: data };
+}
+
 export function createNivasaWorker() {
   const url = process.env.REDIS_URL;
   if (!url) throw new Error("REDIS_NOT_CONFIGURED");
@@ -43,7 +50,7 @@ export function createNivasaWorker() {
               : method === "createWalkthroughPrompt"
                 ? "WALKTHROUGH_PROMPT"
                 : (job.name as AIRequest["type"]),
-          input: job.data as unknown as WorkerPayload,
+          input: toWorkerPayload(job.data),
         };
         const result = await provider[method](request);
         await transitionJob({
