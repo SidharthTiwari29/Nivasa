@@ -17,16 +17,16 @@
 
 ## Test matrix
 
-| Area                        | Success                              | Critical negative case                                        |
-| --------------------------- | ------------------------------------ | ------------------------------------------------------------- |
-| Home intelligence validator | Complete property profile accepted  | Invalid property type/area rejected                           |
-| Room understanding validator | Valid room contract accepted        | Confidence outside 0–10000 rejected                            |
-| Home DNA validator          | All required domains accepted        | Missing required domain rejected                               |
-| Home intelligence API       | Owner can read/update own home       | Cross-owner property is not accessible                         |
-| Room understanding API      | Owner can create/list versions      | Cross-owner room is not accessible                             |
-| Home DNA API                | Owner can create/list versions      | Cross-owner property is not accessible                         |
-| Versioning                  | New writes increment version         | Existing history is never silently reused as a new version   |
-| Provenance                  | AI/USER/IMPORTED remain explicit     | AI record cannot be presented as user confirmation             |
+| Area                          | Success                            | Critical negative case                                     |
+| ----------------------------- | ---------------------------------- | ---------------------------------------------------------- |
+| Home intelligence validator   | Complete property profile accepted | Invalid property type/area rejected                        |
+| Room understanding validator  | Valid room contract accepted       | Confidence outside 0–10000 rejected                        |
+| Home DNA validator            | All required domains accepted      | Missing required domain rejected                           |
+| Home intelligence API         | Owner can read/update own home     | Cross-owner property is not accessible                     |
+| Room understanding API        | Owner can create/list versions     | Cross-owner room is not accessible                         |
+| Home DNA API                  | Owner can create/list versions     | Cross-owner property is not accessible                     |
+| Versioning                    | New writes increment version       | Existing history is never silently reused as a new version |
+| Provenance                    | AI/USER/IMPORTED remain explicit   | AI record cannot be presented as user confirmation         |
 
 ## CI gate
 
