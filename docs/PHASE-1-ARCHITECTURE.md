@@ -284,3 +284,7 @@ Architecture freeze is complete when:
 - the first implementation slice can be developed without redefining Phase 1.
 
 After this document is merged, implementation begins with **Home Intelligence + Home DNA** as the first Phase 1 delivery step.
+
+## 14. Formatting gate
+
+This document is intentionally maintained as plain Markdown and must pass the repository's existing formatter. Do not hand-wrap Markdown to satisfy a guessed formatter output; run the repository-pinned formatter before committing changes.
