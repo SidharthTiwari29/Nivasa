@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/server/db/prisma";
-import { createDesignRevision, createDesignVersion } from "./designProjectService";
+import {
+  createDesignRevision,
+  createDesignVersion,
+} from "./designProjectService";
 
 vi.mock("@/server/db/prisma", () => ({
   prisma: {
@@ -33,7 +36,9 @@ describe("designProjectService", () => {
   it("increments the design version and preserves parameters", async () => {
     db.designProject.findFirst.mockResolvedValue({ id: "project-1" } as never);
     db.designVersion.findFirst.mockResolvedValue({ version: 3 } as never);
-    db.designVersion.create.mockResolvedValue({ id: "version-4", version: 4 } as never);
+    db.designVersion.create.mockResolvedValue(
+      { id: "version-4", version: 4 } as never,
+    );
 
     await expect(
       createDesignVersion({
