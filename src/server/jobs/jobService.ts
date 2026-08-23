@@ -1,4 +1,4 @@
-import type { JobType } from "@prisma/client";
+import type { Prisma, JobType } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 import { enqueueJob } from "./queue";
 
@@ -25,7 +25,7 @@ export async function createAndEnqueueJob(input: {
       projectId: input.projectId,
       type: input.type,
       idempotencyKey: input.idempotencyKey,
-      input: input.payload,
+      input: input.payload as Prisma.InputJsonValue,
     },
   });
   try {
@@ -69,7 +69,7 @@ export async function transitionJob(input: {
       status: input.status,
       provider: input.provider,
       providerJobId: input.providerJobId,
-      output: input.output,
+      output: input.output as Prisma.InputJsonValue | undefined,
       errorCode: input.errorCode,
       errorMessage: input.errorMessage,
       startedAt: input.status === "RUNNING" ? new Date() : current.startedAt,
