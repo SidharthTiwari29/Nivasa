@@ -29,7 +29,11 @@ export async function createAndEnqueueJob(input: {
     },
   });
   try {
-    await enqueueJob({ jobId: job.id, type: input.type, payload: input.payload });
+    await enqueueJob({
+      jobId: job.id,
+      type: input.type,
+      payload: input.payload,
+    });
     return job;
   } catch (error) {
     await prisma.aIJob.update({
@@ -37,7 +41,8 @@ export async function createAndEnqueueJob(input: {
       data: {
         status: "FAILED",
         errorCode: "QUEUE_UNAVAILABLE",
-        errorMessage: error instanceof Error ? error.message : "Queue unavailable",
+        errorMessage:
+          error instanceof Error ? error.message : "Queue unavailable",
         completedAt: new Date(),
       },
     });
@@ -54,7 +59,9 @@ export async function transitionJob(input: {
   errorCode?: string;
   errorMessage?: string;
 }) {
-  const current = await prisma.aIJob.findUniqueOrThrow({ where: { id: input.jobId } });
+  const current = await prisma.aIJob.findUniqueOrThrow({
+    where: { id: input.jobId },
+  });
   if (terminal.has(current.status)) return current;
   return prisma.aIJob.update({
     where: { id: input.jobId },

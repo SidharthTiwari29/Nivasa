@@ -8,12 +8,18 @@ type WorkerPayload = Record<string, unknown>;
 
 function providerMethod(type: string) {
   switch (type) {
-    case "ROOM_UNDERSTANDING": return "analyzeFloorPlan" as const;
-    case "DESIGN_GENERATION": return "generateDesign" as const;
-    case "DESIGN_REVISION": return "reviseDesign" as const;
-    case "BOQ_GENERATION": return "assistBoq" as const;
-    case "WALKTHROUGH": return "createWalkthroughPrompt" as const;
-    default: return null;
+    case "ROOM_UNDERSTANDING":
+      return "analyzeFloorPlan" as const;
+    case "DESIGN_GENERATION":
+      return "generateDesign" as const;
+    case "DESIGN_REVISION":
+      return "reviseDesign" as const;
+    case "BOQ_GENERATION":
+      return "assistBoq" as const;
+    case "WALKTHROUGH":
+      return "createWalkthroughPrompt" as const;
+    default:
+      return null;
   }
 }
 
@@ -30,17 +36,37 @@ export function createNivasaWorker() {
         const provider = getAIProvider();
         const request: AIRequest = {
           jobId: String(job.id),
-          type: method === "assistBoq" ? "BOQ_ASSISTANCE" : method === "createWalkthroughPrompt" ? "WALKTHROUGH_PROMPT" : job.name as AIRequest["type"],
+          type:
+            method === "assistBoq"
+              ? "BOQ_ASSISTANCE"
+              : method === "createWalkthroughPrompt"
+                ? "WALKTHROUGH_PROMPT"
+                : (job.name as AIRequest["type"]),
           input: job.data,
         };
         const result = await provider[method](request);
-        await transitionJob({ jobId: String(job.id), status: "SUCCEEDED", provider: process.env.AI_PROVIDER, providerJobId: result.providerJobId, output: result.output });
+        await transitionJob({
+          jobId: String(job.id),
+          status: "SUCCEEDED",
+          provider: process.env.AI_PROVIDER,
+          providerJobId: result.providerJobId,
+          output: result.output,
+        });
         return result.output;
       } catch (error) {
-        await transitionJob({ jobId: String(job.id), status: "FAILED", errorCode: "PROVIDER_ERROR", errorMessage: error instanceof Error ? error.message : "Provider failed" });
+        await transitionJob({
+          jobId: String(job.id),
+          status: "FAILED",
+          errorCode: "PROVIDER_ERROR",
+          errorMessage:
+            error instanceof Error ? error.message : "Provider failed",
+        });
         throw error;
       }
     },
-    { connection: new IORedis(url, { maxRetriesPerRequest: null }), concurrency: Number(process.env.JOB_CONCURRENCY ?? 4) },
+    {
+      connection: new IORedis(url, { maxRetriesPerRequest: null }),
+      concurrency: Number(process.env.JOB_CONCURRENCY ?? 4),
+    },
   );
 }

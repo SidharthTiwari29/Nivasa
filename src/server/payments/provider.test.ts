@@ -11,6 +11,8 @@ describe("Razorpay webhook signatures", () => {
   });
 
   it("rejects a forged signature", () => {
-    expect(verifyRazorpayWebhookSignature("{}", "not-a-signature", "test-secret")).toBe(false);
+    expect(
+      verifyRazorpayWebhookSignature("{}", "not-a-signature", "test-secret"),
+    ).toBe(false);
   });
 });

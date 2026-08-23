@@ -11,5 +11,16 @@ export const POST = withErrorHandling(async (request: Request) => {
   const actor = await requireAuth();
   const input = parseOrThrow(schema, await request.json());
   const purchase = await createPurchase(actor.userId, input.packageCode);
-  return NextResponse.json({ purchase: { id: purchase.id, packageCode: purchase.package.code, providerOrderId: purchase.providerOrderId, amountMinor: purchase.amountMinor.toString(), currency: purchase.currency } }, { status: 201 });
+  return NextResponse.json(
+    {
+      purchase: {
+        id: purchase.id,
+        packageCode: purchase.package.code,
+        providerOrderId: purchase.providerOrderId,
+        amountMinor: purchase.amountMinor.toString(),
+        currency: purchase.currency,
+      },
+    },
+    { status: 201 },
+  );
 });
