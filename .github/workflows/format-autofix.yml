@@ -1,20 +1,21 @@
 name: Format autofix
 
 on:
-  push:
+  pull_request:
     branches:
-      - codex/phase-0-1-complete
+      - main
 
 permissions:
   contents: write
 
 jobs:
   format:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: codex/phase-0-1-complete
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -31,5 +32,5 @@ jobs:
             echo "No formatting changes needed."
           else
             git commit -m "chore: apply repository formatting"
-            git push origin HEAD:codex/phase-0-1-complete
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
           fi
