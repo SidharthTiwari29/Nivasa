@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { withErrorHandling } from "@/server/errors/handler";
 import { parseOrThrow } from "@/server/validators/parse";
-import { homeDnaSchema, propertyIdParamSchema } from "@/server/validators/homeIntelligence";
+import {
+  homeDnaSchema,
+  propertyIdParamSchema,
+} from "@/server/validators/homeIntelligence";
 import { homeIntelligenceService } from "@/server/services/homeIntelligenceService";
 
 type RouteParams = { params: Promise<{ id: string }> };
