@@ -147,11 +147,13 @@ export const homeIntelligenceRepository = {
         homeIntelligenceVersion: property.homeIntelligence?.version ?? 0,
         household: json(input.household) as Prisma.InputJsonValue,
         lifestyle: json(input.lifestyle) as Prisma.InputJsonValue,
-        designPersonality: json(input.designPersonality) as Prisma.InputJsonValue,
+        designPersonality:
+          json(input.designPersonality) as Prisma.InputJsonValue,
         storageNeeds: json(input.storageNeeds) as Prisma.InputJsonValue,
         functionalNeeds: json(input.functionalNeeds) as Prisma.InputJsonValue,
         futureNeeds: json(input.futureNeeds) as Prisma.InputJsonValue,
-        smartHomePreferences: json(input.smartHomePreferences) as Prisma.InputJsonValue,
+        smartHomePreferences:
+          json(input.smartHomePreferences) as Prisma.InputJsonValue,
         language: input.language,
         createdByUserId: ownerId,
       },
