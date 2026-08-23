@@ -31,12 +31,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx prettier --write docs/PHASE-1-ARCHITECTURE.md
-      - run: cp docs/PHASE-1-ARCHITECTURE.md /tmp/PHASE-1-ARCHITECTURE.md
-      - uses: actions/upload-artifact@v4
-        with:
-          name: phase-1-prettier-output
-          path: /tmp/PHASE-1-ARCHITECTURE.md
       - run: npm run format:check
       - run: npm run lint
       - run: npx prisma generate
