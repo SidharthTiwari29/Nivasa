@@ -39,7 +39,10 @@ export const homeIntelligenceRepository = {
         homeIntelligence: true,
         rooms: {
           include: {
-            roomUnderstandings: { orderBy: { version: "desc" }, take: 1 },
+            roomUnderstandings: {
+              orderBy: { version: "desc" },
+              take: 1,
+            },
           },
           orderBy: { createdAt: "asc" },
         },
@@ -55,7 +58,10 @@ export const homeIntelligenceRepository = {
     return serializable(async (tx) => {
       const property = await tx.property.findFirst({
         where: { id: propertyId, ownerId },
-        select: { id: true, homeIntelligence: { select: { version: true } } },
+        select: {
+          id: true,
+          homeIntelligence: { select: { version: true } },
+        },
       });
       if (!property) return null;
 
@@ -146,7 +152,11 @@ export const homeIntelligenceRepository = {
     });
   },
 
-  async createHomeDna(propertyId: string, ownerId: string, input: HomeDnaInput) {
+  async createHomeDna(
+    propertyId: string,
+    ownerId: string,
+    input: HomeDnaInput,
+  ) {
     return serializable(async (tx) => {
       const property = await tx.property.findFirst({
         where: { id: propertyId, ownerId },
@@ -170,11 +180,13 @@ export const homeIntelligenceRepository = {
           homeIntelligenceVersion: property.homeIntelligence.version,
           household: json(input.household) as Prisma.InputJsonValue,
           lifestyle: json(input.lifestyle) as Prisma.InputJsonValue,
-          designPersonality: json(input.designPersonality) as Prisma.InputJsonValue,
+          designPersonality:
+            json(input.designPersonality) as Prisma.InputJsonValue,
           storageNeeds: json(input.storageNeeds) as Prisma.InputJsonValue,
           functionalNeeds: json(input.functionalNeeds) as Prisma.InputJsonValue,
           futureNeeds: json(input.futureNeeds) as Prisma.InputJsonValue,
-          smartHomePreferences: json(input.smartHomePreferences) as Prisma.InputJsonValue,
+          smartHomePreferences:
+            json(input.smartHomePreferences) as Prisma.InputJsonValue,
           language: input.language,
           createdByUserId: ownerId,
         },
