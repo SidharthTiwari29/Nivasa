@@ -9,7 +9,9 @@ import type {
 const json = (value: Record<string, unknown> | undefined) =>
   value as Prisma.InputJsonValue | undefined;
 
-async function serializable<T>(operation: (tx: Prisma.TransactionClient) => Promise<T>) {
+async function serializable<T>(
+  operation: (tx: Prisma.TransactionClient) => Promise<T>,
+) {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
       return await prisma.$transaction(operation, {
