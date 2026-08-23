@@ -8,13 +8,20 @@ import type {
 
 export const homeIntelligenceService = {
   async get(propertyId: string, ownerId: string) {
-    const property = await homeIntelligenceRepository.findForOwner(propertyId, ownerId);
+    const property = await homeIntelligenceRepository.findForOwner(
+      propertyId,
+      ownerId,
+    );
     if (!property) throw new NotFoundError("Property");
     return property;
   },
 
   async upsert(propertyId: string, ownerId: string, input: HomeIntelligenceInput) {
-    const result = await homeIntelligenceRepository.upsertForOwner(propertyId, ownerId, input);
+    const result = await homeIntelligenceRepository.upsertForOwner(
+      propertyId,
+      ownerId,
+      input,
+    );
     if (!result) throw new NotFoundError("Property");
     return result;
   },
@@ -46,7 +53,11 @@ export const homeIntelligenceService = {
   },
 
   async createHomeDna(propertyId: string, ownerId: string, input: HomeDnaInput) {
-    const result = await homeIntelligenceRepository.createHomeDna(propertyId, ownerId, input);
+    const result = await homeIntelligenceRepository.createHomeDna(
+      propertyId,
+      ownerId,
+      input,
+    );
     if (!result) throw new NotFoundError("Property");
     return result;
   },
