@@ -43,7 +43,7 @@ export function createNivasaWorker() {
               : method === "createWalkthroughPrompt"
                 ? "WALKTHROUGH_PROMPT"
                 : (job.name as AIRequest["type"]),
-          input: job.data,
+          input: job.data as WorkerPayload,
         };
         const result = await provider[method](request);
         await transitionJob({
