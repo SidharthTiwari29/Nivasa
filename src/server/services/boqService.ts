@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 import { calculateCost } from "./costing";
 
@@ -27,6 +28,13 @@ export async function createBoq(input: {
   });
   const totals = calculateCost(input.lines);
   const version = (latest?.version ?? 0) + 1;
+  const snapshot = input.lines.map((line) => ({
+    ...line,
+    quantity: line.quantity.toString(),
+    unitPriceMinor: line.unitPriceMinor.toString(),
+    labourMinor: (line.labourMinor ?? 0n).toString(),
+    materialMinor: (line.materialMinor ?? 0n).toString(),
+  }));
   return prisma.boq.create({
     data: {
       projectId: input.projectId,
@@ -37,13 +45,7 @@ export async function createBoq(input: {
       taxMinor: totals.taxMinor,
       discountMinor: totals.discountMinor,
       totalMinor: totals.totalMinor,
-      snapshot: input.lines.map((line) => ({
-        ...line,
-        quantity: line.quantity.toString(),
-        unitPriceMinor: line.unitPriceMinor.toString(),
-        labourMinor: (line.labourMinor ?? 0n).toString(),
-        materialMinor: (line.materialMinor ?? 0n).toString(),
-      })),
+      snapshot: snapshot as Prisma.InputJsonValue,
       lines: {
         create: input.lines.map((line) => ({
           catalogueItemId: line.catalogueItemId,
