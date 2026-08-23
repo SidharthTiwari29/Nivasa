@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { Worker, type Job } from "bullmq";
 import IORedis from "ioredis";
 import { getAIProvider, type AIRequest } from "@/server/ai/provider";
@@ -50,7 +51,7 @@ export function createNivasaWorker() {
           status: "SUCCEEDED",
           provider: process.env.AI_PROVIDER,
           providerJobId: result.providerJobId,
-          output: result.output,
+          output: result.output as Prisma.InputJsonValue,
         });
         return result.output;
       } catch (error) {
