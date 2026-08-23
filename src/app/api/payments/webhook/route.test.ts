@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "./route";
 
 const { verifyWebhook, activatePaidPurchase, consumeRateLimit } = vi.hoisted(
@@ -22,6 +22,8 @@ vi.mock("@/server/security/rateLimit", () => ({
 }));
 
 describe("payment webhook", () => {
+  beforeEach(() => vi.clearAllMocks());
+
   it("rejects requests without a signature", async () => {
     consumeRateLimit.mockResolvedValue({ allowed: true });
 
