@@ -6,7 +6,9 @@ const { incr, expire } = vi.hoisted(() => ({
 }));
 
 vi.mock("ioredis", () => ({
-  default: vi.fn().mockImplementation(() => ({ incr, expire })),
+  default: vi.fn().mockImplementation(function MockRedis() {
+    return { incr, expire };
+  }),
 }));
 
 describe("consumeRateLimit", () => {
