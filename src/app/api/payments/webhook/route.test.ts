@@ -61,7 +61,9 @@ describe("payment webhook", () => {
 
     const body = JSON.stringify({
       event: "payment.captured",
-      payload: { payment: { entity: { id: "payment-1", order_id: "order-1" } } },
+      payload: {
+        payment: { entity: { id: "payment-1", order_id: "order-1" } },
+      },
     });
     const response = await POST(
       new Request("http://localhost/api/payments/webhook", {
