@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 
 export function recordAudit(input: {
@@ -8,7 +9,16 @@ export function recordAudit(input: {
   requestId?: string;
   metadata?: Record<string, unknown>;
 }) {
-  return prisma.auditLog.create({ data: input });
+  return prisma.auditLog.create({
+    data: {
+      userId: input.userId,
+      action: input.action,
+      entity: input.entity,
+      entityId: input.entityId,
+      requestId: input.requestId,
+      metadata: input.metadata as Prisma.InputJsonValue | undefined,
+    },
+  });
 }
 
 export function listAuditLogs(input: {
