@@ -12,7 +12,7 @@ export const homeIntelligenceSchema = z.object({
   state: z.string().trim().min(1).max(120).optional(),
   country: z.string().trim().min(1).max(120).default("India"),
   carpetAreaSqFt: z.number().positive().max(100000).nullable().optional(),
-  metadata: z.record(z.string(), z.unknown()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 export type HomeIntelligenceInput = z.infer<typeof homeIntelligenceSchema>;
 
@@ -35,22 +35,22 @@ export const roomUnderstandingSchema = z.object({
   name: z.string().trim().min(1).max(120),
   confidenceBps: z.number().int().min(0).max(10000).nullable().optional(),
   source: z.enum(["AI", "USER", "IMPORTED"]),
-  geometry: z.record(z.string(), z.unknown()).optional(),
-  dimensions: z.record(z.string(), z.unknown()).optional(),
-  constraints: z.record(z.string(), z.unknown()).optional(),
-  requirements: z.record(z.string(), z.unknown()).optional(),
+  geometry: z.record(z.string(), z.any()).optional(),
+  dimensions: z.record(z.string(), z.any()).optional(),
+  constraints: z.record(z.string(), z.any()).optional(),
+  requirements: z.record(z.string(), z.any()).optional(),
   status: z.enum(["UNCONFIRMED", "CONFIRMED", "CORRECTED", "NEEDS_REVIEW"]),
 });
 export type RoomUnderstandingInput = z.infer<typeof roomUnderstandingSchema>;
 
 export const homeDnaSchema = z.object({
-  household: z.record(z.string(), z.unknown()),
-  lifestyle: z.record(z.string(), z.unknown()),
-  designPersonality: z.record(z.string(), z.unknown()),
-  storageNeeds: z.record(z.string(), z.unknown()),
-  functionalNeeds: z.record(z.string(), z.unknown()),
-  futureNeeds: z.record(z.string(), z.unknown()),
-  smartHomePreferences: z.record(z.string(), z.unknown()),
+  household: z.record(z.string(), z.any()),
+  lifestyle: z.record(z.string(), z.any()),
+  designPersonality: z.record(z.string(), z.any()),
+  storageNeeds: z.record(z.string(), z.any()),
+  functionalNeeds: z.record(z.string(), z.any()),
+  futureNeeds: z.record(z.string(), z.any()),
+  smartHomePreferences: z.record(z.string(), z.any()),
   language: z.string().trim().min(2).max(20).default("en-IN"),
 });
 export type HomeDnaInput = z.infer<typeof homeDnaSchema>;
