@@ -24,7 +24,11 @@ export const POST = withErrorHandling(
     const { userId } = await requireAuth();
     const { id } = parseOrThrow(propertyIdParamSchema, await params);
     const body = parseOrThrow(homeDnaSchema, await request.json());
-    const version = await homeIntelligenceService.createHomeDna(id, userId, body);
+    const version = await homeIntelligenceService.createHomeDna(
+      id,
+      userId,
+      body,
+    );
     return NextResponse.json({ version }, { status: 201 });
   },
 );
