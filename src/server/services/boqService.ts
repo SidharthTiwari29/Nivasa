@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 import { calculateCost } from "./costing";
@@ -45,9 +46,10 @@ export async function createBoq(input: {
       taxMinor: totals.taxMinor,
       discountMinor: totals.discountMinor,
       totalMinor: totals.totalMinor,
-      snapshot: snapshot as Prisma.InputJsonValue,
+      snapshot: snapshot as unknown as Prisma.InputJsonValue,
       lines: {
         create: input.lines.map((line) => ({
+          id: randomUUID(),
           catalogueItemId: line.catalogueItemId,
           description: line.description,
           quantity: line.quantity.toString(),
