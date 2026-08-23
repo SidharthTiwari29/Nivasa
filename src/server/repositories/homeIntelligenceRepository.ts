@@ -1,9 +1,13 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 import type {
   HomeDnaInput,
   HomeIntelligenceInput,
   RoomUnderstandingInput,
 } from "@/server/validators/homeIntelligence";
+
+const json = (value: Record<string, unknown> | undefined) =>
+  value as Prisma.InputJsonValue | undefined;
 
 export const homeIntelligenceRepository = {
   findForOwner(propertyId: string, ownerId: string) {
@@ -45,7 +49,7 @@ export const homeIntelligenceRepository = {
         state: input.state,
         country: input.country,
         carpetAreaSqFt: input.carpetAreaSqFt,
-        metadata: input.metadata,
+        metadata: json(input.metadata),
         confirmedAt: new Date(),
         confirmedByUserId: ownerId,
       },
@@ -58,7 +62,7 @@ export const homeIntelligenceRepository = {
         state: input.state,
         country: input.country,
         carpetAreaSqFt: input.carpetAreaSqFt,
-        metadata: input.metadata,
+        metadata: json(input.metadata),
         confirmedAt: new Date(),
         confirmedByUserId: ownerId,
       },
@@ -75,13 +79,20 @@ export const homeIntelligenceRepository = {
       where: { id: roomId, propertyId, property: { ownerId } },
       select: {
         id: true,
-        roomUnderstandings: { select: { version: true }, orderBy: { version: "desc" }, take: 1 },
+        roomUnderstandings: {
+          select: { version: true },
+          orderBy: { version: "desc" },
+          take: 1,
+        },
       },
     });
     if (!room) return null;
 
     const version = (room.roomUnderstandings[0]?.version ?? 0) + 1;
-    const confirmedByUserId = input.status === "CORRECTED" || input.status === "CONFIRMED" ? ownerId : null;
+    const confirmedByUserId =
+      input.status === "CORRECTED" || input.status === "CONFIRMED"
+        ? ownerId
+        : null;
 
     return prisma.roomUnderstanding.create({
       data: {
@@ -91,10 +102,10 @@ export const homeIntelligenceRepository = {
         name: input.name,
         confidenceBps: input.confidenceBps,
         source: input.source,
-        geometry: input.geometry,
-        dimensions: input.dimensions,
-        constraints: input.constraints,
-        requirements: input.requirements,
+        geometry: json(input.geometry),
+        dimensions: json(input.dimensions),
+        constraints: json(input.constraints),
+        requirements: json(input.requirements),
         status: input.status,
         confirmedAt: confirmedByUserId ? new Date() : null,
         confirmedByUserId,
@@ -112,7 +123,15 @@ export const homeIntelligenceRepository = {
   async createHomeDna(propertyId: string, ownerId: string, input: HomeDnaInput) {
     const property = await prisma.property.findFirst({
       where: { id: propertyId, ownerId },
-      select: { id: true, homeIntelligence: { select: { version: true } }, homeDnaVersions: { select: { version: true }, orderBy: { version: "desc" }, take: 1 } },
+      select: {
+        id: true,
+        homeIntelligence: { select: { version: true } },
+        homeDnaVersions: {
+          select: { version: true },
+          orderBy: { version: "desc" },
+          take: 1,
+        },
+      },
     });
     if (!property) return null;
 
@@ -122,13 +141,13 @@ export const homeIntelligenceRepository = {
         propertyId,
         version,
         homeIntelligenceVersion: property.homeIntelligence?.version ?? 0,
-        household: input.household,
-        lifestyle: input.lifestyle,
-        designPersonality: input.designPersonality,
-        storageNeeds: input.storageNeeds,
-        functionalNeeds: input.functionalNeeds,
-        futureNeeds: input.futureNeeds,
-        smartHomePreferences: input.smartHomePreferences,
+        household: json(input.household) as Prisma.InputJsonValue,
+        lifestyle: json(input.lifestyle) as Prisma.InputJsonValue,
+        designPersonality: json(input.designPersonality) as Prisma.InputJsonValue,
+        storageNeeds: json(input.storageNeeds) as Prisma.InputJsonValue,
+        functionalNeeds: json(input.functionalNeeds) as Prisma.InputJsonValue,
+        futureNeeds: json(input.futureNeeds) as Prisma.InputJsonValue,
+        smartHomePreferences: json(input.smartHomePreferences) as Prisma.InputJsonValue,
         language: input.language,
         createdByUserId: ownerId,
       },
