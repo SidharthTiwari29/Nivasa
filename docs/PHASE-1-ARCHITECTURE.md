@@ -208,6 +208,7 @@ Route handler
 UI components never access Prisma directly.
 
 Mutating endpoints must have:
+
 - authentication
 - ownership/role authorization
 - Zod input validation
