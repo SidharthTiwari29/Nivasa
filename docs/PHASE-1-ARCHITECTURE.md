@@ -37,42 +37,55 @@ Phase 1 must build on these contracts rather than replace them.
 The current schema is a production foundation, not yet the complete Phase 1 product model. The following are intentionally absent or insufficient and must be added deliberately:
 
 ### Home/property intelligence
+
 `Property` currently contains `name` and optional `address`, but not the complete product-level property profile. Phase 1 needs structured fields for property type, configuration, possession timing, location and user-confirmed home understanding metadata.
 
 ### Home DNA
+
 There is no dedicated persistent Home DNA aggregate. Household, lifestyle, design personality, storage, functional requirements, future needs and smart-home preferences need a versioned, auditable model tied to the user's home/project.
 
 ### Room intelligence
+
 `Room` currently has a coarse `RoomType`, name, area and JSON metadata. Phase 1 needs a structured room-understanding contract with confidence, user confirmation/correction state, dimensions/geometry metadata and room requirements without forcing provider-specific AI output into the core model.
 
 ### Budget model
+
 There is no first-class budget-plan/recommendation/lock model. Phase 1 needs immutable budget decisions plus revision history and explicit distinction between estimates and verified prices.
 
 ### Product/material provenance
+
 `CatalogueItem` and `CataloguePrice` provide a foundation, but Phase 1 needs source/provenance, verification/freshness, brand/product identifiers, media, material/specification attributes, warranty claims and recommendation rationale. Real source data must be distinguishable from Nivasa estimates and recommendations.
 
 ### Design decision/explainability
+
 Design versions and revisions exist, but the product needs structured design decisions/recommendations so that `why this`, `why not that`, trade-offs and user overrides remain auditable and reusable by the What-If and Savings systems.
 
 ### What-If / Savings
+
 There is no first-class simulation/savings model. Changes need deterministic deltas against a locked baseline, with reasoned impact and no floating-point monetary arithmetic.
 
 ### Smart home
+
 There is no domain model for smart-home capabilities, scenes, device recommendations or experience states. Smart-home features must be capability-driven and provider/product neutral.
 
 ### Buildability
+
 There is no first-class buildability assessment model. The Phase 1 engine must represent checks, evidence, warnings, unknowns and pass/needs-review outcomes without pretending that AI can validate structural facts it cannot observe.
 
 ### Visualization entitlements and experience state
+
 Rendering/provider boundaries exist, but Phase 1 needs a product-level visualization request/entitlement model connecting a locked design to room images, home images, smart scenes and future walkthrough jobs.
 
 ### Localization and assistant
+
 No persistent user language preference or assistant interaction contract currently exists. Localization must be independent of business logic; assistant responses must carry provenance/type where factual product claims are involved.
 
 ### Notifications
+
 No first-class notification/preference model is part of the current product foundation. Phase 1 needs event-driven, preference-aware notifications without coupling copy to core domain logic.
 
 ### Execution
+
 The foundation contains commercial/payment infrastructure but not a full execution project/quote/negotiation/work-progress model.
 
 ## 4. Canonical Phase 1 domain graph
@@ -114,45 +127,59 @@ User
 ## 5. Ownership boundaries
 
 ### Home Intelligence Service
+
 Owns creation/update of the structured home model, floor-plan ingestion lifecycle, room confirmation and user corrections.
 
 ### Home DNA Service
+
 Owns household/lifestyle/design-personality/preferences and produces a versioned Home DNA snapshot for design generation.
 
 ### Budget Service
+
 Owns budget recommendation, user-approved budget lock, budget revisions and deterministic cost envelopes.
 
 ### Design Service
+
 Owns design versions/revisions, design decisions and design-state transitions. It does not own catalogue truth or payment state.
 
 ### Catalogue/Product Intelligence Service
+
 Owns product/material records, provenance, verification timestamps, media references, attributes, warranty claims and normalized price observations. It does not invent missing data.
 
 ### Recommendation Service
+
 Consumes Home DNA + home facts + budget + product facts and produces explainable recommendations. It records the evidence/rationale used.
 
 ### Simulation/Savings Service
+
 Computes deterministic What-If deltas and savings plans against a chosen design baseline.
 
 ### Smart Home Service
+
 Owns capability definitions, device/product mapping and scene definitions. A scene is a design/experience intent; actual device integration remains behind adapters.
 
 ### Buildability Service
+
 Owns deterministic checks and evidence-backed review findings. Unknown/unsupported checks are explicit `NEEDS_REVIEW`, never silently treated as pass.
 
 ### BOQ/Costing Service
+
 Remains the authoritative monetary calculation layer. All business money uses integer minor units or Prisma Decimal, never JavaScript floating-point arithmetic.
 
 ### Visualization Service
+
 Owns visualization requests and lifecycle. Provider adapters remain replaceable and fail honestly when unconfigured.
 
 ### Assistant/Localization Service
+
 Owns language preference and assistant orchestration. Business services remain the source of truth; the assistant cannot bypass authorization or mutate domain state directly.
 
 ### Notification Service
+
 Owns event-to-notification mapping, user preferences, localization and delivery state.
 
 ### Execution Service
+
 Owns execution project state, site checks, quote versions, negotiation and milestones. Payment/entitlement remains owned by commercial services.
 
 ## 6. Data truth model
