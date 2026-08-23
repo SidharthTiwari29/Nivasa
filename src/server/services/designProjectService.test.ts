@@ -15,7 +15,7 @@ vi.mock("@/server/db/prisma", () => ({
   },
 }));
 
-const db = vi.mocked(prisma);
+const db = vi.mocked(prisma, { deep: true });
 
 describe("designProjectService", () => {
   beforeEach(() => vi.clearAllMocks());
