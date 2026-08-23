@@ -24,7 +24,11 @@ export const PUT = withErrorHandling(
     const { userId } = await requireAuth();
     const { id } = parseOrThrow(propertyIdParamSchema, await params);
     const body = parseOrThrow(homeIntelligenceSchema, await request.json());
-    const homeIntelligence = await homeIntelligenceService.upsert(id, userId, body);
+    const homeIntelligence = await homeIntelligenceService.upsert(
+      id,
+      userId,
+      body,
+    );
     return NextResponse.json({ homeIntelligence });
   },
 );
