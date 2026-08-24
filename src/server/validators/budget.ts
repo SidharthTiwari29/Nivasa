@@ -33,7 +33,12 @@ export const budgetLineSchema = z
 
 export const createBudgetSchema = z.object({
   idempotencyKey: z.string().trim().min(8).max(128),
-  homeIntelligenceVersion: z.number().int().positive().nullable().optional(),
+  homeIntelligenceVersion: z
+    .number()
+    .int()
+    .positive()
+    .nullable()
+    .optional(),
   homeDnaVersion: z.number().int().positive().nullable().optional(),
   contingencyMinor: minorMoney.default(0),
   truth: z.enum(["ESTIMATE", "VERIFIED", "RECOMMENDATION"]),
