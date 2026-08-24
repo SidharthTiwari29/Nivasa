@@ -4,7 +4,10 @@ export interface BudgetRange {
   highMinor: bigint;
 }
 
-export function calculateBudgetTotals(lines: BudgetRange[], contingencyMinor = 0n): BudgetRange {
+export function calculateBudgetTotals(
+  lines: BudgetRange[],
+  contingencyMinor = 0n,
+): BudgetRange {
   if (contingencyMinor < 0n) throw new Error("INVALID_CONTINGENCY");
 
   return lines.reduce(
