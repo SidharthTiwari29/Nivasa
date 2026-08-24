@@ -13,7 +13,11 @@ export const budgetService = {
 
   async create(propertyId: string, ownerId: string, input: CreateBudgetInput) {
     try {
-      const result = await budgetRepository.createVersion(propertyId, ownerId, input);
+      const result = await budgetRepository.createVersion(
+        propertyId,
+        ownerId,
+        input,
+      );
       if (!result) throw new NotFoundError("Property");
       return result;
     } catch (error) {
@@ -41,7 +45,11 @@ export const budgetService = {
   },
 
   async impact(propertyId: string, ownerId: string, input: BudgetImpactInput) {
-    const result = await budgetRepository.createImpact(propertyId, ownerId, input);
+    const result = await budgetRepository.createImpact(
+      propertyId,
+      ownerId,
+      input,
+    );
     if (!result) throw new NotFoundError("Budget plan");
     return result;
   },
