@@ -50,7 +50,12 @@ export const PATCH = withErrorHandling(
     }
 
     return NextResponse.json(
-      { error: { code: "VALIDATION_ERROR", message: "Unsupported budget action" } },
+      {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Unsupported budget action",
+        },
+      },
       { status: 422 },
     );
   },
