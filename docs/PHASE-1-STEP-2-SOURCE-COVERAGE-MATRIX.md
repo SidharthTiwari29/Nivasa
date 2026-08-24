@@ -3,7 +3,7 @@
 This is the single planning matrix for expanding the market reference universe. It deliberately avoids one-off source-specific code. Every source uses the same registry and ingestion contract.
 
 | Category | Coverage examples / seed references | Required product depth |
-|---|---|---|
+| --- | --- | --- |
 | Furniture | IKEA, Pepperfry, Furnishka, Urban Ladder, WoodenStreet, Home Centre, Durian, Royaloak, Godrej Interio, Nilkamal, Stanley | exact SKU, dimensions, material, finish, configuration, price, seller, availability |
 | Wardrobes & storage | Godrej, Aristo, IKEA, Spacewood, Sleek, HomeLane, Livspace + regional fabricators | carcass, board, laminate/veneer, shutters, hinges, channels, handles, baskets, lifts, internal accessories, installation |
 | Modular kitchens | Livspace, HomeLane, DesignCafe, Sleek, Spacewood + manufacturers/fabricators | carcass, shutters, hardware, channels, baskets, countertop, sink, faucet, appliances, installation |
