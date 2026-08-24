@@ -7,12 +7,12 @@ import {
 describe("market source registry", () => {
   it("contains a broad multi-category seed universe", () => {
     expect(MARKET_SOURCE_REGISTRY.length).toBeGreaterThanOrEqual(100);
-    expect(new Set(MARKET_SOURCE_REGISTRY.map((source) => source.key)).size).toBe(
-      MARKET_SOURCE_REGISTRY.length,
-    );
-    expect(new Set(MARKET_SOURCE_REGISTRY.map((source) => source.domain)).size).toBe(
-      MARKET_SOURCE_REGISTRY.length,
-    );
+    expect(
+      new Set(MARKET_SOURCE_REGISTRY.map((source) => source.key)).size,
+    ).toBe(MARKET_SOURCE_REGISTRY.length);
+    expect(
+      new Set(MARKET_SOURCE_REGISTRY.map((source) => source.domain)).size,
+    ).toBe(MARKET_SOURCE_REGISTRY.length);
 
     const categories = new Set(
       MARKET_SOURCE_REGISTRY.flatMap((source) => source.categories),
@@ -33,7 +33,9 @@ describe("market source registry", () => {
 
   it("keeps every seed source disabled until access and terms are reviewed", () => {
     expect(
-      MARKET_SOURCE_REGISTRY.every((source) => source.ingestionEligible === false),
+      MARKET_SOURCE_REGISTRY.every(
+        (source) => source.ingestionEligible === false,
+      ),
     ).toBe(true);
   });
 });
