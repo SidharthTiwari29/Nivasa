@@ -399,8 +399,8 @@ export const MARKET_SOURCE_REGISTRY: readonly MarketSourceDefinition[] = [
   ),
   source("legrand", "Legrand India", "legrand.co.in", "MANUFACTURER", [
     "electrical",
-    "smart-home",
-  ] as MarketCategory[]),
+    "fans-smart-home",
+  ]),
   source("schneider", "Schneider Electric India", "se.com/in", "MANUFACTURER", [
     "electrical",
     "fans-smart-home",
@@ -519,37 +519,65 @@ export const MARKET_SOURCE_REGISTRY: readonly MarketSourceDefinition[] = [
   ]),
 ];
 
-export const MARKET_SOURCE_KEYS = new Set(
-  MARKET_SOURCE_REGISTRY.map((item) => item.key),
-);
+const REQUIRED_MARKET_CATEGORIES: readonly MarketCategory[] = [
+  "furniture",
+  "wardrobes-storage",
+  "kitchens-cabinetry",
+  "bathroom-sanitary-plumbing",
+  "tiles-surfaces",
+  "paint-wall-finishes",
+  "boards-laminates-veneers",
+  "hardware",
+  "ceiling-acoustic",
+  "lighting",
+  "electrical",
+  "fans-smart-home",
+  "flooring",
+  "curtains-blinds",
+  "doors-glass",
+  "soft-furnishings-decor",
+  "appliances",
+  "outdoor",
+  "designers-services",
+];
 
-export function validateMarketSourceRegistry(
+export const validateMarketSourceRegistry = (
   registry: readonly MarketSourceDefinition[] = MARKET_SOURCE_REGISTRY,
-): string[] {
-  const errors: string[] = [];
+): void => {
   const keys = new Set<string>();
   const domains = new Set<string>();
+  const coveredCategories = new Set<MarketCategory>();
 
-  for (const item of registry) {
-    if (!item.key || keys.has(item.key))
-      errors.push(`duplicate/empty key: ${item.key}`);
-    if (!item.canonicalName.trim())
-      errors.push(`empty canonicalName: ${item.key}`);
-    if (!item.domain.trim()) errors.push(`empty domain: ${item.key}`);
-    if (domains.has(item.domain))
-      errors.push(`duplicate domain: ${item.domain}`);
-    if (item.categories.length === 0) errors.push(`no category: ${item.key}`);
-    keys.add(item.key);
-    domains.add(item.domain);
+  for (const sourceDefinition of registry) {
+    if (keys.has(sourceDefinition.key)) {
+      throw new Error(`Duplicate market source key: ${sourceDefinition.key}`);
+    }
+    keys.add(sourceDefinition.key);
+
+    if (domains.has(sourceDefinition.domain)) {
+      throw new Error(`Duplicate market source domain: ${sourceDefinition.domain}`);
+    }
+    domains.add(sourceDefinition.domain);
+
+    if (!sourceDefinition.canonicalName.trim()) {
+      throw new Error(`Market source name is required: ${sourceDefinition.key}`);
+    }
+    if (!sourceDefinition.domain.includes(".")) {
+      throw new Error(`Market source domain is invalid: ${sourceDefinition.key}`);
+    }
+    for (const category of sourceDefinition.categories) {
+      coveredCategories.add(category);
+    }
   }
 
-  return errors;
-}
+  const missingCategories = REQUIRED_MARKET_CATEGORIES.filter(
+    (category) => !coveredCategories.has(category),
+  );
+  if (missingCategories.length > 0) {
+    throw new Error(
+      `Market source registry is missing categories: ${missingCategories.join(", ")}`,
+    );
+  }
+};
 
-export function assertMarketSourceRegistry(
-  registry: readonly MarketSourceDefinition[] = MARKET_SOURCE_REGISTRY,
-): void {
-  const errors = validateMarketSourceRegistry(registry);
-  if (errors.length > 0)
-    throw new Error(`Invalid market source registry: ${errors.join("; ")}`);
-}
+validateMarketSourceRegistry();
