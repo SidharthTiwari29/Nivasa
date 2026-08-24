@@ -555,15 +555,21 @@ export const validateMarketSourceRegistry = (
     keys.add(sourceDefinition.key);
 
     if (domains.has(sourceDefinition.domain)) {
-      throw new Error(`Duplicate market source domain: ${sourceDefinition.domain}`);
+      throw new Error(
+        `Duplicate market source domain: ${sourceDefinition.domain}`,
+      );
     }
     domains.add(sourceDefinition.domain);
 
     if (!sourceDefinition.canonicalName.trim()) {
-      throw new Error(`Market source name is required: ${sourceDefinition.key}`);
+      throw new Error(
+        `Market source name is required: ${sourceDefinition.key}`,
+      );
     }
     if (!sourceDefinition.domain.includes(".")) {
-      throw new Error(`Market source domain is invalid: ${sourceDefinition.key}`);
+      throw new Error(
+        `Market source domain is invalid: ${sourceDefinition.key}`,
+      );
     }
     for (const category of sourceDefinition.categories) {
       coveredCategories.add(category);
