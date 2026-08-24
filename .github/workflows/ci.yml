@@ -31,8 +31,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx prettier --write docs/PHASE-1-STEP-1-ACCEPTANCE.md src/server/repositories/homeIntelligenceRepository.ts
-      - run: git diff -- docs/PHASE-1-STEP-1-ACCEPTANCE.md src/server/repositories/homeIntelligenceRepository.ts
+      - run: npx prettier --write .
+      - run: git diff --exit-code -- .
       - run: npm run format:check
       - run: npm run lint
       - run: npx prisma generate
