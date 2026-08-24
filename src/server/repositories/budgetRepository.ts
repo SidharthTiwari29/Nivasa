@@ -49,16 +49,18 @@ const json = (value: unknown) => JSON.stringify(value);
 
 export const budgetRepository = {
   async findPlan(propertyId: string, ownerId: string) {
-    const plans = await prisma.$queryRaw<Array<{
-      id: string;
-      propertyId: string;
-      ownerId: string;
-      currency: string;
-      status: string;
-      lockedVersion: number | null;
-      lockedAt: Date | null;
-      lockedByUserId: string | null;
-    }>>(Prisma.sql`
+    const plans = await prisma.$queryRaw<
+      Array<{
+        id: string;
+        propertyId: string;
+        ownerId: string;
+        currency: string;
+        status: string;
+        lockedVersion: number | null;
+        lockedAt: Date | null;
+        lockedByUserId: string | null;
+      }>
+    >(Prisma.sql`
       SELECT "id", "propertyId", "ownerId", "currency", "status",
              "lockedVersion", "lockedAt", "lockedByUserId"
       FROM "BudgetPlan"

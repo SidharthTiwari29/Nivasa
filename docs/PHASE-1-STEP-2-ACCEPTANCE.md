@@ -19,16 +19,16 @@
 
 ## Test matrix
 
-| Area | Success | Critical negative case |
-| --- | --- | --- |
-| Budget validator | Valid scope/ranges accepted | Negative/non-integer money rejected |
-| Calculation | Low ≤ target ≤ high and totals are exact | Invalid range ordering rejected |
-| Repository | Owner-scoped version persistence | Foreign property cannot be read or mutated |
-| Idempotency | Same key returns the original version | Same key cannot create a second version |
-| Lock | Owner locks an unlocked version | Locked version cannot be mutated or locked twice |
-| History | New recalculation creates a new version | Existing locked version is never overwritten |
-| Provenance | Estimate/source/recommendation remain explicit | Unclassified pricing input rejected |
-| API | Authenticated owner can create/read/lock | Unauthenticated/cross-owner request rejected |
+| Area             | Success                                        | Critical negative case                           |
+| ---------------- | ---------------------------------------------- | ------------------------------------------------ |
+| Budget validator | Valid scope/ranges accepted                    | Negative/non-integer money rejected              |
+| Calculation      | Low ≤ target ≤ high and totals are exact       | Invalid range ordering rejected                  |
+| Repository       | Owner-scoped version persistence               | Foreign property cannot be read or mutated       |
+| Idempotency      | Same key returns the original version          | Same key cannot create a second version          |
+| Lock             | Owner locks an unlocked version                | Locked version cannot be mutated or locked twice |
+| History          | New recalculation creates a new version        | Existing locked version is never overwritten     |
+| Provenance       | Estimate/source/recommendation remain explicit | Unclassified pricing input rejected              |
+| API              | Authenticated owner can create/read/lock       | Unauthenticated/cross-owner request rejected     |
 
 ## CI gate
 
