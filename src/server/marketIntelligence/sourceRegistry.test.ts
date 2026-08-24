@@ -17,11 +17,6 @@ describe("market source registry", () => {
     const categories = new Set(
       MARKET_SOURCE_REGISTRY.flatMap((source) => source.categories),
     );
-    expect(categories).toEqual(
-      expect.objectContaining({
-        add: expect.any(Function),
-      }),
-    );
     expect(categories.has("furniture")).toBe(true);
     expect(categories.has("wardrobes-storage")).toBe(true);
     expect(categories.has("bathroom-sanitary-plumbing")).toBe(true);
@@ -37,8 +32,8 @@ describe("market source registry", () => {
   });
 
   it("keeps every seed source disabled until access and terms are reviewed", () => {
-    expect(MARKET_SOURCE_REGISTRY.every((source) => source.ingestionEligible === false)).toBe(
-      true,
-    );
+    expect(
+      MARKET_SOURCE_REGISTRY.every((source) => source.ingestionEligible === false),
+    ).toBe(true);
   });
 });
