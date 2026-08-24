@@ -48,7 +48,7 @@ const assertSource = (
   }
 
   if (!source.ingestionEligible) {
-    throw new Error(`Market source is not ingestion eligible: ${source.sourceKey ?? source.key}`);
+    throw new Error(`Market source is not ingestion eligible: ${source.key}`);
   }
 };
 
