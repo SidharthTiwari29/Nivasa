@@ -90,10 +90,14 @@ export const assertSourceCatalogIntegrity = (
 ): void => {
   const audit = auditSourceCatalog(sources);
   if (audit.duplicateKeys.length > 0) {
-    throw new Error(`Duplicate market source keys: ${audit.duplicateKeys.join(", ")}`);
+    throw new Error(
+      `Duplicate market source keys: ${audit.duplicateKeys.join(", ")}`,
+    );
   }
   if (audit.invalidDomains.length > 0) {
-    throw new Error(`Invalid market source domains: ${audit.invalidDomains.join(", ")}`);
+    throw new Error(
+      `Invalid market source domains: ${audit.invalidDomains.join(", ")}`,
+    );
   }
   if (audit.missingCategories.length > 0) {
     throw new Error(
