@@ -7,6 +7,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 ## Research-derived source families
 
 ### Design and inspiration
+
 - Livspace
 - NoBroker Interiors
 - DesignCafe
@@ -18,6 +19,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - design publications and award archives
 
 ### Marketplaces and broad retail
+
 - Amazon India
 - Flipkart
 - IKEA India
@@ -34,6 +36,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - Nilkamal
 
 ### Furniture and storage
+
 - Godrej Interio
 - Aristo
 - Durian
@@ -48,6 +51,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - local modular manufacturers and carpenters
 
 ### Kitchen, wardrobe and hardware
+
 - Hettich
 - Häfele
 - Blum
@@ -64,6 +68,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - local hardware distributors
 
 ### Boards, laminates, veneers and surfaces
+
 - Greenply
 - Greenpanel
 - CenturyPly
@@ -81,6 +86,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - local plywood and laminate dealers
 
 ### Paints and wall finishes
+
 - Asian Paints
 - Berger
 - Nerolac
@@ -92,6 +98,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - wallpapers and specialist wall-finish vendors
 
 ### Tiles, stone and flooring
+
 - Kajaria
 - Somany
 - Orientbell
@@ -105,6 +112,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - SPC/vinyl/wood flooring brands
 
 ### Bathroom, sanitaryware and plumbing
+
 - Hindware
 - Jaquar
 - CERA
@@ -123,6 +131,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - local sanitary and plumbing dealers
 
 ### Lighting and electrical
+
 - Philips/Signify
 - Wipro Lighting
 - Havells
@@ -140,6 +149,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - decorative lighting studios
 
 ### Fans, smart home and security
+
 - Atomberg
 - Havells
 - Orient
@@ -154,6 +164,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - local automation integrators
 
 ### Curtains, blinds, rugs and soft furnishings
+
 - D'Decor
 - Bombay Dyeing
 - Spaces
@@ -169,6 +180,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - local curtain/blind/fabric dealers
 
 ### Art, décor and collectible objects
+
 - Pepperfry
 - Amazon
 - Flipkart
@@ -183,6 +195,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - sculpture and artefact vendors
 
 ### Mandir / pooja / devotional design
+
 - Livspace pooja designs
 - NoBroker pooja units
 - specialist wooden mandir vendors
@@ -201,6 +214,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - local craftsmen
 
 ### Appliances
+
 - Samsung
 - LG
 - Bosch
@@ -219,6 +233,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - Aquaguard
 
 ### Doors, glass, windows and architectural fittings
+
 - Saint-Gobain Glass
 - AIS
 - Fenesta
@@ -231,6 +246,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - mosquito-screen vendors
 
 ### Outdoor, balcony and garden
+
 - IKEA
 - Pepperfry
 - Urban Ladder
@@ -242,6 +258,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 - balcony shading/blind vendors
 
 ### Designers, craftsmen and services
+
 - national design platforms
 - regional interior studios
 - architects
