@@ -1,6 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
-import type { BudgetImpactInput, CreateBudgetInput } from "@/server/validators/budget";
+import type {
+  BudgetImpactInput,
+  CreateBudgetInput,
+} from "@/server/validators/budget";
 
 interface BudgetVersionRow {
   id: string;
@@ -21,7 +24,9 @@ interface BudgetVersionRow {
   createdAt: Date;
 }
 
-async function serializable<T>(operation: (tx: Prisma.TransactionClient) => Promise<T>) {
+async function serializable<T>(
+  operation: (tx: Prisma.TransactionClient) => Promise<T>,
+) {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
       return await prisma.$transaction(operation, {
@@ -92,7 +97,11 @@ export const budgetRepository = {
     };
   },
 
-  async createVersion(propertyId: string, ownerId: string, input: CreateBudgetInput) {
+  async createVersion(
+    propertyId: string,
+    ownerId: string,
+    input: CreateBudgetInput,
+  ) {
     return serializable(async (tx) => {
       const property = await tx.property.findFirst({
         where: { id: propertyId, ownerId },
@@ -100,7 +109,9 @@ export const budgetRepository = {
       });
       if (!property) return null;
 
-      const existingPlan = await tx.$queryRaw<Array<{ id: string; status: string }>>(Prisma.sql`
+      const existingPlan = await tx.$queryRaw<
+        Array<{ id: string; status: string }>
+      >(Prisma.sql`
         SELECT "id", "status" FROM "BudgetPlan"
         WHERE "propertyId" = ${propertyId} AND "ownerId" = ${ownerId}
         FOR UPDATE
@@ -135,9 +146,18 @@ export const budgetRepository = {
         LIMIT 1
       `);
       const version = (latest[0]?.version ?? 0) + 1;
-      const totalLowMinor = input.lines.reduce((sum, line) => sum + BigInt(line.lowMinor), 0n);
-      const totalTargetMinor = input.lines.reduce((sum, line) => sum + BigInt(line.targetMinor), 0n);
-      const totalHighMinor = input.lines.reduce((sum, line) => sum + BigInt(line.highMinor), 0n);
+      const totalLowMinor = input.lines.reduce(
+        (sum, line) => sum + BigInt(line.lowMinor),
+        0n,
+      );
+      const totalTargetMinor = input.lines.reduce(
+        (sum, line) => sum + BigInt(line.targetMinor),
+        0n,
+      );
+      const totalHighMinor = input.lines.reduce(
+        (sum, line) => sum + BigInt(line.highMinor),
+        0n,
+      );
       const id = crypto.randomUUID();
 
       await tx.$executeRaw(Prisma.sql`
@@ -168,17 +188,26 @@ export const budgetRepository = {
         `);
       }
 
-      return { id, planId, version, totalLowMinor, totalTargetMinor, totalHighMinor };
+      return {
+        id,
+        planId,
+        version,
+        totalLowMinor,
+        totalTargetMinor,
+        totalHighMinor,
+      };
     });
   },
 
   async lockVersion(propertyId: string, ownerId: string, version: number) {
     return serializable(async (tx) => {
-      const plan = await tx.$queryRaw<Array<{ id: string; status: string }>>(Prisma.sql`
-        SELECT "id", "status" FROM "BudgetPlan"
-        WHERE "propertyId" = ${propertyId} AND "ownerId" = ${ownerId}
-        FOR UPDATE
-      `);
+      const plan = await tx.$queryRaw<Array<{ id: string; status: string }>>(
+        Prisma.sql`
+          SELECT "id", "status" FROM "BudgetPlan"
+          WHERE "propertyId" = ${propertyId} AND "ownerId" = ${ownerId}
+          FOR UPDATE
+        `,
+      );
       if (!plan[0]) return null;
       if (plan[0].status === "LOCKED") return { conflict: true } as const;
 
@@ -199,7 +228,11 @@ export const budgetRepository = {
     });
   },
 
-  async createImpact(propertyId: string, ownerId: string, input: BudgetImpactInput) {
+  async createImpact(
+    propertyId: string,
+    ownerId: string,
+    input: BudgetImpactInput,
+  ) {
     const plan = await prisma.$queryRaw<Array<{ id: string }>>(Prisma.sql`
       SELECT "id" FROM "BudgetPlan"
       WHERE "propertyId" = ${propertyId} AND "ownerId" = ${ownerId}
