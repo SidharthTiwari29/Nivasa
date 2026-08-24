@@ -54,23 +54,23 @@ describe("market ingestion normalization", () => {
 
   it("rejects sources that are not explicitly eligible", () => {
     expect(() =>
-      normalizeMarketRecord(
-        { ...source, ingestionEligible: false },
-        record(),
-      ),
+      normalizeMarketRecord({ ...source, ingestionEligible: false }, record()),
     ).toThrow("Market source is not ingestion eligible: test-source");
   });
 
   it("rejects non-HTTPS evidence URLs", () => {
     expect(() =>
-      normalizeMarketRecord(source, record({ sourceUrl: "http://example.com/item" })),
+      normalizeMarketRecord(
+        source,
+        record({ sourceUrl: "http://example.com/item" }),
+      ),
     ).toThrow("Market source URL must use HTTPS");
   });
 
   it("rejects records without an external ID or product name", () => {
-    expect(() => normalizeMarketRecord(source, record({ externalId: " " }))).toThrow(
-      "Market records require an external ID and name",
-    );
+    expect(() =>
+      normalizeMarketRecord(source, record({ externalId: " " })),
+    ).toThrow("Market records require an external ID and name");
     expect(() => normalizeMarketRecord(source, record({ name: " " }))).toThrow(
       "Market records require an external ID and name",
     );
