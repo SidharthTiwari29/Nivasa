@@ -31,8 +31,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx prettier --write .
-      - run: git diff --exit-code -- .
       - run: npm run format:check
       - run: npm run lint
       - run: npx prisma generate
