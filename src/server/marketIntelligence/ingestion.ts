@@ -37,7 +37,11 @@ export interface CanonicalMarketProduct {
 }
 
 const normalizeText = (value: string): string =>
-  value.trim().toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ");
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ");
 
 const assertSource = (
   source: MarketSourceDefinition | undefined,
@@ -67,8 +71,15 @@ export const normalizeMarketRecord = (
   }
 
   const normalizedName = normalizeText(record.name);
-  const normalizedBrand = record.brand ? normalizeText(record.brand) : undefined;
-  const canonicalKey = [source.key, record.externalId.trim(), normalizedBrand ?? "", normalizedName]
+  const normalizedBrand = record.brand
+    ? normalizeText(record.brand)
+    : undefined;
+  const canonicalKey = [
+    source.key,
+    record.externalId.trim(),
+    normalizedBrand ?? "",
+    normalizedName,
+  ]
     .filter(Boolean)
     .join(":");
 
@@ -101,7 +112,10 @@ export const normalizeMarketRecords = (
   const normalized: CanonicalMarketProduct[] = [];
 
   for (const record of records) {
-    const product = normalizeMarketRecord(sourceMap.get(record.sourceKey), record);
+    const product = normalizeMarketRecord(
+      sourceMap.get(record.sourceKey),
+      record,
+    );
     if (seen.has(product.canonicalKey)) {
       continue;
     }
