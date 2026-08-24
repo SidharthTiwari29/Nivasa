@@ -69,19 +69,20 @@ This document is the implementation guardrail for Phase 1. No Phase 1 feature ma
    - downloadable room/overall images
    - ₹9,999 immersive video/walkthrough + execution-plan experience
 10. Execution
-   - site reality check
-   - design lock
-   - BOQ lock
-   - GST quotation
-   - manpower/labour/logistics/material/other costs
-   - Nivasa margin
-   - negotiation
-   - contract
-   - immersive final walkthrough
-   - execution
-   - project tracking
-   - handover
-   - Nivasa Home
+
+- site reality check
+- design lock
+- BOQ lock
+- GST quotation
+- manpower/labour/logistics/material/other costs
+- Nivasa margin
+- negotiation
+- contract
+- immersive final walkthrough
+- execution
+- project tracking
+- handover
+- Nivasa Home
 
 ## Cross-cutting requirements
 
