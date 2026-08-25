@@ -20,6 +20,8 @@ export interface RawMarketRecord {
 export interface CanonicalMarketProduct {
   sourceKey: string;
   externalId: string;
+  sourceObservationKey: string;
+  canonicalFingerprint: string;
   canonicalKey: string;
   name: string;
   normalizedName: string;
@@ -42,6 +44,18 @@ const normalizeText = (value: string): string =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .replace(/\s+/g, " ");
+
+const normalizeOptionalText = (value: string | undefined): string | undefined => {
+  const normalized = value ? normalizeText(value) : "";
+  return normalized || undefined;
+};
+
+const buildCanonicalFingerprint = (record: RawMarketRecord): string => {
+  const brand = normalizeOptionalText(record.brand) ?? "unknown-brand";
+  const name = normalizeText(record.name);
+  const sku = normalizeOptionalText(record.sku);
+  return [brand, record.category, name, sku ?? "no-sku"].join("|");
+};
 
 function assertSource(
   source: MarketSourceDefinition | undefined,
@@ -71,22 +85,20 @@ export const normalizeMarketRecord = (
   }
 
   const normalizedName = normalizeText(record.name);
-  const normalizedBrand = record.brand
-    ? normalizeText(record.brand)
-    : undefined;
-  const canonicalKey = [
-    source.key,
-    record.externalId.trim(),
-    normalizedBrand ?? "",
-    normalizedName,
-  ]
-    .filter(Boolean)
-    .join(":");
+  const normalizedBrand = normalizeOptionalText(record.brand);
+  const externalId = record.externalId.trim();
+  const sourceObservationKey = `${source.key}:${externalId}`;
+  const canonicalFingerprint = buildCanonicalFingerprint(record);
 
   return {
     sourceKey: source.key,
-    externalId: record.externalId.trim(),
-    canonicalKey,
+    externalId,
+    sourceObservationKey,
+    canonicalFingerprint,
+    // Deliberately source-independent. This is a matching fingerprint, not a
+    // claim that two observations are the same product; confidence/evidence
+    // must decide whether a cross-source match is exact or merely comparable.
+    canonicalKey: canonicalFingerprint,
     name: record.name.trim(),
     normalizedName,
     brand: record.brand?.trim() || undefined,
@@ -116,10 +128,10 @@ export const normalizeMarketRecords = (
       sourceMap.get(record.sourceKey),
       record,
     );
-    if (seen.has(product.canonicalKey)) {
+    if (seen.has(product.sourceObservationKey)) {
       continue;
     }
-    seen.add(product.canonicalKey);
+    seen.add(product.sourceObservationKey);
     normalized.push(product);
   }
 
