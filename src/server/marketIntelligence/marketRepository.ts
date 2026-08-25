@@ -43,7 +43,10 @@ function assertPrice(value: bigint, field: string): void {
 }
 
 function assertConfidence(value: number | undefined): void {
-  if (value !== undefined && (value < 0 || value > 10000 || !Number.isInteger(value))) {
+  if (
+    value !== undefined &&
+    (value < 0 || value > 10000 || !Number.isInteger(value))
+  ) {
     throw new Error("CONFIDENCE_BPS_OUT_OF_RANGE");
   }
 }
@@ -56,7 +59,9 @@ function assertConfidence(value: number | undefined): void {
  */
 export const marketRepository = {
   async startIngestionRun(input: MarketIngestionRunInput) {
-    const existing = await prisma.$queryRaw<Array<{ id: string; status: string }>>(Prisma.sql`
+    const existing = await prisma.$queryRaw<
+      Array<{ id: string; status: string }>
+    >(Prisma.sql`
       SELECT "id", "status"
       FROM "MarketIngestionRun"
       WHERE "sourceId" = ${input.sourceId}
@@ -225,7 +230,8 @@ export const marketRepository = {
 
   async appendPriceObservation(input: MarketObservationInput) {
     assertPrice(input.amountMinor, "AMOUNT_MINOR");
-    if (input.listAmountMinor !== undefined) assertPrice(input.listAmountMinor, "LIST_AMOUNT_MINOR");
+    if (input.listAmountMinor !== undefined)
+      assertPrice(input.listAmountMinor, "LIST_AMOUNT_MINOR");
     assertConfidence(input.confidenceBps);
     if (!input.unit.trim()) throw new Error("PRICE_UNIT_REQUIRED");
     if (input.freshUntil && input.freshUntil < input.observedAt) {

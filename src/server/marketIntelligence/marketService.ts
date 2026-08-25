@@ -15,13 +15,17 @@ export interface MarketPricePresentation {
   evidence: Record<string, unknown>;
 }
 
-function freshness(freshUntil: Date | null): MarketPricePresentation["freshness"] {
+function freshness(
+  freshUntil: Date | null,
+): MarketPricePresentation["freshness"] {
   if (!freshUntil) return "UNKNOWN";
   return freshUntil >= new Date() ? "FRESH" : "STALE";
 }
 
 export const marketService = {
-  async priceHistory(sourceProductId: string): Promise<MarketPricePresentation[]> {
+  async priceHistory(
+    sourceProductId: string,
+  ): Promise<MarketPricePresentation[]> {
     const rows = await marketRepository.listPriceHistory(sourceProductId);
 
     return rows.map((row) => ({
@@ -36,9 +40,7 @@ export const marketService = {
       taxIncluded:
         typeof row.taxIncluded === "boolean" ? row.taxIncluded : null,
       shippingIncluded:
-        typeof row.shippingIncluded === "boolean"
-          ? row.shippingIncluded
-          : null,
+        typeof row.shippingIncluded === "boolean" ? row.shippingIncluded : null,
       installationIncluded:
         typeof row.installationIncluded === "boolean"
           ? row.installationIncluded
