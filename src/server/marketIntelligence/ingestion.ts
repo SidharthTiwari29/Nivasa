@@ -45,7 +45,9 @@ const normalizeText = (value: string): string =>
     .replace(/[^a-z0-9]+/g, " ")
     .replace(/\s+/g, " ");
 
-const normalizeOptionalText = (value: string | undefined): string | undefined => {
+const normalizeOptionalText = (
+  value: string | undefined,
+): string | undefined => {
   const normalized = value ? normalizeText(value) : "";
   return normalized || undefined;
 };
@@ -95,9 +97,6 @@ export const normalizeMarketRecord = (
     externalId,
     sourceObservationKey,
     canonicalFingerprint,
-    // Deliberately source-independent. This is a matching fingerprint, not a
-    // claim that two observations are the same product; confidence/evidence
-    // must decide whether a cross-source match is exact or merely comparable.
     canonicalKey: canonicalFingerprint,
     name: record.name.trim(),
     normalizedName,
