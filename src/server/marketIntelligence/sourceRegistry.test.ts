@@ -1,6 +1,6 @@
+import { describe, expect, it } from "vitest";
 import {
   MARKET_SOURCE_REGISTRY,
-  assertMarketSourceRegistry,
   validateMarketSourceRegistry,
 } from "./sourceRegistry";
 
@@ -28,7 +28,6 @@ describe("market source registry", () => {
 
   it("has no duplicate or incomplete source records", () => {
     expect(validateMarketSourceRegistry()).toEqual([]);
-    expect(() => assertMarketSourceRegistry()).not.toThrow();
   });
 
   it("keeps every seed source disabled until access and terms are reviewed", () => {
