@@ -1,0 +1,42 @@
+name: Step 2 registry fix
+
+on:
+  push:
+    branches:
+      - codex/phase-1-step-2-budget-reality
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[step2-registry-patch]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/phase-1-step-2-budget-reality
+
+      - name: Add doors/glass registry coverage
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/server/marketIntelligence/sourceRegistry.ts')
+          text = path.read_text()
+          marker = '];\n\nconst REQUIRED_MARKET_CATEGORIES'
+          entry = '''  source("dorma-doors-glass", "dormakaba India", "dormakaba.com", "MANUFACTURER", [\n    "doors-glass",\n  ]),\n'''
+          if 'dorma-doors-glass' not in text:
+              if marker not in text:
+                  raise SystemExit('registry insertion marker not found')
+              text = text.replace(marker, entry + marker, 1)
+              path.write_text(text)
+          PY
+
+      - name: Commit registry fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/server/marketIntelligence/sourceRegistry.ts
+          git diff --cached --quiet || git commit -m "fix: add doors and glass market source coverage [step2-registry-patch]"
+          git push origin HEAD:codex/phase-1-step-2-budget-reality
