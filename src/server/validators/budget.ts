@@ -18,7 +18,10 @@ const budgetLineBaseSchema = z.object({
   basis: z.record(z.string(), z.unknown()),
 });
 
-const budgetLineRangeRefinement = (value: z.infer<typeof budgetLineBaseSchema>, ctx: z.RefinementCtx) => {
+const budgetLineRangeRefinement = (
+  value: z.infer<typeof budgetLineBaseSchema>,
+  ctx: z.RefinementCtx,
+) => {
   if (value.lowMinor > value.targetMinor) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -47,7 +50,10 @@ const customBudgetLineSchema = budgetLineBaseSchema.extend({
 });
 
 export const budgetLineSchema = z
-  .discriminatedUnion("kind", [catalogueBudgetLineSchema, customBudgetLineSchema])
+  .discriminatedUnion("kind", [
+    catalogueBudgetLineSchema,
+    customBudgetLineSchema,
+  ])
   .superRefine(budgetLineRangeRefinement);
 
 export const createBudgetSchema = z.object({
