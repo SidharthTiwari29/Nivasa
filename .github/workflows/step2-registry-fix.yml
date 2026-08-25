@@ -40,3 +40,5 @@ jobs:
           git add src/server/marketIntelligence/sourceRegistry.ts
           git diff --cached --quiet || git commit -m "fix: add doors and glass market source coverage [step2-registry-patch]"
           git push origin HEAD:codex/phase-1-step-2-budget-reality
+
+# Temporary one-shot repair workflow; removed after the registry patch lands.
