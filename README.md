@@ -2,46 +2,80 @@
 
 **Your home. Designed your way.**
 
-Nivasa is an AI-native home-interior platform for India. It takes a homeowner from their real property and floor plan to an exceptionally well-designed, transparent, budget-aware, purchasable and executable home.
+> **Ghar mein ghusne se pehle, ghar ko experience karo.**
 
-Nivasa is not merely an AI image generator, furniture catalogue, BOQ calculator, marketplace or project-management tool. Its differentiation is the connected intelligence layer:
+Nivasa is an AI-powered home-design, product-discovery, cost-transparency, visualization and execution platform for homeowners in India.
 
-**Home → Space → Design → Materials → Products → Options → Deals → BOQ → Budget → Visualization → Procurement → Execution**
+Nivasa is **not** merely an AI image generator, catalogue, BOQ calculator, marketplace, designer directory or project-management tool. Its core advantage is a connected intelligence system that links the customer's actual home to design, real products and materials, choices, savings, buildability, visualization, procurement and execution.
 
-> **Status rule:** This README is the end-to-end product and engineering contract. It describes the agreed vision and implementation foundations. It must never be used to claim that an unfinished capability is complete.
+```text
+HOME
+  ↓
+SPACE / LAYOUT INTELLIGENCE
+  ↓
+DESIGN INTELLIGENCE
+  ↓
+INTERIOR / PRODUCT / MATERIAL INTELLIGENCE
+  ↓
+WHAT-IF / SAVINGS INTELLIGENCE
+  ↓
+SMART HOME INTELLIGENCE
+  ↓
+BUILDABILITY / BOQ / BUDGET
+  ↓
+LOCALIZATION / ASSISTANT / NOTIFICATIONS
+  ↓
+COMMERCIAL + VISUALIZATION
+  ↓
+IMMERSIVE WALKTHROUGH
+  ↓
+PROCUREMENT
+  ↓
+EXECUTION
+  ↓
+QUALITY / HANDOVER
+```
+
+> **README status rule:** This document is the canonical product-and-engineering vision and acceptance contract. It describes both target capabilities and implementation foundations. A capability must not be described as production-complete until implementation, tests, security, integration, CI and acceptance evidence exist.
 
 ---
 
 # 1. North Star
 
+Nivasa should take a homeowner from:
+
 ```text
-REAL PROPERTY
-    ↓
-FLOOR PLAN / PHOTOS / USER BRIEF
-    ↓
-SPATIAL UNDERSTANDING
-    ↓
-ROOM + ELEMENT MODEL
-    ↓
-DESIGN INTELLIGENCE
-    ↓
-MULTIPLE DESIGN DIRECTIONS
-    ↓
-REAL MATERIALS + COMPONENTS + PRODUCTS
-    ↓
-MORE OPTIONS / BETTER OPTIONS / BETTER DEALS
-    ↓
-BOQ + COST + BUDGET CONTROL
-    ↓
-USER REVIEW / LOCK / REVISION
-    ↓
-3D / 360 / WALKTHROUGH / VIDEO
-    ↓
-PROCUREMENT
-    ↓
-EXECUTION
-    ↓
-QUALITY / HANDOVER
+MY ACTUAL PROPERTY
+      ↓
+MY FLOOR PLAN / PHOTOS / REQUIREMENTS
+      ↓
+NIVASA UNDERSTANDS MY SPACE
+      ↓
+NIVASA DESIGNS MY HOME
+      ↓
+I GET MULTIPLE STRONG OPTIONS
+      ↓
+I CAN ASK WHAT-IF QUESTIONS
+      ↓
+I SEE REAL PRODUCTS / MATERIALS / PRICES / EVIDENCE
+      ↓
+I SEE BETTER OPTIONS AND BETTER DEALS
+      ↓
+I SEE WHAT I CAN SAVE
+      ↓
+I SEE BUILDABILITY / BOQ / BUDGET IMPACT
+      ↓
+I SEE MY ACTUAL APARTMENT
+      ↓
+I EXPERIENCE MY FUTURE HOME
+      ↓
+I APPROVE
+      ↓
+I BUY / PROCURE
+      ↓
+I BUILD
+      ↓
+I HAND OVER
 ```
 
 Product promise:
@@ -50,109 +84,282 @@ Product promise:
 
 ---
 
-# 2. Product Vision
+# 2. What Nivasa Is Solving
 
-Nivasa connects the fragmented journey normally spread across designers, contractors, suppliers, manufacturers, marketplaces, product research, quotations, BOQs, visualization and execution.
+Interior design is fragmented across:
 
-The homeowner should not need to become an interior-design expert. Nivasa should provide:
+- designers
+- architects
+- contractors
+- suppliers
+- brands
+- marketplaces
+- furniture stores
+- material vendors
+- quotations
+- spreadsheets
+- BOQs
+- visualization tools
+- procurement
+- execution teams
 
-- exceptional design intelligence
-- transparency
-- meaningful choice
-- real-product and material intelligence
-- cost and savings intelligence
-- visualization
-- procurement support
-- execution support
-- an auditable project history
+The homeowner often has to become the coordinator, researcher, negotiator and quality controller.
 
-The system optimizes for **design quality + practicality + transparency + value**, not merely the lowest price.
+Nivasa aims to make the homeowner's experience coherent:
+
+```text
+DESIGN
++
+PRODUCT DISCOVERY
++
+PRICE TRANSPARENCY
++
+VALUE / SAVINGS
++
+VISUALIZATION
++
+BUILDABILITY
++
+PROCUREMENT
++
+EXECUTION
+```
+
+The system optimizes for **design quality + practicality + transparency + value + execution confidence**, not simply lowest price.
 
 ---
 
 # 3. Non-Negotiable Principles
 
-## Design First
+## 3.1 Design First
 
-Beautiful renders alone are insufficient. Designs must respect actual dimensions, proportions, circulation, ergonomics, storage, natural light, ventilation, electrical/plumbing constraints, furniture scale, kitchen workflow, wardrobe usability, lighting, materials, durability, maintenance, constructability, lifestyle and budget.
+Beautiful renders are insufficient. Design must respect:
 
-## Real Home First
+- actual dimensions
+- proportions
+- scale
+- circulation
+- ergonomics
+- storage
+- natural light
+- ventilation
+- electrical requirements
+- plumbing requirements
+- known structural constraints
+- furniture dimensions
+- kitchen workflow
+- wardrobe usability
+- lighting
+- materials
+- durability
+- maintenance
+- constructability
+- lifestyle
+- budget
 
-The customer's actual property is the source of truth where information has been confirmed. Inputs may include floor plans, apartment layouts, room photos, dimensions, property information, lifestyle requirements, existing furniture, preferences, budget and constraints.
+## 3.2 Real Home First
 
-## Transparency First
+The customer's actual property is the source of truth wherever information has been confirmed.
 
-For important decisions the homeowner should understand **what**, **why**, **price**, **source**, **freshness**, **alternatives**, **trade-offs**, **savings** and **confidence**.
+Inputs may include:
 
-## Value First
+- floor plans
+- apartment layouts
+- room photographs
+- dimensions
+- property details
+- lifestyle requirements
+- existing furniture
+- preferences
+- budget
+- constraints
+
+## 3.3 Transparency First
+
+For important decisions, the homeowner should understand:
+
+- what is recommended
+- why it is recommended
+- price
+- price basis
+- MRP/reference price where available
+- source
+- freshness
+- product/material specifications
+- brand
+- warranty information where available
+- alternatives
+- trade-offs
+- potential savings
+- confidence
+
+Nivasa must never invent facts to make a recommendation look complete.
+
+## 3.4 Value First
 
 ```text
 CHEAPEST ≠ BEST VALUE ≠ BEST QUALITY ≠ BEST DEAL
 ```
 
-A genuine deal requires evidence. Nivasa must explain trade-offs rather than blindly recommending the cheapest option.
+The system must distinguish price, value, quality and genuine deal evidence.
 
-## User Control
+## 3.5 User Control
 
-Users can accept, reject, compare, modify, lock, replace, downgrade, upgrade, preserve and revert important decisions. Locked decisions must not be silently changed by later AI generation.
+Users can:
 
-## No Fabricated Certainty
+- accept
+- reject
+- compare
+- modify
+- replace
+- upgrade
+- downgrade
+- lock
+- preserve
+- revert
 
-Unknown or AI-inferred information must remain explicitly unknown/estimated with appropriate confidence until confirmed. Nivasa must never manufacture catalogue prices, availability, evidence or provider success.
+important decisions.
+
+A locked decision must not be silently changed by subsequent AI generation.
+
+## 3.6 No Fabricated Certainty
+
+AI inference is not automatically authoritative.
+
+Unknown information remains:
+
+```text
+UNKNOWN
+```
+
+or:
+
+```text
+ESTIMATED / INFERRED
+```
+
+with appropriate confidence until confirmed.
+
+Nivasa must never fabricate:
+
+- dimensions
+- prices
+- availability
+- warranties
+- product identity
+- evidence
+- provider success
+- execution completion
 
 ---
 
-# 4. Property and Spatial Intelligence
+# 4. The Canonical Nivasa Development Sequence
 
-Nivasa must build a persistent spatial model from the customer's home information. Where supported, it should represent:
+The product roadmap is deliberately ordered because later capabilities depend on earlier intelligence.
 
-- property and floor
-- rooms and boundaries
-- walls and openings
-- doors and windows
+```text
+INTELLIGENCE
+      ↓
+WHAT-IF / SAVINGS
+      ↓
+SMART HOME
+      ↓
+BUILDABILITY / BOQ
+      ↓
+LOCALIZATION / ASSISTANT / NOTIFICATIONS
+      ↓
+COMMERCIAL / VISUALIZATION
+      ↓
+WALKTHROUGH / IMMERSIVE
+      ↓
+EXECUTION
+```
+
+This sequence is the canonical product dependency chain.
+
+A feature should not bypass the foundation merely because it is visually exciting or commercially attractive.
+
+---
+
+# 5. Nivasa Development Rule
+
+> **No feature gets built just because it sounds exciting.**
+
+Every feature must earn its place by answering:
+
+1. Does it strengthen the homeowner journey?
+2. Does it use or strengthen Nivasa's intelligence graph?
+3. Does it create measurable value through better design, transparency, affordability, quality, confidence or execution?
+4. Does it have a clear dependency position in the roadmap?
+5. Can it be implemented production-grade rather than as a demo-only feature?
+6. Can it be tested, secured, observed and supported operationally?
+
+If the answer is no, the feature does not enter the production build queue.
+
+---
+
+# 6. Property and Spatial Intelligence
+
+Nivasa must create a persistent spatial representation of the customer's actual home.
+
+Where supported by evidence it should represent:
+
+- property
+- floor
+- room
+- walls
+- boundaries
+- doors
+- windows
+- openings
 - dimensions
 - circulation
 - fixed architectural elements
-- electrical and plumbing constraints
+- electrical constraints
+- plumbing constraints
 - known structural constraints
 - usable zones
-- furniture, storage and lighting zones
-- confidence and uncertainty
+- furniture zones
+- storage zones
+- lighting zones
+- confidence
+- uncertainty
 
-Target workflow:
+Target flow:
 
 ```text
-UPLOAD FLOOR PLAN
-      ↓
+FLOOR PLAN / PHOTOS / MEASUREMENTS
+        ↓
 PLAN ANALYSIS
-      ↓
+        ↓
 ROOM / WALL / DOOR / WINDOW DETECTION
-      ↓
+        ↓
 DIMENSION EXTRACTION
-      ↓
+        ↓
 SPATIAL MODEL
-      ↓
+        ↓
 DESIGN SYSTEM
 ```
 
-Incorrect geometry can corrupt design, product selection, BOQ, visualization and execution, so spatial uncertainty must be explicit.
+Incorrect geometry can corrupt design, product selection, BOQ, visualization and execution. Spatial uncertainty therefore remains explicit.
 
 ---
 
-# 5. Layout Upload and Exceptional Interior Designer Capability
+# 7. Layout Upload → Exceptional Interior Designer
 
-A core product vision is that when a customer uploads their apartment layout, Nivasa should be capable of acting like an exceptionally strong interior designer grounded in that actual home.
+A defining Nivasa capability is the ability to take a customer's uploaded apartment layout and reason like an exceptionally strong interior designer grounded in that actual home.
 
-It should reason about:
+Nivasa should reason about:
 
-- space planning
+- spatial planning
 - furniture placement
 - circulation
 - proportions
 - storage
 - lighting
-- colour and texture
-- kitchens
+- colour
+- texture
+- kitchen workflow
 - wardrobes
 - TV/storage units
 - utility spaces
@@ -165,16 +372,17 @@ It should reason about:
 - children's rooms
 - elderly-friendly requirements
 - smart-home requirements
-- budget and constructability
+- budget
+- buildability
 
-Nivasa should challenge a poor decision rather than blindly follow it:
+Nivasa should not blindly follow a request that produces a poor outcome.
 
 ```text
 USER REQUEST
     ↓
 DESIGN ANALYSIS
     ↓
-ISSUE / TRADE-OFF DETECTED
+ISSUE / TRADE-OFF
     ↓
 EXPLANATION
     ↓
@@ -183,13 +391,17 @@ BETTER ALTERNATIVES
 USER DECISION
 ```
 
-The long-term signature experience is: **upload the customer's actual apartment layout and see that exact apartment transformed according to the selected design.**
+The signature long-term experience is:
+
+> **Upload my actual apartment layout and see my actual apartment transformed according to my selected design.**
 
 ---
 
-# 6. Multiple Designs and User-Controlled Revisions
+# 8. Design Intelligence
 
-Users should receive multiple strong design directions rather than one AI output:
+Nivasa should generate and reason over multiple design directions rather than one generic image.
+
+Supported directions include, as appropriate:
 
 - Luxury
 - Premium
@@ -207,27 +419,56 @@ Users should receive multiple strong design directions rather than one AI output
 Different rooms can use different economic strategies:
 
 ```text
-PREMIUM KITCHEN + VALUE LIVING + CUSTOM BEDROOM + BUDGET UTILITY
+PREMIUM KITCHEN
++
+VALUE LIVING
++
+CUSTOM BEDROOM
++
+BUDGET UTILITY
 ```
 
-Important design decisions must be versioned and traceable:
+The system must maintain overall coherence while respecting room-level choices.
+
+---
+
+# 9. Design Versioning and User Control
+
+Design is a persistent lifecycle:
+
+```text
+DESIGN PROJECT
+    ↓
+VERSION
+    ↓
+REVISION
+    ↓
+DESIGN ELEMENT CHANGES
+    ↓
+DOWNSTREAM IMPACT
+```
+
+Important changes must be traceable:
 
 - what changed
 - why
-- who
+- who changed it
 - when
 - previous value
-- replacement
+- new value
+- affected products/materials
 - BOQ impact
 - budget impact
 - visualization impact
 - procurement impact
 
+Locked decisions are protected constraints.
+
 ---
 
-# 7. Interior Intelligence Graph
+# 10. Interior Intelligence Graph
 
-Nivasa models the interior world rather than treating products as isolated rows.
+Nivasa models the interior universe rather than treating catalogue products as isolated rows.
 
 Canonical entities include:
 
@@ -269,11 +510,13 @@ WARDROBE
  └─ CARPENTRY / INSTALLATION
 ```
 
+This graph is what allows Nivasa to reason from a design choice to real materials, products, costs and execution requirements.
+
 ---
 
-# 8. Interior Scope
+# 11. Interior Scope
 
-The long-term universe covers:
+The intelligence universe is extensible and includes:
 
 ### Furniture
 Sofas, beds, tables, chairs, dining furniture, side tables, TV units and storage.
@@ -291,7 +534,7 @@ Hinges, drawer channels, lift-up systems, handles, baskets, organisers, locks an
 Ceiling lights, spotlights, profile lighting, pendants, wall lights, cabinet lighting, switches, sockets and smart switches.
 
 ### Plumbing and Appliances
-Faucets, sinks, sanitaryware, shower systems, refrigerators, ovens, microwaves, dishwashers, hobs, chimneys, washing machines, dryers, ACs and TVs.
+Faucets, sinks, sanitaryware, shower systems, refrigerators, ovens, microwaves, dishwashers, hobs, chimneys, washing machines, dryers, air conditioners and televisions.
 
 ### Soft Furnishing and Decor
 Curtains, blinds, rugs, cushions, upholstery, mirrors, artwork, plants and decorative objects.
@@ -302,13 +545,11 @@ Smart lighting, sensors, locks, automation, security and connected devices.
 ### Execution
 Carpentry, electrical, plumbing, painting, fabrication, false ceiling, installation, delivery, assembly and site execution.
 
-The taxonomy must remain extensible.
-
 ---
 
-# 9. Source → Evidence → Canonical Entity
+# 12. Source → Observation → Evidence → Canonical Entity
 
-Nivasa must never treat scraped, imported or supplied information as automatically authoritative.
+Nivasa must never treat imported, scraped or supplied information as automatically authoritative.
 
 ```text
 SOURCE
@@ -332,7 +573,7 @@ MARKET OBSERVATION
 PROJECT INTELLIGENCE
 ```
 
-Market observations should retain, where available:
+Market observations should preserve, where available:
 
 - source identity
 - source reference
@@ -341,7 +582,8 @@ Market observations should retain, where available:
 - verification timestamp
 - geography
 - currency
-- price/MRP
+- price
+- MRP/reference price
 - availability
 - seller
 - evidence reference
@@ -352,9 +594,9 @@ A source name alone is not evidence.
 
 ---
 
-# 10. Canonical Products and Variants
+# 13. Canonical Product and Variant Identity
 
-The same product can appear across many sources. Nivasa should resolve duplicate observations to a canonical product while preserving meaningful variants.
+The same product can appear across multiple sources.
 
 ```text
 SOURCE A → PRODUCT X → ₹12,999
@@ -366,33 +608,47 @@ SOURCE C → PRODUCT X → ₹13,499
      OBSERVATIONS / HISTORY
 ```
 
-Variants remain distinct when size, finish, colour, material, capacity, specification, model or SKU changes meaningfully.
+Meaningful variants remain distinct where size, finish, colour, material, capacity, specification, model or SKU changes meaningfully.
+
+The system must not merge unrelated products merely because names are similar.
 
 ---
 
-# 11. Source Universe and 500+ Source Target
+# 14. Source Universe and 500+ Source Ambition
 
-The long-term target is a broad India-relevant source universe that may include manufacturers, brands, retailers, marketplaces, dealers, distributors, local suppliers and service providers.
+The long-term source universe may include:
 
-A **500+ legitimate source target** is an implementation-scale ambition, not the definition of product quality. Quality matters more than count.
+- manufacturers
+- brands
+- retailers
+- marketplaces
+- dealers
+- distributors
+- local suppliers
+- service providers
+- execution partners
 
-A source must have, as applicable:
+A **500+ legitimate source target** is an implementation-scale ambition, not a quality guarantee.
+
+Source quality is more important than source count.
+
+A source must have appropriate:
 
 - eligibility
-- governed ingestion
+- governance
 - provenance
 - freshness
 - normalization
-- canonical identity
+- identity handling
 - evidence handling
 
 A source appearing in a registry does not automatically mean its data is ingestible.
 
 ---
 
-# 12. More Options
+# 15. More Options
 
-Nivasa should provide significantly more useful choices across:
+Nivasa should provide substantially more useful choices across:
 
 - premium
 - mid-range
@@ -405,11 +661,11 @@ Nivasa should provide significantly more useful choices across:
 - finishes
 - sellers
 
-The system must group and rank options intelligently rather than overwhelm users with duplicate listings.
+The intelligence layer must group and rank choices rather than overwhelm the homeowner with duplicates.
 
 ---
 
-# 13. Better Options
+# 16. Better Options
 
 Nivasa should identify better options using evidence-backed signals such as:
 
@@ -418,22 +674,39 @@ Nivasa should identify better options using evidence-backed signals such as:
 - durability
 - design fit
 - maintenance
-- confidence
+- evidence confidence
 - budget fit
 - availability
 - service
 - warranty
 - project compatibility
 
-Potential labels include Premium, Best Overall, Smart Buy, Best Value, Budget Pick and Deal. Important labels must be explainable.
+Potential explainable labels include:
+
+- Premium
+- Best Overall
+- Smart Buy
+- Best Value
+- Budget Pick
+- Deal
+
+Labels must be explainable and must not imply unsupported guarantees.
 
 ---
 
-# 14. Better Deals and Savings Intelligence
+# 17. Better Deals
 
-Nivasa must distinguish a genuine deal from a marketing discount.
+Nivasa must distinguish:
 
-Deal intelligence may use:
+```text
+CHEAPEST
+≠
+BEST VALUE
+≠
+BEST DEAL
+```
+
+Deal intelligence may consider:
 
 - observed price
 - reference price
@@ -458,11 +731,51 @@ UPGRADE ANALYSIS
 ₹15,000 → ₹17,000 → EXTRA ₹2,000 → BETTER WARRANTY / DURABILITY
 ```
 
-Local/custom alternatives should also be considered where appropriate, with quality and execution trade-offs clearly shown.
+Local/custom alternatives may be surfaced where appropriate, with explicit quality, durability, service and execution trade-offs.
 
 ---
 
-# 15. Substitution Intelligence
+# 18. What-If and Savings Intelligence
+
+What-if is a core intelligence layer, not a decorative calculator.
+
+Users should be able to ask:
+
+- What if I change this material?
+- What if I choose another product?
+- What if I upgrade this?
+- What if I downgrade this?
+- What if I keep my existing furniture?
+- What if I use a local/custom alternative?
+- What if I reduce the budget by ₹1 lakh?
+- What can I change without affecting the design significantly?
+- What should I never compromise?
+
+Flow:
+
+```text
+CURRENT DESIGN
+      ↓
+WHAT-IF CHANGE
+      ↓
+DESIGN IMPACT
+      ↓
+MATERIAL / PRODUCT IMPACT
+      ↓
+BOQ IMPACT
+      ↓
+PRICE IMPACT
+      ↓
+SAVINGS / EXTRA COST
+      ↓
+QUALITY / PERFORMANCE / MAINTENANCE TRADE-OFF
+      ↓
+USER DECISION
+```
+
+---
+
+# 19. Substitution Intelligence
 
 ```text
 CURRENT CHOICE
@@ -473,30 +786,37 @@ PRICE DIFFERENCE
       ↓
 SAVING
       ↓
-QUALITY / PERFORMANCE IMPACT
+QUALITY IMPACT
       ↓
-DESIGN / MAINTENANCE IMPACT
+PERFORMANCE IMPACT
+      ↓
+DESIGN IMPACT
+      ↓
+MAINTENANCE IMPACT
       ↓
 USER DECISION
 ```
 
-Nivasa should explain what changes, what remains unchanged, the expected quality difference, maintenance difference, durability difference and visual impact.
+Nivasa must explain what changes and what remains unchanged.
 
 ---
 
-# 16. Project-Level Optimization
+# 20. Project-Level Optimization
 
-Nivasa should eventually optimize the entire interior project, not merely one product.
+Nivasa should optimize the entire project rather than only individual products.
 
 ```text
-ORIGINAL PROJECT  ₹12,50,000
-OPTIMIZED PROJECT ₹10,90,000
-POTENTIAL SAVING   ₹1,60,000
+ORIGINAL PROJECT
+₹12,50,000
+
+OPTIMIZED PROJECT
+₹10,90,000
+
+POTENTIAL SAVING
+₹1,60,000
 ```
 
-Savings should be explainable by category and must not silently compromise protected decisions.
-
-Example:
+The savings explanation should identify contributing areas, for example:
 
 ```text
 ₹45,000 → kitchen materials
@@ -506,9 +826,50 @@ Example:
 ₹30,000 → supplier comparison
 ```
 
+Protected decisions remain protected.
+
 ---
 
-# 17. Materials, Components and Assemblies
+# 21. Smart Home Intelligence
+
+Smart-home recommendations should be grounded in the customer's actual home, lifestyle and design rather than being a generic device catalogue.
+
+Potential domains include:
+
+- lighting automation
+- sensors
+- smart switches
+- security
+- smart locks
+- comfort
+- scenes
+- energy awareness
+- connected appliances
+- room-specific automation
+
+The system should connect:
+
+```text
+ROOM
+  ↓
+LIFESTYLE / USE CASE
+  ↓
+SMART-HOME SCENARIO
+  ↓
+DEVICES / SYSTEMS
+  ↓
+COST
+  ↓
+DESIGN IMPACT
+  ↓
+WHAT-IF / VALUE
+```
+
+Smart-home features must remain subordinate to the overall home intelligence model.
+
+---
+
+# 22. Materials, Components and Assemblies
 
 The layer between design and catalogue is critical.
 
@@ -528,13 +889,24 @@ KITCHEN
  └─ Appliances
 ```
 
-Material intelligence should support evidence-backed attributes such as grade, thickness, construction, moisture resistance, load capacity, durability, finish, application suitability, maintenance and compatibility.
+Material intelligence should support evidence-backed attributes such as:
+
+- grade
+- thickness
+- construction
+- moisture resistance
+- load capacity
+- durability
+- finish
+- application suitability
+- maintenance
+- compatibility
 
 ---
 
-# 18. Design-to-Product Grounding
+# 23. Design-to-Product Grounding
 
-When procurement is promised, visual design should connect to real entities whenever possible:
+Where procurement is promised, the visual design should connect to real entities whenever possible:
 
 ```text
 DESIGN ELEMENT
@@ -550,13 +922,51 @@ SELLER / SERVICE
 PRICE / AVAILABILITY
 ```
 
-If a visual object is only an AI-generated concept and cannot currently be sourced, it must be clearly identified as illustrative. It must never silently appear to be a real catalogue product.
+If an object is only an AI-generated concept and cannot currently be sourced, it must be clearly identified as illustrative.
 
 ---
 
-# 19. BOQ
+# 24. Buildability Intelligence
 
-The BOQ is a living projection of:
+The design must eventually be tested against whether it can actually be built.
+
+Buildability considerations include:
+
+- dimensions
+- clearances
+- circulation
+- material availability
+- component compatibility
+- hardware requirements
+- electrical requirements
+- plumbing requirements
+- installation requirements
+- fabrication constraints
+- site constraints
+- quantity assumptions
+- labour/services
+
+The goal is:
+
+```text
+BEAUTIFUL DESIGN
+      ↓
+BUILDABLE DESIGN
+      ↓
+QUANTIFIABLE DESIGN
+      ↓
+COSTABLE DESIGN
+      ↓
+PROCUREABLE DESIGN
+      ↓
+EXECUTABLE DESIGN
+```
+
+---
+
+# 25. BOQ
+
+BOQ is a living projection of the design and build plan.
 
 ```text
 DESIGN
@@ -578,13 +988,32 @@ SERVICES
 TOTAL
 ```
 
-BOQ must support room-wise items, material/component/product line items, quantities, units, persisted catalogue rates, labour, services, taxes where applicable, commercial adjustments, alternatives, approved selections, budget allocation, versioning, change impact, project totals and exports.
+BOQ should support:
+
+- room-wise items
+- material line items
+- component line items
+- product line items
+- quantities
+- units
+- persisted catalogue rates
+- labour
+- services
+- taxes where applicable
+- commercial adjustments
+- alternatives
+- approved selections
+- budget allocation
+- versioning
+- change impact
+- project totals
+- exports
 
 Deterministic costing must use persisted catalogue/market data. No fabricated catalogue prices.
 
 ---
 
-# 20. Budget Intelligence
+# 26. Budget Intelligence
 
 Nivasa should continuously answer:
 
@@ -600,27 +1029,25 @@ Nivasa should continuously answer:
 Example:
 
 ```text
-CURRENT ₹14,80,000
-TARGET  ₹12,50,000
-GAP      ₹2,30,000
+CURRENT  ₹14,80,000
+TARGET   ₹12,50,000
+GAP       ₹2,30,000
 ```
 
-The system should find intelligent savings rather than randomly removing items.
+Budget optimization must be explainable.
 
 ---
 
-# 21. Revision Impact Engine
+# 27. Revision Impact Engine
 
-Every important change should propagate through connected project objects:
+Connected changes should propagate:
 
 ```text
-USER CHANGES LAMINATE
+USER CHANGES MATERIAL
         ↓
 DESIGN REVISION
         ↓
-MATERIAL
-        ↓
-PRODUCT
+PRODUCT / COMPONENT
         ↓
 BOQ
         ↓
@@ -633,41 +1060,399 @@ VISUALIZATION
 PROCUREMENT
 ```
 
-Nivasa should identify affected downstream objects and explain the impact.
-
 Example:
 
-> Changing this countertop will affect 2 BOQ items, reduce the estimated budget by ₹18,000 and require regeneration of the kitchen visualization.
+> Changing this countertop affects 2 BOQ items, changes the estimated budget and requires regeneration of the affected visualization.
 
 ---
 
-# 22. Visualization
+# 28. Nivasa Product Ladder
 
-Visualization is a core experience, not decoration.
+Nivasa is designed as a real commercial product, not a pricing-page mockup.
 
-Target capabilities include:
+The agreed product ladder is:
 
-- photorealistic images
+| Product | Price | Positioning |
+|---|---:|---|
+| **Free** | ₹0 | Explore Nivasa and understand the experience |
+| **Nivasa Design** | **₹99** | Entry-level design document / design experience |
+| **Nivasa Home Book** | **₹2,599** | Rich home intelligence + visualization + product/material detail |
+| **Nivasa Immersive** | **₹9,999** | Premium immersive future-home experience + walkthrough + execution pathway |
+
+> **Pricing is configurable commercial data, not hard-coded UI truth.** The package definitions must be server-owned and changeable without rewriting product logic.
+
+The previously discussed ₹999 visualization concept is **not** the canonical current ladder; the cleaner agreed ladder is ₹99 / ₹2,599 / ₹9,999, with Free as the entry tier.
+
+---
+
+# 29. Free Tier
+
+Purpose: allow a homeowner to understand Nivasa and enter the funnel without giving away the entire paid experience.
+
+The exact limits are server-configured, but the tier should be deliberately limited around:
+
+- account creation
+- basic property onboarding
+- limited exploration
+- limited design preview
+- limited intelligence exposure
+- upgrade prompts tied to real value
+
+Free must not be represented as a full design service.
+
+---
+
+# 30. Nivasa Design — ₹99
+
+Positioning:
+
+> **Affordable entry into a professionally structured Nivasa design experience.**
+
+The ₹99 experience should focus on delivering a meaningful design artifact rather than pretending to be the complete Nivasa journey.
+
+Core capability family:
+
+- property/layout intake
+- design brief
+- initial design direction
+- structured design output/document
+- core room/design recommendations
+- limited revision capability
+- foundational cost awareness where supported
+
+The exact entitlement limits must be server-owned and auditable.
+
+The ₹99 tier should create a natural path into the richer Home Book and Immersive experiences.
+
+---
+
+# 31. Nivasa Home Book — ₹2,599
+
+Positioning:
+
+> **A rich, transparent digital home book that explains the designed home and the real things that make it.**
+
+The Home Book should bring together, where evidence is available:
+
+- room-wise design
+- overall-home design
+- visual outputs
+- downloadable room images
+- downloadable overall-home images
+- real product images
+- product details
+- brand
+- MRP/reference price
+- current/observed price
+- material/specification details
+- warranty information where available
+- source/provenance/freshness
+- why-this recommendation
+- alternatives
+- cost visibility
+- BOQ/summary information where included by entitlement
+- design decisions
+- selected materials/products
+
+Examples of product intelligence should include meaningful attributes, such as material specifications or characteristics like corrosion resistance where supported by evidence.
+
+The customer should be able to understand the relationship between:
+
+```text
+MY DESIGN
+   ↓
+THIS MATERIAL / PRODUCT
+   ↓
+WHY IT WAS SELECTED
+   ↓
+WHAT IT COSTS
+   ↓
+WHAT ALTERNATIVES EXIST
+   ↓
+WHAT I SAVE / SPEND
+```
+
+---
+
+# 32. Nivasa Immersive — ₹9,999
+
+Positioning:
+
+> **Experience your future home before you build it.**
+
+This is the premium signature experience and should extend beyond static renders.
+
+Core experience direction:
+
+```text
+ACTUAL HOME
+    ↓
+FINAL DESIGN
+    ↓
+REAL MATERIALS / PRODUCTS
+    ↓
+IMMERSIVE SCENE
+    ↓
+WALKTHROUGH
+    ↓
+FUTURE-HOME EXPERIENCE
+    ↓
+EXECUTION PATHWAY
+```
+
+The signature concept is:
+
+> **Enter Your Future Home™**
+
+The customer should feel that they are entering their own future apartment rather than viewing a generic render.
+
+The experience can evolve toward:
+
+- immersive walkthrough
+- 3D scene
+- 360° experience
+- room-to-room navigation
+- consistent spatial identity
+- design/material context
+- product context
+- life-in-the-home scenarios
+- execution-plan pathway
+
+Immersive is not a substitute for design intelligence. It is the experiential layer built on top of trusted design and spatial data.
+
+---
+
+# 33. Nivasa DNA™
+
+**Nivasa DNA™** is the persistent intelligence identity of a customer's home.
+
+It should progressively understand:
+
+- the actual property
+- dimensions and spatial constraints
+- rooms
+- household needs
+- lifestyle
+- design preferences
+- aesthetic language
+- material preferences
+- product preferences
+- budget behaviour
+- protected decisions
+- selected products
+- alternatives considered
+- savings decisions
+- smart-home preferences
+- project history
+- procurement state
+- execution state
+
+Conceptually:
+
+```text
+MY HOME
+  ↓
+MY SPACE
+  ↓
+MY STYLE
+  ↓
+MY NEEDS
+  ↓
+MY MATERIALS
+  ↓
+MY PRODUCTS
+  ↓
+MY BUDGET
+  ↓
+MY DECISIONS
+  ↓
+MY PROJECT HISTORY
+  ↓
+MY NIVASA DNA™
+```
+
+Nivasa DNA should make future recommendations more contextual while preserving user control and privacy.
+
+It should not be treated as a marketing label without an underlying persistent project/intelligence model.
+
+---
+
+# 34. Visualization System
+
+Visualization is a core product capability.
+
+Target layers:
+
+- design boards
+- photorealistic renders
 - consistent camera views
 - before/after
 - panorama
 - 360°
-- 3D scene
+- 3D scenes
 - immersive walkthrough
 - video
 - actual-apartment visualization
 
-The signature experience is:
+The system must maintain spatial and design consistency across outputs.
 
-> **A customer uploads their actual apartment layout and sees that exact apartment transformed according to the selected design.**
-
-The output should feel like **“This is my apartment”**, not a generic room inspired by the request.
+AI-generated imagery must not silently create false catalogue claims.
 
 ---
 
-# 23. Procurement
+# 35. Walkthrough and Future-Home Experience
 
-Nivasa must eventually connect approved design decisions to purchasing:
+The walkthrough is the experiential culmination of the intelligence stack.
+
+```text
+SPATIAL MODEL
+      ↓
+DESIGN MODEL
+      ↓
+REAL PRODUCTS / MATERIALS
+      ↓
+CONSISTENT 3D SCENE
+      ↓
+NAVIGATION
+      ↓
+WALKTHROUGH
+      ↓
+ENTER YOUR FUTURE HOME™
+```
+
+The experience should ultimately allow the customer to understand not just how the home looks, but how it feels to move through it and live in it.
+
+---
+
+# 36. Localization
+
+Nivasa is India-first and should progressively localize intelligence around:
+
+- Indian homes and apartment layouts
+- local product availability
+- local suppliers
+- local service providers
+- local pricing
+- Indian commercial/tax context where applicable
+- regional materials
+- regional languages where supported
+- local execution realities
+
+Localization must be evidence-backed rather than assumed.
+
+---
+
+# 37. Nivasa Assistant
+
+The assistant is the conversational interface to the connected project graph.
+
+It should answer questions such as:
+
+- Why did you recommend this?
+- What is cheaper?
+- What is better?
+- What will I save?
+- What if I change this?
+- What does this material mean?
+- Is this compatible?
+- What is pending?
+- What changed since the previous version?
+- What needs my approval?
+- What is the next step?
+
+The assistant must operate against trusted project/catalogue/evidence data where factual claims matter.
+
+---
+
+# 38. Notifications
+
+Notifications should be useful, not spam.
+
+Examples include:
+
+- design ready
+- revision ready
+- approval required
+- price/availability observation changed
+- quote received
+- procurement status
+- delivery update
+- execution milestone
+- snag/open issue
+- handover readiness
+
+Notifications should be state-driven and auditable.
+
+---
+
+# 39. Commercial Architecture
+
+Nivasa must implement packages as a real commercial system.
+
+Required principles:
+
+- server-owned package definitions
+- server-owned feature definitions
+- entitlement enforcement
+- usage counters/limits where applicable
+- feature gating
+- payment order creation on the server
+- Razorpay integration for India
+- signed webhook verification
+- idempotent purchase activation
+- transactional entitlement state
+- concurrency protection
+- replay protection
+- explicit payment states
+
+The frontend must never independently activate a paid entitlement.
+
+Commercial configuration should support changing package limits/pricing without changing business logic.
+
+---
+
+# 40. Feature Entitlement Model
+
+Commercial packages should be represented through explicit entitlements rather than scattered price checks.
+
+Conceptually:
+
+```text
+PACKAGE
+  ↓
+ENTITLEMENTS
+  ↓
+FEATURE LIMITS
+  ↓
+USAGE
+  ↓
+AUTHORIZATION
+  ↓
+USER EXPERIENCE
+```
+
+Possible entitlement dimensions include:
+
+- number of properties
+- design concepts
+- revisions
+- renders
+- visual downloads
+- BOQ generations
+- advanced product intelligence
+- what-if analyses
+- immersive access
+- walkthrough access
+- exports
+- assistant capability
+
+Limits must be configuration/data, not duplicated throughout frontend code.
+
+---
+
+# 41. Procurement
+
+Nivasa should eventually connect approved design decisions to purchasing.
 
 ```text
 APPROVED DESIGN
@@ -685,13 +1470,21 @@ ORDER
 DELIVERY
 ```
 
-The system should preserve the relationship between selected item, supplier, price, quantity, approved BOQ and order/delivery.
+The project should preserve the relationship between:
+
+- selected item
+- selected supplier
+- price
+- quantity
+- approved BOQ
+- order
+- delivery
 
 ---
 
-# 24. Execution
+# 42. Execution
 
-The product journey does not end after procurement.
+The product journey does not end at procurement.
 
 ```text
 APPROVED DESIGN
@@ -715,11 +1508,25 @@ CORRECTIONS
 HANDOVER
 ```
 
-Execution services should be first-class entities: carpentry, electrical, plumbing, painting, fabrication, false ceiling, installation, assembly and site work.
+Execution services are first-class project entities.
+
+Examples:
+
+- carpentry
+- electrical
+- plumbing
+- painting
+- fabrication
+- false ceiling
+- installation
+- assembly
+- site work
+
+Execution records should preserve what was approved, ordered, delivered, installed and changed.
 
 ---
 
-# 25. Collaboration and Approvals
+# 43. Collaboration and Auditability
 
 Nivasa should support controlled collaboration among:
 
@@ -743,9 +1550,13 @@ Important objects require versioning and approval:
 
 Approvals should be timestamped, attributable and auditable.
 
+The system should avoid the question:
+
+> Which file is actually final?
+
 ---
 
-# 26. AI Architecture
+# 44. AI Architecture
 
 AI providers must remain behind provider-neutral contracts.
 
@@ -756,32 +1567,34 @@ AI capabilities include:
 - design generation
 - design revision
 - product/material grounding
+- recommendation
+- what-if analysis
 - BOQ assistance
-- recommendations
-- explanations
+- explanation
 - visualization prompting
 - walkthrough generation
 - video prompting
+- assistant interactions
 
 AI output is not authoritative merely because an AI model generated it.
 
 ```text
 AI OUTPUT
-    ↓
+   ↓
 VALIDATION
-    ↓
+   ↓
 PROJECT DATA + GEOMETRY + CATALOGUE + EVIDENCE
-    ↓
+   ↓
 TRUSTED RESULT
 ```
 
 ---
 
-# 27. AI Job Architecture
+# 45. Durable AI Jobs
 
-Asynchronous AI jobs must support:
+Asynchronous AI jobs should support:
 
-- durable job state
+- durable state
 - idempotency
 - retries
 - exponential backoff
@@ -789,65 +1602,32 @@ Asynchronous AI jobs must support:
 - provider error handling
 - worker lifecycle
 - observability
+- safe cancellation where appropriate
 - no fabricated success
 
-If a provider is unavailable:
+If a provider fails:
 
 ```text
-PROVIDER UNAVAILABLE
-        ↓
-EXPLICIT FAILURE
-        ↓
+PROVIDER FAILURE
+      ↓
+EXPLICIT FAILURE STATE
+      ↓
 RETRY / RECOVERY
 ```
 
-Never convert provider failure into fake success.
+Never:
+
+```text
+PROVIDER FAILURE
+      ↓
+FAKE SUCCESS
+```
 
 ---
 
-# 28. Security
+# 46. Persistent Project Model
 
-Production boundaries include:
-
-- Auth.js authentication
-- persisted roles
-- server-side authorization
-- owner-scoped access
-- validated inputs
-- structured API errors
-- audit logging
-- secure signed storage
-- security headers
-- safe failure behaviour
-
-Roles include User, Designer, Admin and Super Admin. Authorization must happen server-side.
-
----
-
-# 29. Commercial Architecture
-
-Nivasa is intended to be a real commercial product.
-
-The commercial system should support:
-
-- server-owned package definitions
-- feature gating
-- entitlement enforcement
-- server-created payment orders
-- Razorpay integration for India
-- signed webhook verification
-- idempotent purchase activation
-- transactional entitlement state
-- concurrency protection
-- reserve/confirm/release semantics
-
-The frontend must never independently activate paid entitlements. Server-side state is authoritative.
-
----
-
-# 30. Persistent Project Model
-
-The core project relationship is:
+The core relationship is:
 
 ```text
 PROPERTY
@@ -893,13 +1673,135 @@ PROJECT
 BOQ
 ```
 
-This prevents isolated feature silos.
+This connected model is a primary architectural principle.
 
 ---
 
-# 31. Phase 0 — Production Foundation
+# 47. Nivasa DNA as the Long-Term Intelligence Loop
 
-Phase 0 establishes:
+The long-term intelligence loop is:
+
+```text
+USER
+ ↓
+PROPERTY
+ ↓
+SPATIAL MODEL
+ ↓
+DESIGN
+ ↓
+PRODUCT / MATERIAL
+ ↓
+PRICE / MARKET DATA
+ ↓
+BOQ
+ ↓
+BUDGET
+ ↓
+USER FEEDBACK
+ ↓
+DESIGN REVISION
+ ↓
+BETTER RECOMMENDATION
+ ↓
+BETTER VALUE
+```
+
+As the project progresses, Nivasa DNA should accumulate trusted project context without turning assumptions into facts.
+
+---
+
+# 48. Product Roadmap and Engineering Dependency
+
+## Stage 1 — Intelligence
+
+Build the foundation for:
+
+- property
+- spatial understanding
+- rooms
+- design model
+- catalogue/material intelligence
+- evidence
+- canonical identity
+- recommendation foundations
+
+## Stage 2 — What-If / Savings
+
+Build:
+
+- substitutions
+- alternatives
+- price comparison
+- savings analysis
+- project-level optimization
+- budget impact
+- protected decisions
+
+## Stage 3 — Smart Home
+
+Build contextual smart-home intelligence grounded in the property, design and lifestyle.
+
+## Stage 4 — Buildability / BOQ
+
+Build:
+
+- buildability checks
+- quantities
+- BOQ
+- deterministic costing
+- budget
+- revision impact
+
+## Stage 5 — Localization / Assistant / Notifications
+
+Build:
+
+- India/local context
+- assistant
+- state-driven notifications
+- project communication
+
+## Stage 6 — Commercial / Visualization
+
+Build:
+
+- product packages
+- entitlements
+- payment
+- rich visual outputs
+- Home Book
+- product intelligence presentation
+
+## Stage 7 — Walkthrough / Immersive
+
+Build:
+
+- consistent 3D scene
+- 360°
+- navigation
+- walkthrough
+- Enter Your Future Home™
+
+## Stage 8 — Execution
+
+Build:
+
+- procurement
+- delivery
+- installation
+- milestones
+- quality
+- snagging
+- handover
+
+These stages are a product dependency sequence, not permission to claim every stage is already implemented.
+
+---
+
+# 49. Phase 0 — Production Foundation
+
+Phase 0 establishes the engineering foundation:
 
 - repository conventions
 - authentication
@@ -920,12 +1822,14 @@ Phase 0 establishes:
 
 ---
 
-# 32. Phase 0.1 — Production Foundation Completion
+# 50. Phase 0.1 — Production Foundation Acceptance
 
-Phase 0.1 establishes the production-grade server foundation required by the product contract:
+Phase 0.1 establishes the production-grade server foundation required by the product contract.
+
+It includes, as applicable:
 
 - Auth.js boundaries
-- roles
+- persisted roles
 - authorization
 - Zod validation
 - repository/service boundaries
@@ -948,35 +1852,32 @@ Phase 0.1 establishes the production-grade server foundation required by the pro
 - operational documentation
 - CI
 
-Phase 0.1 must not be declared complete merely because files exist. Acceptance requires implementation, tests, integration, authorization, data integrity, CI, documentation and a gap audit.
+Phase 0.1 is not complete merely because these files exist. Acceptance requires implementation, tests, integration, authorization, data integrity, CI, documentation and an end-to-end gap audit.
 
 ---
 
-# 33. Step 1 — Property and Design Intelligence
+# 51. Phase 1 — Product Capability Build
 
-Step 1 establishes the homeowner's real-home foundation:
+There is **one Phase 1**. Do not split it into Phase 1A/1B/1C variants.
+
+Phase 1 follows the fixed product dependency sequence:
 
 ```text
-PROPERTY
-  ↓
-FLOOR PLAN
-  ↓
-SPATIAL MODEL
-  ↓
-ROOMS / ELEMENTS
-  ↓
-DESIGN PROJECT
-  ↓
-DESIGN VERSIONS / REVISIONS
+INTELLIGENCE
+→ WHAT-IF / SAVINGS
+→ SMART HOME
+→ BUILDABILITY / BOQ
+→ LOCALIZATION / ASSISTANT / NOTIFICATIONS
+→ COMMERCIAL / VISUALIZATION
+→ WALKTHROUGH / IMMERSIVE
+→ EXECUTION
 ```
-
-Acceptance must prove that real user-owned property and spatial information can safely flow into the design lifecycle without cross-user access or fabricated certainty.
 
 ---
 
-# 34. Step 2 — Interior Intelligence
+# 52. Step 2 — Interior Intelligence Acceptance Contract
 
-Step 2 is significantly more than creating a catalogue table.
+Step 2 is more than a catalogue table.
 
 The acceptance chain is:
 
@@ -1005,6 +1906,8 @@ BETTER OPTIONS
    ↓
 BETTER DEALS
    ↓
+SUBSTITUTIONS
+   ↓
 PROJECT COMPATIBILITY
    ↓
 BOQ / BUDGET IMPACT
@@ -1012,29 +1915,25 @@ BOQ / BUDGET IMPACT
 EXPLAINABLE RECOMMENDATION
 ```
 
-Step 2 must establish the foundations necessary to connect market intelligence to layouts, rooms, designs, revisions, materials, products, BOQ and budget.
-
----
-
-# 35. Step 2 Acceptance Criteria
-
-Step 2 is **not complete** when:
+Step 2 is not complete when:
 
 - a source registry exists
 - a catalogue table exists
 - a few products exist
 - an API returns mock data
 - a schema compiles
-- tests only cover happy paths
+- happy-path tests pass
 
-Step 2 requires:
+Acceptance requires:
 
 ### Source
+
 - source identity
-- governed source adapter
 - source eligibility
+- governed adapter
 
 ### Observation
+
 - raw observation
 - normalized observation
 - timestamps
@@ -1042,18 +1941,21 @@ Step 2 requires:
 - provenance
 
 ### Evidence
+
 - evidence reference
 - confidence
 - freshness
 - validation
 
 ### Canonical Identity
+
 - canonical product
 - variants
 - SKU identity
 - cross-source matching
 
 ### Market Intelligence
+
 - prices
 - price history
 - availability
@@ -1061,28 +1963,31 @@ Step 2 requires:
 - geography
 
 ### Recommendation
-- More Options
-- Better Options
-- Better Deals
+
+- more options
+- better options
+- better deals
 - alternatives
 - substitutions
 - trade-offs
 - project compatibility
 
 ### Project Integration
+
 - design linkage
 - BOQ linkage
 - budget impact
 - revision impact
 
 ### Transparency
-The customer must understand:
+
+The customer must be able to understand:
 
 > **Why is this recommendation being made?**
 
 ---
 
-# 36. Testing Requirements
+# 53. Testing Contract
 
 The authoritative CI chain is:
 
@@ -1104,7 +2009,7 @@ PRODUCTION BUILD
 GIT DIFF CHECK
 ```
 
-Recommended local gate:
+Local verification should include:
 
 ```bash
 npm ci
@@ -1120,9 +2025,9 @@ git diff --check
 
 ---
 
-# 37. Market Intelligence Testing
+# 54. Intelligence and Domain Testing
 
-Tests must cover:
+Market-intelligence tests should cover:
 
 - source eligibility
 - normalization
@@ -1144,11 +2049,7 @@ Tests must cover:
 - BOQ impact
 - budget impact
 
----
-
-# 38. Design Intelligence Testing
-
-Tests must cover:
+Design-intelligence tests should cover:
 
 - floor-plan validation
 - spatial inputs
@@ -1165,7 +2066,7 @@ Tests must cover:
 
 ---
 
-# 39. Security and Commercial Testing
+# 55. Security and Commercial Testing
 
 Tests must include:
 
@@ -1183,7 +2084,35 @@ Tests must include:
 
 ---
 
-# 40. Operations
+# 56. Security Architecture
+
+Production boundaries include:
+
+- Auth.js authentication
+- persisted roles
+- server-side authorization
+- owner-scoped access
+- validated inputs
+- structured API errors
+- audit logging
+- secure signed storage
+- security headers
+- safe failure behaviour
+
+Roles include, as required by the product:
+
+```text
+USER
+DESIGNER
+ADMIN
+SUPER_ADMIN
+```
+
+Authorization must happen server-side.
+
+---
+
+# 57. Operations
 
 Operational documentation should cover:
 
@@ -1197,272 +2126,49 @@ Operational documentation should cover:
 - failure behaviour
 - operational recovery
 
-Provider integrations are real boundaries. Missing credentials must produce explicit configuration errors. Redis is required when asynchronous jobs are submitted or a worker is started. Never commit production credentials.
-
----
-
-# 41. Transparency Contract
-
-For every important recommendation, Nivasa should be able to show, where applicable:
+When required configuration is absent:
 
 ```text
-WHAT IS IT?
-WHY IS IT RECOMMENDED?
-WHAT DOES IT COST?
-WHERE DID THE INFORMATION COME FROM?
-WHEN WAS IT VERIFIED?
-IS IT AVAILABLE?
-WHAT ARE THE ALTERNATIVES?
-WHAT DO I SAVE?
-WHAT DO I GIVE UP?
-HOW CONFIDENT IS NIVASA?
+MISSING CONFIGURATION
+      ↓
+EXPLICIT CONFIGURATION ERROR
 ```
 
-This is a product requirement, not merely a UI preference.
+Never fake provider success.
+
+Redis is required when asynchronous jobs are submitted or a worker is started.
+
+Production credentials must never be committed.
 
 ---
 
-# 42. Affordability and Value Contract
+# 58. Repository Documentation Contract
 
-Nivasa should continuously search for ways to improve value without degrading the design blindly.
+The README defines the product contract.
 
-The optimization order is:
+Supporting documents should provide implementation detail without contradicting it, including where present:
 
-```text
-PROTECT USER NON-NEGOTIABLES
-        ↓
-PRESERVE DESIGN INTENT
-        ↓
-COMPARE EQUIVALENT OPTIONS
-        ↓
-IDENTIFY BETTER VALUE
-        ↓
-IDENTIFY REAL DEALS
-        ↓
-IDENTIFY SAFE SUBSTITUTIONS
-        ↓
-SHOW SAVINGS + TRADE-OFFS
-        ↓
-USER APPROVAL
-```
+- `ARCHITECTURE.md`
+- `DEVELOPMENT.md`
+- `docs/OPERATIONS.md`
 
-The goal is **affordable excellence**, not cheap interiors.
+When a supporting document conflicts with the product contract, the conflict must be resolved rather than silently allowing multiple visions.
 
 ---
 
-# 43. Design Quality Contract
+# 59. No-Premature-Closure Rule
 
-Nivasa's design engine should evaluate designs against:
-
-- spatial fit
-- circulation
-- proportion
-- ergonomics
-- storage efficiency
-- lighting
-- material harmony
-- colour harmony
-- functionality
-- maintenance
-- durability
-- constructability
-- budget
-- lifestyle
-
-A design that looks good but fails practical constraints is not an exceptional Nivasa design.
-
----
-
-# 44. Actual-Apartment Visualization Contract
-
-The visualization system must preserve spatial truth as far as the available evidence permits.
-
-The target flow is:
-
-```text
-CUSTOMER LAYOUT
-      ↓
-SPATIAL MODEL
-      ↓
-DESIGN
-      ↓
-REAL MATERIALS / PRODUCTS
-      ↓
-CONSISTENT SCENE
-      ↓
-RENDER
-      ↓
-360° / WALKTHROUGH
-      ↓
-VIDEO
-```
-
-Generated imagery must not be presented as measured reality when geometry is uncertain.
-
----
-
-# 45. Project Change Contract
-
-A project change must be treated as a connected state transition.
-
-Example:
-
-```text
-USER REQUEST
-      ↓
-VALIDATE
-      ↓
-CREATE REVISION
-      ↓
-UPDATE DESIGN
-      ↓
-RECALCULATE MATERIALS / PRODUCTS
-      ↓
-RECALCULATE BOQ
-      ↓
-RECALCULATE BUDGET
-      ↓
-FLAG VISUALIZATION CHANGES
-      ↓
-FLAG PROCUREMENT CHANGES
-      ↓
-USER APPROVAL
-```
-
-No downstream object should silently remain stale when the system knows it is affected.
-
----
-
-# 46. Data Integrity Contract
-
-Canonical project data must remain authoritative for:
-
-- identity
-- ownership
-- approved design state
-- locked decisions
-- BOQ quantities
-- persisted catalogue prices
-- payment/entitlement state
-- approvals
-
-AI output, UI state, scraped observations and external provider responses are inputs or evidence—not automatic authority.
-
----
-
-# 47. Engineering Philosophy
-
-Nivasa must be built as a production-grade startup platform, not as a collection of demos.
-
-Every feature should be evaluated for:
-
-- correctness
-- reliability
-- security
-- scalability
-- maintainability
-- observability
-- data integrity
-- user trust
-- commercial viability
-- real-world usefulness
-
-Prefer:
-
-- canonical entities
-- explicit state transitions
-- immutable/versioned history where appropriate
-- deterministic calculations
-- evidence-backed intelligence
-- provider abstraction
-- server-authoritative state
-- strong validation
-- comprehensive tests
-- auditable decisions
-
-Avoid temporary shortcuts that create structural debt in the core project model.
-
----
-
-# 48. Product Intelligence Loop
-
-```text
-USER
- ↓
-PROPERTY
- ↓
-SPATIAL MODEL
- ↓
-DESIGN
- ↓
-PRODUCT / MATERIAL
- ↓
-PRICE / MARKET DATA
- ↓
-BOQ
- ↓
-BUDGET
- ↓
-USER FEEDBACK
- ↓
-DESIGN REVISION
- ↓
-BETTER RECOMMENDATION
- ↓
-BETTER VALUE
-```
-
-The intelligence loop should improve as Nivasa accumulates product knowledge, material knowledge, design knowledge, project history, market observations, user feedback and execution knowledge.
-
----
-
-# 49. Long-Term Competitive Moat
-
-The moat is not a single AI model.
-
-It is the combination of:
-
-```text
-SPATIAL INTELLIGENCE
-        +
-DESIGN INTELLIGENCE
-        +
-INTERIOR KNOWLEDGE GRAPH
-        +
-PRODUCT / MATERIAL DATA
-        +
-SOURCE EVIDENCE
-        +
-PRICE INTELLIGENCE
-        +
-BOQ INTELLIGENCE
-        +
-PROJECT HISTORY
-        +
-VISUALIZATION
-        +
-PROCUREMENT
-        +
-EXECUTION
-```
-
-This connected system becomes harder to replicate as the underlying knowledge and project graph grows.
-
----
-
-# 50. No-Premature-Closure Rule
-
-A phase or step must **never** be closed merely because:
+A phase or step must never be closed merely because:
 
 - code compiles
 - CI is green
-- Prisma migration exists
+- a Prisma migration exists
 - a model exists
 - an API exists
 - a UI exists
 - a provider contract exists
 - a source registry exists
-- a small subset of products exists
+- a small product subset exists
 
 Acceptance requires:
 
@@ -1486,95 +2192,78 @@ DOCUMENTATION
 END-TO-END GAP AUDIT
 ```
 
-The repository must always distinguish between **IMPLEMENTED** and **VISION / TARGET**.
-
----
-
-# 51. Current Implementation Status Contract
-
-Authoritative status must be determined from:
-
-1. merged implementation
-2. current branch/PR state
-3. passing CI
-4. tests
-5. integration coverage
-6. security checks
-7. open issues
-8. acceptance audits
-
-The README preserves the complete vision so implementation does not gradually lose product scope. It must be updated when the implementation genuinely changes, but unfinished capabilities must never be represented as completed.
-
----
-
-# 52. Definition of Done
-
-A capability is production-complete only when the relevant contract is demonstrated end-to-end.
+The repository must clearly distinguish:
 
 ```text
-REQUIREMENT
-    ↓
-DESIGN
-    ↓
-IMPLEMENTATION
-    ↓
-VALIDATION
-    ↓
-TESTS
-    ↓
-AUTHORIZATION / SECURITY
-    ↓
-INTEGRATION
-    ↓
-CI
-    ↓
-DOCUMENTATION
-    ↓
-ACCEPTANCE AUDIT
+IMPLEMENTED
 ```
 
-A green CI run is necessary, but it is not by itself the definition of done.
+from:
+
+```text
+VISION / TARGET
+```
+
+No unfinished capability may be represented as complete.
 
 ---
 
-# 53. Startup-Grade Product Standard
+# 60. Long-Term Competitive Moat
 
-Nivasa should be built for real homeowners and real commercial transactions.
+The moat is not a single AI model.
 
-The system must optimize for:
+It is the combination of:
 
-- trust
-- clarity
-- affordability
-- quality
-- speed
-- flexibility
-- reliability
-- explainability
-- scalability
+```text
+SPATIAL INTELLIGENCE
+        +
+DESIGN INTELLIGENCE
+        +
+INTERIOR KNOWLEDGE GRAPH
+        +
+PRODUCT / MATERIAL DATA
+        +
+SOURCE EVIDENCE
+        +
+PRICE INTELLIGENCE
+        +
+WHAT-IF / SAVINGS
+        +
+BOQ / BUILDABILITY
+        +
+NIVASA DNA™
+        +
+VISUALIZATION
+        +
+IMMERSIVE EXPERIENCE
+        +
+PROCUREMENT
+        +
+EXECUTION
+```
 
-The customer should never need to understand Nivasa's internal complexity to benefit from it.
-
-Complexity belongs behind the product experience.
+As project knowledge accumulates, Nivasa should become increasingly capable of making context-aware recommendations while maintaining transparency and user control.
 
 ---
 
-# 54. Complete Nivasa Promise
+# 61. Complete Nivasa Experience
+
+The complete product should feel like one continuous journey:
 
 ```text
 I UPLOAD MY HOME
         ↓
 NIVASA UNDERSTANDS MY SPACE
         ↓
-NIVASA UNDERSTANDS MY REQUIREMENTS
+NIVASA UNDERSTANDS MY LIFESTYLE AND REQUIREMENTS
         ↓
 NIVASA DESIGNS MY HOME
         ↓
 I GET MULTIPLE GREAT OPTIONS
         ↓
-I CAN MODIFY AND LOCK WHAT I WANT
+I LOCK WHAT MATTERS
         ↓
-NIVASA CONNECTS THE DESIGN TO REAL PRODUCTS
+NIVASA CONNECTS DESIGN TO REAL PRODUCTS / MATERIALS
         ↓
 I SEE MORE OPTIONS
         ↓
@@ -1582,17 +2271,27 @@ I SEE BETTER OPTIONS
         ↓
 I SEE BETTER DEALS
         ↓
-NIVASA EXPLAINS THE TRADE-OFFS
+I ASK WHAT-IF QUESTIONS
+        ↓
+NIVASA SHOWS SAVINGS AND TRADE-OFFS
+        ↓
+NIVASA RECOMMENDS SMART-HOME OPTIONS
+        ↓
+NIVASA CHECKS BUILDABILITY
         ↓
 NIVASA BUILDS MY BOQ
         ↓
-NIVASA EXPLAINS MY COST
+NIVASA EXPLAINS MY BUDGET
         ↓
-NIVASA FINDS SAVINGS
+NIVASA GIVES ME LOCAL / CONTEXTUAL HELP
         ↓
-I SEE MY ACTUAL APARTMENT
+NIVASA SHOWS MY REAL HOME
         ↓
-3D / 360 / WALKTHROUGH / VIDEO
+I DOWNLOAD MY HOME BOOK
+        ↓
+I ENTER MY FUTURE HOME
+        ↓
+I EXPERIENCE THE WALKTHROUGH
         ↓
 I APPROVE
         ↓
@@ -1601,28 +2300,24 @@ NIVASA HELPS ME PROCURE
 NIVASA SUPPORTS EXECUTION
         ↓
 MY HOME GETS BUILT
+        ↓
+MY PROJECT BECOMES PART OF MY NIVASA DNA™
 ```
 
 ---
 
-# 55. Final Nivasa Product Principle
+# 62. Final Product Principle
 
-Nivasa must not be built as a collection of disconnected features.
+Nivasa should not be built as a collection of disconnected features.
 
 Every major product and engineering decision should ask:
 
-> **Does this make the complete Nivasa journey more connected, more intelligent, more transparent, more affordable, more useful and more executable for the homeowner?**
+> **Does this make the complete Nivasa journey more connected, more intelligent, more transparent, more affordable, more useful, more immersive and more executable for the homeowner?**
 
-The end goal is not simply to generate beautiful interiors.
+The goal is not merely to generate beautiful interiors.
 
 The goal is to fundamentally reshape how people:
 
-**understand → design → compare → choose → budget → visualize → buy → build their homes.**
+**understand → design → compare → choose → optimize → budget → experience → buy → build their homes.**
 
----
-
-# Nivasa
-
-**Your home. Designed your way.**
-
-**Understand it. Design it. Compare it. Optimize it. Visualize it. Buy it. Build it.**
+**Nivasa — Your home. Designed your way.**
