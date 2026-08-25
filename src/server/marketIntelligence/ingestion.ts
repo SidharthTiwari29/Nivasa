@@ -43,10 +43,10 @@ const normalizeText = (value: string): string =>
     .replace(/[^a-z0-9]+/g, " ")
     .replace(/\s+/g, " ");
 
-const assertSource = (
+function assertSource(
   source: MarketSourceDefinition | undefined,
   record: RawMarketRecord,
-): asserts source is MarketSourceDefinition => {
+): asserts source is MarketSourceDefinition {
   if (!source) {
     throw new Error(`Unknown market source: ${record.sourceKey}`);
   }
@@ -54,7 +54,7 @@ const assertSource = (
   if (!source.ingestionEligible) {
     throw new Error(`Market source is not ingestion eligible: ${source.key}`);
   }
-};
+}
 
 export const normalizeMarketRecord = (
   source: MarketSourceDefinition | undefined,
