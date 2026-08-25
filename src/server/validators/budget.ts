@@ -7,25 +7,48 @@ const signedMinorMoney = z
   .min(Number.MIN_SAFE_INTEGER)
   .max(Number.MAX_SAFE_INTEGER);
 
+const budgetLineBaseSchema = z.object({
+  roomId: z.string().cuid().nullable().optional(),
+  category: z.string().trim().min(1).max(100),
+  description: z.string().trim().max(500).optional(),
+  lowMinor: minorMoney,
+  targetMinor: minorMoney,
+  highMinor: minorMoney,
+  truth: z.enum(["ESTIMATE", "VERIFIED", "RECOMMENDATION"]),
+  basis: z.record(z.string(), z.unknown()),
+});
+
+const budgetLineRangeRefinement = (value: z.infer<typeof budgetLineBaseSchema>, ctx: z.RefinementCtx) => {
+  if (value.lowMinor > value.targetMinor) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "lowMinor must be less than or equal to targetMinor",
+      path: ["targetMinor"],
+    });
+  }
+
+  if (value.targetMinor > value.highMinor) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "targetMinor must be less than or equal to highMinor",
+      path: ["highMinor"],
+    });
+  }
+};
+
+const catalogueBudgetLineSchema = budgetLineBaseSchema.extend({
+  kind: z.literal("CATALOGUE"),
+  catalogueItemId: z.string().cuid(),
+});
+
+const customBudgetLineSchema = budgetLineBaseSchema.extend({
+  kind: z.literal("CUSTOM"),
+  catalogueItemId: z.never().optional(),
+});
+
 export const budgetLineSchema = z
-  .object({
-    roomId: z.string().cuid().nullable().optional(),
-    category: z.string().trim().min(1).max(100),
-    description: z.string().trim().max(500).optional(),
-    lowMinor: minorMoney,
-    targetMinor: minorMoney,
-    highMinor: minorMoney,
-    truth: z.enum(["ESTIMATE", "VERIFIED", "RECOMMENDATION"]),
-    basis: z.record(z.string(), z.unknown()),
-  })
-  .refine((value) => value.lowMinor <= value.targetMinor, {
-    message: "lowMinor must be less than or equal to targetMinor",
-    path: ["targetMinor"],
-  })
-  .refine((value) => value.targetMinor <= value.highMinor, {
-    message: "targetMinor must be less than or equal to highMinor",
-    path: ["highMinor"],
-  });
+  .discriminatedUnion("kind", [catalogueBudgetLineSchema, customBudgetLineSchema])
+  .superRefine(budgetLineRangeRefinement);
 
 export const createBudgetSchema = z.object({
   idempotencyKey: z.string().trim().min(8).max(128),
