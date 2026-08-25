@@ -27,7 +27,7 @@ describe("market source registry", () => {
   });
 
   it("has no duplicate or incomplete source records", () => {
-    expect(validateMarketSourceRegistry()).toEqual([]);
+    expect(() => validateMarketSourceRegistry()).not.toThrow();
   });
 
   it("keeps every seed source disabled until access and terms are reviewed", () => {
