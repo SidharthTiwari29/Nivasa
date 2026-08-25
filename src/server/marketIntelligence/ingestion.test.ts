@@ -18,6 +18,12 @@ const source: MarketSourceDefinition = {
   ingestionEligible: true,
 };
 
+const alternateSource: MarketSourceDefinition = {
+  ...source,
+  key: "alternate-source",
+  canonicalName: "Alternate Source",
+};
+
 const record = (overrides: Partial<RawMarketRecord> = {}): RawMarketRecord => ({
   sourceKey: source.key,
   sourceUrl: "https://example.com/products/chair-1",
@@ -36,12 +42,14 @@ describe("market ingestion normalization", () => {
     const product = normalizeMarketRecord(source, record());
 
     expect(product.externalId).toBe("chair-1");
+    expect(product.sourceObservationKey).toBe("test-source:chair-1");
     expect(product.name).toBe("Oak Dining Chair");
     expect(product.normalizedName).toBe("oak dining chair");
     expect(product.brand).toBe("Example Brand");
-    expect(product.canonicalKey).toBe(
-      "test-source:chair-1:example brand:oak dining chair",
+    expect(product.canonicalFingerprint).toBe(
+      "example brand|furniture|oak dining chair|no-sku",
     );
+    expect(product.canonicalKey).toBe(product.canonicalFingerprint);
     expect(product.sourceUrl).toBe("https://example.com/products/chair-1");
     expect(product.observedAt.toISOString()).toBe("2026-08-24T10:00:00.000Z");
   });
@@ -76,7 +84,7 @@ describe("market ingestion normalization", () => {
     );
   });
 
-  it("deduplicates normalized records by canonical identity", () => {
+  it("deduplicates repeated observations from the same source", () => {
     const first = record();
     const second = record({
       name: "Oak Dining Chair",
@@ -92,5 +100,27 @@ describe("market ingestion normalization", () => {
     const second = record({ externalId: "chair-2" });
 
     expect(normalizeMarketRecords([source], [first, second])).toHaveLength(2);
+  });
+
+  it("keeps cross-source observations separate while exposing a shared matching fingerprint", () => {
+    const first = record();
+    const second = record({
+      sourceKey: alternateSource.key,
+      externalId: "alt-chair-9",
+      sourceUrl: "https://example.com/products/alt-chair-9",
+    });
+
+    const products = normalizeMarketRecords(
+      [source, alternateSource],
+      [first, second],
+    );
+
+    expect(products).toHaveLength(2);
+    expect(products[0].sourceObservationKey).not.toBe(
+      products[1].sourceObservationKey,
+    );
+    expect(products[0].canonicalFingerprint).toBe(
+      products[1].canonicalFingerprint,
+    );
   });
 });
