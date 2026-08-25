@@ -517,6 +517,9 @@ export const MARKET_SOURCE_REGISTRY: readonly MarketSourceDefinition[] = [
   source("sleep-company", "The Sleep Company", "thesleepcompany.in", "BRAND", [
     "soft-furnishings-decor",
   ]),
+  source("dorma-doors-glass", "dormakaba India", "dormakaba.com", "MANUFACTURER", [
+    "doors-glass",
+  ]),
 ];
 
 const REQUIRED_MARKET_CATEGORIES: readonly MarketCategory[] = [
