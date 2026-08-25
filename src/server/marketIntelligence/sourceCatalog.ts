@@ -5,10 +5,24 @@ import {
 } from "./sourceRegistry";
 import { MARKET_SOURCE_EXPANSION } from "./sourceRegistryExpansion";
 
-export const MARKET_SOURCE_CATALOG: readonly MarketSourceDefinition[] = [
-  ...MARKET_SOURCE_REGISTRY,
-  ...MARKET_SOURCE_EXPANSION,
-];
+const mergeUniqueSources = (
+  primary: readonly MarketSourceDefinition[],
+  expansion: readonly MarketSourceDefinition[],
+): readonly MarketSourceDefinition[] => {
+  const seen = new Set<string>();
+  const merged: MarketSourceDefinition[] = [];
+
+  for (const source of [...primary, ...expansion]) {
+    if (seen.has(source.key)) continue;
+    seen.add(source.key);
+    merged.push(source);
+  }
+
+  return merged;
+};
+
+export const MARKET_SOURCE_CATALOG: readonly MarketSourceDefinition[] =
+  mergeUniqueSources(MARKET_SOURCE_REGISTRY, MARKET_SOURCE_EXPANSION);
 
 export const MARKET_SOURCE_TARGET = 500;
 
