@@ -9,6 +9,7 @@ describe("Budget Reality validation", () => {
     assumptions: { pricing: "planning estimate" },
     lines: [
       {
+        kind: "CUSTOM" as const,
         category: "kitchen",
         lowMinor: 200000,
         targetMinor: 250000,
