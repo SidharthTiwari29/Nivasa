@@ -1,0 +1,34 @@
+name: Format branch
+
+on:
+  push:
+    branches:
+      - step2-gap-closure-implementation
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run format
+      - name: Commit formatting changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "Formatting already clean"
+            exit 0
+          fi
+          git add .
+          git commit -m "chore: format step 2 implementation"
+          git push
