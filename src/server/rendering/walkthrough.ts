@@ -10,11 +10,15 @@ export interface WalkthroughInput {
 }
 
 /** Builds the provider-neutral request for Nivasa Immersive; it never claims rendering succeeded. */
-export function createWalkthroughRequest(input: WalkthroughInput): RenderRequest {
+export function createWalkthroughRequest(
+  input: WalkthroughInput,
+): RenderRequest {
   if (!input.jobId.trim()) throw new Error("WALKTHROUGH_JOB_ID_REQUIRED");
-  if (!input.designRevisionId.trim()) throw new Error("DESIGN_REVISION_REQUIRED");
+  if (!input.designRevisionId.trim())
+    throw new Error("DESIGN_REVISION_REQUIRED");
   if (input.roomIds.length === 0) throw new Error("WALKTHROUGH_ROOM_REQUIRED");
-  if (input.roomIds.some((roomId) => !roomId.trim())) throw new Error("WALKTHROUGH_ROOM_ID_INVALID");
+  if (input.roomIds.some((roomId) => !roomId.trim()))
+    throw new Error("WALKTHROUGH_ROOM_ID_INVALID");
 
   return {
     jobId: input.jobId,

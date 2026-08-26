@@ -17,7 +17,19 @@ describe("createWalkthroughRequest", () => {
   });
 
   it("rejects incomplete walkthrough inputs", () => {
-    expect(() => createWalkthroughRequest({ jobId: "job-1", designRevisionId: "", roomIds: ["living"] })).toThrow("DESIGN_REVISION_REQUIRED");
-    expect(() => createWalkthroughRequest({ jobId: "job-1", designRevisionId: "revision-1", roomIds: [] })).toThrow("WALKTHROUGH_ROOM_REQUIRED");
+    expect(() =>
+      createWalkthroughRequest({
+        jobId: "job-1",
+        designRevisionId: "",
+        roomIds: ["living"],
+      }),
+    ).toThrow("DESIGN_REVISION_REQUIRED");
+    expect(() =>
+      createWalkthroughRequest({
+        jobId: "job-1",
+        designRevisionId: "revision-1",
+        roomIds: [],
+      }),
+    ).toThrow("WALKTHROUGH_ROOM_REQUIRED");
   });
 });

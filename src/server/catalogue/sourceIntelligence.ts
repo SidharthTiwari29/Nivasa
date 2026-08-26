@@ -62,7 +62,11 @@ export type MarketObservation = EvidenceRef & {
 
 export function validateConfidenceBps(confidenceBps: number | undefined): void {
   if (confidenceBps === undefined) return;
-  if (!Number.isInteger(confidenceBps) || confidenceBps < 0 || confidenceBps > 10_000) {
+  if (
+    !Number.isInteger(confidenceBps) ||
+    confidenceBps < 0 ||
+    confidenceBps > 10_000
+  ) {
     throw new Error("CONFIDENCE_BPS_OUT_OF_RANGE");
   }
 }

@@ -1,6 +1,14 @@
 export type TruthClass = "VERIFIED" | "ESTIMATED" | "INFERRED" | "UNKNOWN";
 
-export type SourceKind = "MANUFACTURER" | "BRAND" | "RETAILER" | "MARKETPLACE" | "DEALER" | "DISTRIBUTOR" | "LOCAL_SUPPLIER" | "SERVICE_PROVIDER";
+export type SourceKind =
+  | "MANUFACTURER"
+  | "BRAND"
+  | "RETAILER"
+  | "MARKETPLACE"
+  | "DEALER"
+  | "DISTRIBUTOR"
+  | "LOCAL_SUPPLIER"
+  | "SERVICE_PROVIDER";
 
 export interface SourceRef {
   sourceId: string;
@@ -53,7 +61,10 @@ export function validateConfidenceBps(value: number): void {
   }
 }
 
-export function calculatePotentialSavingMinor(currentMinor: bigint, alternativeMinor: bigint): bigint {
+export function calculatePotentialSavingMinor(
+  currentMinor: bigint,
+  alternativeMinor: bigint,
+): bigint {
   if (currentMinor < 0n || alternativeMinor < 0n) {
     throw new Error("prices cannot be negative");
   }

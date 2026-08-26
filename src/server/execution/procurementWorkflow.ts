@@ -1,7 +1,11 @@
-import { assessProcurementReadiness, type ProcurementLine } from "./procurementGuard";
+import {
+  assessProcurementReadiness,
+  type ProcurementLine,
+} from "./procurementGuard";
 import { calculateQuoteTotal, type SupplierQuote } from "./quote";
 
-export type ProcurementDecision = "BLOCKED" | "READY_FOR_RFQ" | "QUOTE_ACCEPTABLE";
+export type ProcurementDecision =
+  "BLOCKED" | "READY_FOR_RFQ" | "QUOTE_ACCEPTABLE";
 
 export interface ProcurementAssessment {
   decision: ProcurementDecision;
@@ -10,7 +14,10 @@ export interface ProcurementAssessment {
   currency?: string;
 }
 
-export function assessForRfq(lines: readonly ProcurementLine[], buildable: boolean): ProcurementAssessment {
+export function assessForRfq(
+  lines: readonly ProcurementLine[],
+  buildable: boolean,
+): ProcurementAssessment {
   const readiness = assessProcurementReadiness(lines, buildable);
   return readiness.ready
     ? { decision: "READY_FOR_RFQ", missing: [] }
@@ -24,7 +31,13 @@ export function assessSupplierQuote(
   now = new Date(),
 ): ProcurementAssessment {
   const readiness = assessProcurementReadiness(lines, buildable);
-  if (!readiness.ready) return { decision: "BLOCKED", missing: readiness.missing };
+  if (!readiness.ready)
+    return { decision: "BLOCKED", missing: readiness.missing };
   const total = calculateQuoteTotal(quote, now);
-  return { decision: "QUOTE_ACCEPTABLE", missing: [], quoteTotalMinor: total.subtotalMinor, currency: total.currency };
+  return {
+    decision: "QUOTE_ACCEPTABLE",
+    missing: [],
+    quoteTotalMinor: total.subtotalMinor,
+    currency: total.currency,
+  };
 }

@@ -12,14 +12,26 @@ export interface SupplierQuote {
   lines: readonly QuoteLine[];
 }
 
-export interface QuoteTotal { subtotalMinor: bigint; currency: string }
+export interface QuoteTotal {
+  subtotalMinor: bigint;
+  currency: string;
+}
 
-export function calculateQuoteTotal(quote: SupplierQuote, now = new Date()): QuoteTotal {
+export function calculateQuoteTotal(
+  quote: SupplierQuote,
+  now = new Date(),
+): QuoteTotal {
   if (!quote.supplierId.trim()) throw new Error("supplier is required");
-  if (quote.expiresAt.getTime() < now.getTime()) throw new Error("quote expired");
+  if (quote.expiresAt.getTime() < now.getTime())
+    throw new Error("quote expired");
   if (!quote.lines.length) throw new Error("quote has no lines");
   const subtotalMinor = quote.lines.reduce((sum, line) => {
-    if (!line.catalogueItemId.trim() || !Number.isFinite(line.quantity) || line.quantity <= 0 || line.unitPriceMinor < 0n) {
+    if (
+      !line.catalogueItemId.trim() ||
+      !Number.isFinite(line.quantity) ||
+      line.quantity <= 0 ||
+      line.unitPriceMinor < 0n
+    ) {
       throw new Error("invalid quote line");
     }
     return sum + BigInt(line.quantity) * line.unitPriceMinor;

@@ -9,13 +9,18 @@ describe("createWalkthroughManifest", () => {
     ]);
     expect(result.mode).toBe("FREE_ROAM");
     expect(result.includeNookAndCornerCoverage).toBe(true);
-    expect(result.rooms.map((room) => room.roomId)).toEqual(["living", "bedroom"]);
+    expect(result.rooms.map((room) => room.roomId)).toEqual([
+      "living",
+      "bedroom",
+    ]);
   });
 
   it("rejects duplicate room sequences", () => {
-    expect(() => createWalkthroughManifest("project-1", [
-      { roomId: "a", sequence: 0, entryPoint: { x: 0, y: 0, z: 0 } },
-      { roomId: "b", sequence: 0, entryPoint: { x: 1, y: 0, z: 1 } },
-    ])).toThrow("room sequence must be unique");
+    expect(() =>
+      createWalkthroughManifest("project-1", [
+        { roomId: "a", sequence: 0, entryPoint: { x: 0, y: 0, z: 0 } },
+        { roomId: "b", sequence: 0, entryPoint: { x: 1, y: 0, z: 1 } },
+      ]),
+    ).toThrow("room sequence must be unique");
   });
 });

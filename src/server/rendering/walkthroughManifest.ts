@@ -19,8 +19,16 @@ export function createWalkthroughManifest(
   if (!rooms.length) throw new Error("walkthrough requires at least one room");
   const sorted = [...rooms].sort((a, b) => a.sequence - b.sequence);
   const sequences = sorted.map((room) => room.sequence);
-  if (new Set(sequences).size !== sequences.length || sequences.some((value) => !Number.isInteger(value) || value < 0)) {
+  if (
+    new Set(sequences).size !== sequences.length ||
+    sequences.some((value) => !Number.isInteger(value) || value < 0)
+  ) {
     throw new Error("room sequence must be unique non-negative integers");
   }
-  return { designProjectId, mode: "FREE_ROAM", rooms: sorted, includeNookAndCornerCoverage: true };
+  return {
+    designProjectId,
+    mode: "FREE_ROAM",
+    rooms: sorted,
+    includeNookAndCornerCoverage: true,
+  };
 }

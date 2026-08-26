@@ -1,4 +1,7 @@
-import { assessProcurementReadiness, type ProcurementLine } from "./procurementGuard";
+import {
+  assessProcurementReadiness,
+  type ProcurementLine,
+} from "./procurementGuard";
 
 export interface BoqForProcurement {
   status: "DRAFT" | "FINALIZED";
@@ -10,8 +13,11 @@ export interface BoqForProcurement {
   }[];
 }
 
-export function procurementLinesFromBoq(boq: BoqForProcurement): ProcurementLine[] {
-  if (boq.status !== "FINALIZED") throw new Error("BOQ must be finalized before procurement");
+export function procurementLinesFromBoq(
+  boq: BoqForProcurement,
+): ProcurementLine[] {
+  if (boq.status !== "FINALIZED")
+    throw new Error("BOQ must be finalized before procurement");
   return boq.lines.map((line) => ({
     catalogueItemId: line.catalogueItemId ?? "",
     quantity: line.quantity,
@@ -20,6 +26,9 @@ export function procurementLinesFromBoq(boq: BoqForProcurement): ProcurementLine
   }));
 }
 
-export function assessFinalizedBoqForProcurement(boq: BoqForProcurement, buildable: boolean) {
+export function assessFinalizedBoqForProcurement(
+  boq: BoqForProcurement,
+  buildable: boolean,
+) {
   return assessProcurementReadiness(procurementLinesFromBoq(boq), buildable);
 }

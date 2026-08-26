@@ -23,9 +23,18 @@ export interface ClearanceFinding {
 export function checkClearances(input: ClearanceInput): ClearanceFinding[] {
   const findings: ClearanceFinding[] = [];
   for (const rule of input.rules ?? []) {
-    const actual = rule.code.includes("FRONT") ? input.frontClearanceMm : input.sideClearanceMm;
+    const actual = rule.code.includes("FRONT")
+      ? input.frontClearanceMm
+      : input.sideClearanceMm;
     if (actual !== undefined && actual < rule.minimumMm) {
-      findings.push({ code: rule.code, severity: "BLOCKER", itemId: input.itemId, message: rule.message, actualMm: actual, requiredMm: rule.minimumMm });
+      findings.push({
+        code: rule.code,
+        severity: "BLOCKER",
+        itemId: input.itemId,
+        message: rule.message,
+        actualMm: actual,
+        requiredMm: rule.minimumMm,
+      });
     }
   }
   return findings;

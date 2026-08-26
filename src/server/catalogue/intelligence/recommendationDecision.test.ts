@@ -1,8 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { explainRecommendation, rankWithExplanation } from "./recommendationDecision";
+import {
+  explainRecommendation,
+  rankWithExplanation,
+} from "./recommendationDecision";
 import type { MarketObservation } from "./source-domain";
 
-const makeObservation = (id: string, amountMinor: bigint, geography = "Bengaluru"): MarketObservation => ({
+const makeObservation = (
+  id: string,
+  amountMinor: bigint,
+  geography = "Bengaluru",
+): MarketObservation => ({
   observationId: id,
   canonicalProductId: "cp-1",
   source: { sourceId: `s-${id}`, kind: "RETAILER", name: `Retailer ${id}` },
@@ -21,8 +28,18 @@ const makeObservation = (id: string, amountMinor: bigint, geography = "Bengaluru
 
 describe("recommendationDecision", () => {
   it("returns an auditable explanation tied to evidence", () => {
-    const decision = explainRecommendation(makeObservation("a", 80_000n), "BEST_VALUE", 100_000n, "Bengaluru");
-    expect(decision.reasons).toEqual(["available", "lower observed price", "high-confidence evidence", "local source"]);
+    const decision = explainRecommendation(
+      makeObservation("a", 80_000n),
+      "BEST_VALUE",
+      100_000n,
+      "Bengaluru",
+    );
+    expect(decision.reasons).toEqual([
+      "available",
+      "lower observed price",
+      "high-confidence evidence",
+      "local source",
+    ]);
     expect(decision.evidence.evidenceId).toBe("e-a");
     expect(decision.mode).toBe("BEST_VALUE");
   });

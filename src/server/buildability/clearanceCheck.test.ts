@@ -6,12 +6,29 @@ describe("checkClearances", () => {
     const findings = checkClearances({
       itemId: "wardrobe",
       frontClearanceMm: 450,
-      rules: [{ code: "FRONT_CLEARANCE", minimumMm: 600, message: "Door opening clearance is insufficient." }],
+      rules: [
+        {
+          code: "FRONT_CLEARANCE",
+          minimumMm: 600,
+          message: "Door opening clearance is insufficient.",
+        },
+      ],
     });
-    expect(findings[0]).toMatchObject({ code: "FRONT_CLEARANCE", severity: "BLOCKER", actualMm: 450, requiredMm: 600 });
+    expect(findings[0]).toMatchObject({
+      code: "FRONT_CLEARANCE",
+      severity: "BLOCKER",
+      actualMm: 450,
+      requiredMm: 600,
+    });
   });
 
   it("passes when clearance meets the configured rule", () => {
-    expect(checkClearances({ itemId: "wardrobe", frontClearanceMm: 600, rules: [{ code: "FRONT_CLEARANCE", minimumMm: 600, message: "ok" }] })).toEqual([]);
+    expect(
+      checkClearances({
+        itemId: "wardrobe",
+        frontClearanceMm: 600,
+        rules: [{ code: "FRONT_CLEARANCE", minimumMm: 600, message: "ok" }],
+      }),
+    ).toEqual([]);
   });
 });

@@ -1,5 +1,8 @@
 import type { MarketObservation } from "./source-domain";
-import { calculatePotentialSavingMinor, validateConfidenceBps } from "./source-domain";
+import {
+  calculatePotentialSavingMinor,
+  validateConfidenceBps,
+} from "./source-domain";
 
 export interface DealOption {
   observation: MarketObservation;
@@ -14,7 +17,11 @@ export function findDeals(
   minimumSavingBps = 500,
 ): DealOption[] {
   if (baselineMinor < 0n) throw new Error("baseline price cannot be negative");
-  if (!Number.isInteger(minimumSavingBps) || minimumSavingBps < 0 || minimumSavingBps > 10_000) {
+  if (
+    !Number.isInteger(minimumSavingBps) ||
+    minimumSavingBps < 0 ||
+    minimumSavingBps > 10_000
+  ) {
     throw new Error("minimumSavingBps must be between 0 and 10000");
   }
 
@@ -24,10 +31,20 @@ export function findDeals(
       return item.available && item.amountMinor < baselineMinor;
     })
     .map((observation) => {
-      const savingMinor = calculatePotentialSavingMinor(baselineMinor, observation.amountMinor);
-      const savingBps = baselineMinor === 0n ? 0 : Number((savingMinor * 10_000n) / baselineMinor);
+      const savingMinor = calculatePotentialSavingMinor(
+        baselineMinor,
+        observation.amountMinor,
+      );
+      const savingBps =
+        baselineMinor === 0n
+          ? 0
+          : Number((savingMinor * 10_000n) / baselineMinor);
       return { observation, savingMinor, savingBps };
     })
     .filter((deal) => deal.savingBps >= minimumSavingBps)
-    .sort((a, b) => b.savingBps - a.savingBps || Number(a.observation.amountMinor - b.observation.amountMinor));
+    .sort(
+      (a, b) =>
+        b.savingBps - a.savingBps ||
+        Number(a.observation.amountMinor - b.observation.amountMinor),
+    );
 }

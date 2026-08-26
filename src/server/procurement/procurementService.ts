@@ -1,4 +1,10 @@
-export type ProcurementState = "DRAFT" | "RFQ_READY" | "RFQ_SENT" | "QUOTE_RECEIVED" | "APPROVED" | "ORDERED";
+export type ProcurementState =
+  | "DRAFT"
+  | "RFQ_READY"
+  | "RFQ_SENT"
+  | "QUOTE_RECEIVED"
+  | "APPROVED"
+  | "ORDERED";
 
 export interface ProcurementItem {
   catalogueItemId: string;
@@ -25,18 +31,29 @@ const transitions: Record<ProcurementState, ProcurementState[]> = {
 };
 
 export function validateProcurementRequest(request: ProcurementRequest): void {
-  if (!request.id.trim() || !request.projectId.trim() || !request.boqId.trim()) throw new Error("procurement identity is required");
-  if (!request.items.length) throw new Error("procurement requires at least one item");
+  if (!request.id.trim() || !request.projectId.trim() || !request.boqId.trim())
+    throw new Error("procurement identity is required");
+  if (!request.items.length)
+    throw new Error("procurement requires at least one item");
   for (const item of request.items) {
-    if (!item.catalogueItemId.trim()) throw new Error("catalogue item is required");
-    if (!Number.isFinite(item.quantity) || item.quantity <= 0) throw new Error("quantity must be greater than zero");
-    if (item.unitPriceMinor < 0n) throw new Error("unit price cannot be negative");
+    if (!item.catalogueItemId.trim())
+      throw new Error("catalogue item is required");
+    if (!Number.isFinite(item.quantity) || item.quantity <= 0)
+      throw new Error("quantity must be greater than zero");
+    if (item.unitPriceMinor < 0n)
+      throw new Error("unit price cannot be negative");
     if (!item.evidenceId.trim()) throw new Error("price evidence is required");
   }
 }
 
-export function advanceProcurement(request: ProcurementRequest, next: ProcurementState): ProcurementRequest {
+export function advanceProcurement(
+  request: ProcurementRequest,
+  next: ProcurementState,
+): ProcurementRequest {
   validateProcurementRequest(request);
-  if (!transitions[request.state].includes(next)) throw new Error(`invalid procurement transition: ${request.state} -> ${next}`);
+  if (!transitions[request.state].includes(next))
+    throw new Error(
+      `invalid procurement transition: ${request.state} -> ${next}`,
+    );
   return { ...request, state: next };
 }
