@@ -42,6 +42,15 @@ describe("rankMarketOptions", () => {
     expect(result[0]?.savingMinor).toBe(20_000n);
   });
 
+  it("does not let a very cheap, weakly evidenced option win on price alone", () => {
+    const result = rankMarketOptions(100_000n, [
+      observation("cheap-weak", 40_000n, 2_000),
+      observation("moderate-strong", 80_000n, 9_500),
+    ]);
+
+    expect(result[0]?.observation.observationId).toBe("moderate-strong");
+  });
+
   it("rejects invalid confidence", () => {
     expect(() =>
       rankMarketOptions(100n, [observation("bad", 50n, 10_001)]),
