@@ -114,6 +114,17 @@ enum RoomUnderstandingStatus {
   NEEDS_REVIEW
 }
 
+enum BudgetStatus {
+  DRAFT
+  LOCKED
+}
+
+enum BudgetTruth {
+  ESTIMATE
+  VERIFIED
+  RECOMMENDATION
+}
+
 model User {
   id                         String                @id @default(cuid())
   email                      String                @unique
@@ -132,6 +143,9 @@ model User {
   confirmedHomeIntelligences HomeIntelligence[]    @relation("HomeIntelligenceConfirmedBy")
   confirmedRoomUnderstandings RoomUnderstanding[] @relation("RoomUnderstandingConfirmedBy")
   createdHomeDnaVersions     HomeDnaVersion[]      @relation("HomeDnaCreatedBy")
+  ownedBudgetPlans           BudgetPlan[]          @relation("BudgetPlanOwner")
+  lockedBudgetPlans          BudgetPlan[]          @relation("BudgetPlanLockedBy")
+  createdBudgetVersions      BudgetVersion[]       @relation("BudgetVersionCreatedBy")
 }
 
 model Account {
@@ -184,6 +198,7 @@ model Property {
   projects         DesignProject[]
   homeIntelligence HomeIntelligence?
   homeDnaVersions  HomeDnaVersion[]
+  budgetPlan       BudgetPlan?
 
   @@index([ownerId, createdAt])
 }
@@ -211,22 +226,22 @@ model HomeIntelligence {
 }
 
 model HomeDnaVersion {
-  id                     String       @id @default(cuid())
-  propertyId             String
-  version                Int
+  id                      String       @id @default(cuid())
+  propertyId              String
+  version                 Int
   homeIntelligenceVersion Int
-  household              Json
-  lifestyle              Json
-  designPersonality      Json
-  storageNeeds           Json
-  functionalNeeds        Json
-  futureNeeds            Json
-  smartHomePreferences   Json
-  language               String       @default("en-IN")
-  createdByUserId        String
-  createdAt              DateTime     @default(now())
-  property               Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  createdBy              User         @relation("HomeDnaCreatedBy", fields: [createdByUserId], references: [id])
+  household               Json
+  lifestyle               Json
+  designPersonality       Json
+  storageNeeds            Json
+  functionalNeeds         Json
+  futureNeeds             Json
+  smartHomePreferences    Json
+  language                String       @default("en-IN")
+  createdByUserId         String
+  createdAt               DateTime     @default(now())
+  property                Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdBy               User         @relation("HomeDnaCreatedBy", fields: [createdByUserId], references: [id])
 
   @@unique([propertyId, version])
   @@index([propertyId, createdAt])
@@ -258,12 +273,13 @@ model Room {
   property          Property             @relation(fields: [propertyId], references: [id])
   projects          DesignProject[]
   roomUnderstandings RoomUnderstanding[]
+  budgetLines       BudgetLine[]
 
   @@index([propertyId])
 }
 
 model RoomUnderstanding {
-  id                String                   @id @default(cuid())
+  id                String                  @id @default(cuid())
   roomId            String
   version           Int
   roomType          RoomType
@@ -274,12 +290,12 @@ model RoomUnderstanding {
   dimensions        Json?
   constraints       Json?
   requirements      Json?
-  status            RoomUnderstandingStatus  @default(UNCONFIRMED)
+  status            RoomUnderstandingStatus @default(UNCONFIRMED)
   confirmedAt       DateTime?
   confirmedByUserId String?
-  createdAt         DateTime                 @default(now())
-  room              Room                     @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  confirmedBy       User?                    @relation("RoomUnderstandingConfirmedBy", fields: [confirmedByUserId], references: [id])
+  createdAt         DateTime                @default(now())
+  room              Room                    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  confirmedBy       User?                   @relation("RoomUnderstandingConfirmedBy", fields: [confirmedByUserId], references: [id])
 
   @@unique([roomId, version])
   @@index([roomId, createdAt])
@@ -390,6 +406,7 @@ model CatalogueItem {
   updatedAt   DateTime         @updatedAt
   prices      CataloguePrice[]
   boqLines    BoqLine[]
+  budgetLines BudgetLine[]
 }
 
 model CataloguePrice {
@@ -443,6 +460,89 @@ model BoqLine {
   @@index([boqId])
 }
 
+model BudgetPlan {
+  id             String         @id @default(cuid())
+  propertyId     String         @unique
+  ownerId        String
+  currency       String         @default("INR")
+  status         BudgetStatus   @default(DRAFT)
+  lockedVersion  Int?
+  lockedAt       DateTime?
+  lockedByUserId String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  property       Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  owner          User           @relation("BudgetPlanOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  lockedBy       User?          @relation("BudgetPlanLockedBy", fields: [lockedByUserId], references: [id], onDelete: SetNull)
+  versions       BudgetVersion[]
+  impacts        BudgetImpact[]
+
+  @@index([ownerId, updatedAt])
+}
+
+model BudgetVersion {
+  id                     String      @id @default(cuid())
+  planId                 String
+  version                Int
+  homeIntelligenceVersion Int?
+  homeDnaVersion         Int?
+  totalLowMinor          BigInt
+  totalTargetMinor       BigInt
+  totalHighMinor         BigInt
+  contingencyMinor       BigInt      @default(0)
+  truth                  BudgetTruth
+  scope                  Json
+  assumptions            Json
+  sourceReferences       Json        @default("[]")
+  createdByUserId        String
+  idempotencyKey         String
+  createdAt               DateTime    @default(now())
+  plan                   BudgetPlan  @relation(fields: [planId], references: [id], onDelete: Cascade)
+  createdBy               User        @relation("BudgetVersionCreatedBy", fields: [createdByUserId], references: [id])
+  lines                   BudgetLine[]
+
+  @@unique([planId, version])
+  @@unique([planId, idempotencyKey])
+  @@index([planId, createdAt])
+  @@index([createdByUserId])
+}
+
+model BudgetLine {
+  id              String        @id @default(cuid())
+  budgetVersionId String
+  roomId          String?
+  catalogueItemId String?
+  category        String
+  description     String?
+  lowMinor        BigInt
+  targetMinor     BigInt
+  highMinor       BigInt
+  truth           BudgetTruth
+  basis           Json
+  createdAt       DateTime      @default(now())
+  budgetVersion   BudgetVersion @relation(fields: [budgetVersionId], references: [id], onDelete: Cascade)
+  room            Room?         @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  catalogueItem   CatalogueItem? @relation(fields: [catalogueItemId], references: [id])
+
+  @@index([budgetVersionId])
+  @@index([roomId])
+}
+
+model BudgetImpact {
+  id                    String     @id @default(cuid())
+  planId                String
+  baseVersion           Int
+  proposedLowDeltaMinor BigInt
+  proposedTargetDeltaMinor BigInt
+  proposedHighDeltaMinor BigInt
+  reason                String
+  inputs                Json
+  createdAt             DateTime   @default(now())
+  plan                  BudgetPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@index([planId, createdAt])
+}
+
 model Package {
   id           String        @id @default(cuid())
   code         String        @unique
@@ -480,7 +580,7 @@ model Payment {
   purchaseId        String        @unique
   status            PaymentStatus @default(CREATED)
   providerPaymentId String?       @unique
-  amountMinor       BigInt        
+  amountMinor       BigInt
   currency          String
   signature         String?
   rawEventHash      String?
@@ -492,21 +592,21 @@ model Payment {
 }
 
 model Entitlement {
-  id                 String            @id @default(cuid())
+  id                 String             @id @default(cuid())
   userId             String
   purchaseId         String?
   packageId          String
-  status              EntitlementStatus @default(ACTIVE)
-  creditsTotal       Int               
-  creditsReserved    Int               @default(0)
-  creditsConsumed    Int               @default(0)
-  idempotencyKey     String            
+  status             EntitlementStatus  @default(ACTIVE)
+  creditsTotal       Int
+  creditsReserved    Int                @default(0)
+  creditsConsumed    Int                @default(0)
+  idempotencyKey     String
   expiresAt          DateTime?
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-  user               User              @relation(fields: [userId], references: [id])
-  purchase           Purchase?         @relation(fields: [purchaseId], references: [id])
-  package            Package           @relation(fields: [packageId], references: [id])
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  user               User               @relation(fields: [userId], references: [id])
+  purchase           Purchase?          @relation(fields: [purchaseId], references: [id])
+  package            Package            @relation(fields: [packageId], references: [id])
   creditReservations CreditReservation[]
 
   @@unique([userId, idempotencyKey])
