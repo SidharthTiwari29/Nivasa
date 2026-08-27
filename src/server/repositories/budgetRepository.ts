@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 import type {
+  AddBudgetScopeLineInput,
   BudgetImpactInput,
   CreateBudgetInput,
 } from "@/server/validators/budget";
@@ -47,6 +48,39 @@ async function serializable<T>(
 
 const json = (value: unknown) => JSON.stringify(value);
 
+async function recomputeTotals(
+  tx: Prisma.TransactionClient,
+  budgetVersionId: string,
+) {
+  const totals = await tx.$queryRaw<
+    Array<{
+      totalLowMinor: bigint;
+      totalTargetMinor: bigint;
+      totalHighMinor: bigint;
+    }>
+  >(Prisma.sql`
+    SELECT
+      COALESCE(SUM("lowMinor"), 0)::bigint AS "totalLowMinor",
+      COALESCE(SUM("targetMinor"), 0)::bigint AS "totalTargetMinor",
+      COALESCE(SUM("highMinor"), 0)::bigint AS "totalHighMinor"
+    FROM "BudgetLine"
+    WHERE "budgetVersionId" = ${budgetVersionId}
+  `);
+
+  const result = totals[0];
+  if (!result) throw new Error("BUDGET_TOTALS_UNAVAILABLE");
+
+  await tx.$executeRaw(Prisma.sql`
+    UPDATE "BudgetVersion"
+    SET "totalLowMinor" = ${result.totalLowMinor},
+        "totalTargetMinor" = ${result.totalTargetMinor},
+        "totalHighMinor" = ${result.totalHighMinor}
+    WHERE "id" = ${budgetVersionId}
+  `);
+
+  return result;
+}
+
 export const budgetRepository = {
   async findPlan(propertyId: string, ownerId: string) {
     const plans = await prisma.$queryRaw<
@@ -82,7 +116,7 @@ export const budgetRepository = {
 
     const lines = versions.length
       ? await prisma.$queryRaw<Array<Record<string, unknown>>>(Prisma.sql`
-          SELECT "id", "budgetVersionId", "roomId", "category", "description",
+          SELECT "id", "budgetVersionId", "roomId", "catalogueItemId", "category", "description",
                  "lowMinor", "targetMinor", "highMinor", "truth", "basis"
           FROM "BudgetLine"
           WHERE "budgetVersionId" IN (${Prisma.join(versions.map((v) => v.id))})
@@ -180,10 +214,11 @@ export const budgetRepository = {
       for (const line of input.lines) {
         await tx.$executeRaw(Prisma.sql`
           INSERT INTO "BudgetLine" (
-            "id", "budgetVersionId", "roomId", "category", "description",
+            "id", "budgetVersionId", "roomId", "catalogueItemId", "category", "description",
             "lowMinor", "targetMinor", "highMinor", "truth", "basis", "createdAt"
           ) VALUES (
-            ${crypto.randomUUID()}, ${id}, ${line.roomId ?? null}, ${line.category},
+            ${crypto.randomUUID()}, ${id}, ${line.roomId ?? null},
+            ${line.kind === "CATALOGUE" ? line.catalogueItemId : null}, ${line.category},
             ${line.description ?? null}, ${BigInt(line.lowMinor)}, ${BigInt(line.targetMinor)},
             ${BigInt(line.highMinor)}, ${line.truth}, ${json(line.basis)}::jsonb, CURRENT_TIMESTAMP
           )
@@ -198,6 +233,97 @@ export const budgetRepository = {
         totalTargetMinor,
         totalHighMinor,
       };
+    });
+  },
+
+  async addScopeLine(
+    propertyId: string,
+    ownerId: string,
+    version: number,
+    input: AddBudgetScopeLineInput,
+  ) {
+    return serializable(async (tx) => {
+      const plan = await tx.$queryRaw<Array<{ id: string; status: string }>>(
+        Prisma.sql`
+          SELECT "id", "status" FROM "BudgetPlan"
+          WHERE "propertyId" = ${propertyId} AND "ownerId" = ${ownerId}
+          FOR UPDATE
+        `,
+      );
+      if (!plan[0]) return null;
+      if (plan[0].status === "LOCKED") throw new Error("BUDGET_LOCKED");
+
+      const budget = await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`
+        SELECT "id" FROM "BudgetVersion"
+        WHERE "planId" = ${plan[0].id} AND "version" = ${version}
+        FOR UPDATE
+      `);
+      if (!budget[0]) return null;
+
+      if (input.kind === "CATALOGUE") {
+        const item = await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`
+          SELECT "id" FROM "CatalogueItem"
+          WHERE "id" = ${input.catalogueItemId} AND "active" = true
+        `);
+        if (!item[0]) return undefined;
+      }
+
+      const id = crypto.randomUUID();
+      await tx.$executeRaw(Prisma.sql`
+        INSERT INTO "BudgetLine" (
+          "id", "budgetVersionId", "roomId", "catalogueItemId", "category", "description",
+          "lowMinor", "targetMinor", "highMinor", "truth", "basis", "createdAt"
+        ) VALUES (
+          ${id}, ${budget[0].id}, ${input.roomId ?? null},
+          ${input.kind === "CATALOGUE" ? input.catalogueItemId : null}, ${input.category},
+          ${input.description ?? null}, ${BigInt(input.lowMinor)}, ${BigInt(input.targetMinor)},
+          ${BigInt(input.highMinor)}, ${input.truth}, ${json(input.basis)}::jsonb, CURRENT_TIMESTAMP
+        )
+      `);
+
+      const totals = await recomputeTotals(tx, budget[0].id);
+      return { id, budgetVersionId: budget[0].id, ...input, ...totals };
+    });
+  },
+
+  async removeScopeLine(
+    propertyId: string,
+    ownerId: string,
+    version: number,
+    scopeLineId: string,
+  ) {
+    return serializable(async (tx) => {
+      const plan = await tx.$queryRaw<Array<{ id: string; status: string }>>(
+        Prisma.sql`
+          SELECT "id", "status" FROM "BudgetPlan"
+          WHERE "propertyId" = ${propertyId} AND "ownerId" = ${ownerId}
+          FOR UPDATE
+        `,
+      );
+      if (!plan[0]) return null;
+      if (plan[0].status === "LOCKED") throw new Error("BUDGET_LOCKED");
+
+      const budget = await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`
+        SELECT "id" FROM "BudgetVersion"
+        WHERE "planId" = ${plan[0].id} AND "version" = ${version}
+        FOR UPDATE
+      `);
+      if (!budget[0]) return null;
+
+      const line = await tx.$queryRaw<Array<{ id: string }>>(Prisma.sql`
+        SELECT "id" FROM "BudgetLine"
+        WHERE "id" = ${scopeLineId} AND "budgetVersionId" = ${budget[0].id}
+        FOR UPDATE
+      `);
+      if (!line[0]) return undefined;
+
+      await tx.$executeRaw(Prisma.sql`
+        DELETE FROM "BudgetLine"
+        WHERE "id" = ${scopeLineId} AND "budgetVersionId" = ${budget[0].id}
+      `);
+
+      const totals = await recomputeTotals(tx, budget[0].id);
+      return { id: scopeLineId, budgetVersionId: budget[0].id, ...totals };
     });
   },
 
