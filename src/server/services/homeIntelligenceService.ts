@@ -51,13 +51,18 @@ export const homeIntelligenceService = {
     roomId: string,
     ownerId: string,
   ) {
-    const result = await homeIntelligenceRepository.listRoomUnderstandings(
+    const room = await homeIntelligenceRepository.findRoomForOwner(
       propertyId,
       roomId,
       ownerId,
     );
-    if (!result.length) throw new NotFoundError("Room understanding");
-    return result;
+    if (!room) throw new NotFoundError("Room");
+
+    return homeIntelligenceRepository.listRoomUnderstandings(
+      propertyId,
+      roomId,
+      ownerId,
+    );
   },
 
   async createHomeDna(
@@ -75,11 +80,12 @@ export const homeIntelligenceService = {
   },
 
   async listHomeDna(propertyId: string, ownerId: string) {
-    const result = await homeIntelligenceRepository.listHomeDna(
+    const property = await homeIntelligenceRepository.findForOwner(
       propertyId,
       ownerId,
     );
-    if (!result.length) throw new NotFoundError("Home DNA");
-    return result;
+    if (!property) throw new NotFoundError("Property");
+
+    return homeIntelligenceRepository.listHomeDna(propertyId, ownerId);
   },
 };
