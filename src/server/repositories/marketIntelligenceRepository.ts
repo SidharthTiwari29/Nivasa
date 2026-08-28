@@ -77,7 +77,6 @@ function toMarketObservation(row: {
       reference: string | null;
     };
   };
-  observedAt: Date;
 }): MarketObservation {
   return {
     observationId: row.id,
@@ -147,10 +146,23 @@ export const marketIntelligenceRepository = {
     return prisma.productVariant.findUnique({ where: { id: variantId } });
   },
 
+  async findVariants(variantIds: readonly string[]) {
+    if (variantIds.length === 0) return [];
+    return prisma.productVariant.findMany({
+      where: { id: { in: [...new Set(variantIds)] } },
+    });
+  },
+
   async findCanonicalProduct(canonicalProductId: string) {
     return prisma.canonicalProduct.findUnique({
       where: { id: canonicalProductId },
-      select: { id: true, name: true, category: true, brand: true, description: true },
+      select: {
+        id: true,
+        name: true,
+        category: true,
+        brand: true,
+        description: true,
+      },
     });
   },
 };
@@ -162,12 +174,13 @@ export function toProductVariant(row: {
   attributes: unknown;
 }): ProductVariant {
   const attributes =
-    row.attributes && typeof row.attributes === "object" && !Array.isArray(row.attributes)
+    row.attributes &&
+    typeof row.attributes === "object" &&
+    !Array.isArray(row.attributes)
       ? Object.fromEntries(
-          Object.entries(row.attributes as Record<string, unknown>).map(([key, value]) => [
-            key,
-            String(value),
-          ]),
+          Object.entries(row.attributes as Record<string, unknown>).map(
+            ([key, value]) => [key, String(value)],
+          ),
         )
       : {};
 
