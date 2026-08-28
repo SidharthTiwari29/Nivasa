@@ -50,6 +50,13 @@ export const homeIntelligenceRepository = {
     });
   },
 
+  findRoomForOwner(propertyId: string, roomId: string, ownerId: string) {
+    return prisma.room.findFirst({
+      where: { id: roomId, propertyId, property: { ownerId } },
+      select: { id: true },
+    });
+  },
+
   async upsertForOwner(
     propertyId: string,
     ownerId: string,
