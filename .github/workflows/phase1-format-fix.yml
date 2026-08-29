@@ -1,0 +1,31 @@
+name: Phase 1 format fix
+
+on:
+  push:
+    branches:
+      - codex/phase-1-step-2-budget-reality
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write src/server/marketIntelligence/intelligencePipeline.ts
+      - name: Commit formatter output
+        run: |
+          if git diff --quiet -- src/server/marketIntelligence/intelligencePipeline.ts; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/server/marketIntelligence/intelligencePipeline.ts
+          git commit -m "style(phase1): apply prettier formatting"
+          git push
