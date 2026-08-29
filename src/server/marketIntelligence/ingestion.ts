@@ -1,4 +1,10 @@
 import type { MarketCategory, MarketSourceDefinition } from "./sourceRegistry";
+import {
+  classifyPrice,
+  normalizeUnit,
+  type MarketPriceType,
+  type NormalizedUnit,
+} from "./marketSemantics";
 
 export interface RawMarketRecord {
   sourceKey: string;
@@ -14,6 +20,7 @@ export interface RawMarketRecord {
   priceMinor?: bigint;
   mrpMinor?: bigint;
   unit?: string;
+  priceType?: MarketPriceType;
   attributes: Record<string, string | number | boolean>;
 }
 
@@ -32,7 +39,8 @@ export interface CanonicalMarketProduct {
   currency: "INR";
   priceMinor?: bigint;
   mrpMinor?: bigint;
-  unit?: string;
+  unit?: NormalizedUnit;
+  priceType?: MarketPriceType;
   attributes: Record<string, string | number | boolean>;
   sourceUrl: string;
   observedAt: Date;
@@ -91,6 +99,17 @@ export const normalizeMarketRecord = (
   const externalId = record.externalId.trim();
   const sourceObservationKey = `${source.key}:${externalId}`;
   const canonicalFingerprint = buildCanonicalFingerprint(record);
+  const normalizedUnit = record.unit ? normalizeUnit(record.unit) : undefined;
+  const priceType =
+    record.priceMinor !== undefined
+      ? (record.priceType ??
+        classifyPrice({
+          amountMinor: record.priceMinor,
+          mrpMinor: record.mrpMinor,
+          sourceKind: "OFFICIAL",
+          unit: normalizedUnit ?? "unit",
+        }))
+      : undefined;
 
   return {
     sourceKey: source.key,
@@ -107,7 +126,8 @@ export const normalizeMarketRecord = (
     currency: "INR",
     priceMinor: record.priceMinor,
     mrpMinor: record.mrpMinor,
-    unit: record.unit?.trim() || undefined,
+    unit: normalizedUnit,
+    priceType,
     attributes: record.attributes,
     sourceUrl: record.sourceUrl,
     observedAt: record.fetchedAt,
