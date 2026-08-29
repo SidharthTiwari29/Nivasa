@@ -11,10 +11,7 @@ export interface ProductIdentityCandidate {
 }
 
 export type ProductMatchKind =
-  | "EXACT_SOURCE"
-  | "EXACT_SKU"
-  | "EQUIVALENT"
-  | "NO_MATCH";
+  "EXACT_SOURCE" | "EXACT_SKU" | "EQUIVALENT" | "NO_MATCH";
 
 export interface ProductMatch {
   kind: ProductMatchKind;
@@ -23,7 +20,11 @@ export interface ProductMatch {
 }
 
 const normalize = (value: string | undefined): string =>
-  value?.trim().toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ") ?? "";
+  value
+    ?.trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ") ?? "";
 
 const materialIdentityKeys = [
   "material",
@@ -94,7 +95,8 @@ export const matchProducts = (
     sharedKeys.length > 0 &&
     sharedKeys.every((key) => leftAttrs[key] === rightAttrs[key]);
   const sameBrand =
-    normalize(left.brand) !== "" && normalize(left.brand) === normalize(right.brand);
+    normalize(left.brand) !== "" &&
+    normalize(left.brand) === normalize(right.brand);
   const sameName = leftName !== "" && leftName === rightName;
 
   if (sameBrand && sameName && sameAttributes) {

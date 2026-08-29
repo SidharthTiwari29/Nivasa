@@ -1,18 +1,26 @@
 name: Phase 1 format fix
 
 on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
   push:
     branches:
-      - codex/phase-1-completion-hardening
+      - codex/phase1-completion-fix-20260829
 
 permissions:
   contents: write
 
 jobs:
   format:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -28,4 +36,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "style(phase1): apply repository-wide prettier formatting"
-          git push
+          git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}
