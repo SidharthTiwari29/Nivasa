@@ -6,20 +6,12 @@ import {
 import type { MarketSourceDefinition } from "./sourceRegistry";
 
 export type SourceAccessStatus =
-  | "UNKNOWN"
-  | "REVIEW_REQUIRED"
-  | "APPROVED"
-  | "BLOCKED"
-  | "EXPIRED";
+  "UNKNOWN" | "REVIEW_REQUIRED" | "APPROVED" | "BLOCKED" | "EXPIRED";
 
 export interface GovernedMarketSource extends MarketSourceDefinition {
   accessStatus: SourceAccessStatus;
   termsReference: string | null;
-  licensingStatus:
-    | "UNKNOWN"
-    | "REVIEW_REQUIRED"
-    | "APPROVED"
-    | "RESTRICTED";
+  licensingStatus: "UNKNOWN" | "REVIEW_REQUIRED" | "APPROVED" | "RESTRICTED";
   freshnessPolicyHours: number | null;
 }
 

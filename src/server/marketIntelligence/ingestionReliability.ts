@@ -1,10 +1,5 @@
 export type IngestionStatus =
-  | "QUEUED"
-  | "RUNNING"
-  | "SUCCEEDED"
-  | "PARTIAL"
-  | "FAILED"
-  | "CANCELLED";
+  "QUEUED" | "RUNNING" | "SUCCEEDED" | "PARTIAL" | "FAILED" | "CANCELLED";
 
 export interface IngestionCounters {
   recordsSeen: number;
