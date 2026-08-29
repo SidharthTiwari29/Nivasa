@@ -31,7 +31,9 @@ export const runIntelligencePipeline = async (
 
   for (const product of normalized) {
     const sourceId = input.sourceIds.get(product.sourceKey);
-    if (!sourceId) throw new Error(`Missing persisted source ID: ${product.sourceKey}`);
+    if (!sourceId) {
+      throw new Error(`Missing persisted source ID: ${product.sourceKey}`);
+    }
 
     const productId = await marketRepository.upsertCanonicalProduct(product);
     const sourceProductId = await marketRepository.upsertSourceProduct({
@@ -70,9 +72,13 @@ export const runIntelligencePipeline = async (
       compatibilityScoreBps: Number(
         product.attributes.compatibilityScoreBps ?? 5000,
       ),
-      durabilityScoreBps: Number(product.attributes.durabilityScoreBps ?? 5000),
+      durabilityScoreBps: Number(
+        product.attributes.durabilityScoreBps ?? 5000,
+      ),
       designFitScoreBps: Number(product.attributes.designFitScoreBps ?? 5000),
-      evidenceConfidenceBps: Number(product.attributes.evidenceConfidenceBps ?? 5000),
+      evidenceConfidenceBps: Number(
+        product.attributes.evidenceConfidenceBps ?? 5000,
+      ),
       normalPriceMinor: product.mrpMinor,
       tradeOffs: [],
     });
