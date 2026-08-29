@@ -51,7 +51,8 @@ export const substitutionIntelligenceService = {
     const variantIds = rows
       .map((row) => row.variantId)
       .filter((id): id is string => Boolean(id));
-    const variants = await marketIntelligenceRepository.findVariants(variantIds);
+    const variants =
+      await marketIntelligenceRepository.findVariants(variantIds);
     const variantById = new Map(
       variants.map((variant) => [variant.id, toProductVariant(variant)]),
     );
@@ -64,7 +65,8 @@ export const substitutionIntelligenceService = {
       const existing = latestByVariant.get(row.variantId);
       if (
         !existing ||
-        row.evidence.observedAt.getTime() > existing.evidence.observedAt.getTime()
+        row.evidence.observedAt.getTime() >
+          existing.evidence.observedAt.getTime()
       ) {
         latestByVariant.set(row.variantId, row);
       }

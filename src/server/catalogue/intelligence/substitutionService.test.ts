@@ -70,16 +70,12 @@ describe("rankSubstitutions", () => {
     };
 
     expect(
-      rankSubstitutions(
-        selected,
-        observation("selected", "v1", 100_000n),
-        [
-          {
-            variant: unrelated,
-            observation: observation("candidate", "v2", 50_000n),
-          },
-        ],
-      ),
+      rankSubstitutions(selected, observation("selected", "v1", 100_000n), [
+        {
+          variant: unrelated,
+          observation: observation("candidate", "v2", 50_000n),
+        },
+      ]),
     ).toEqual([]);
   });
 });
