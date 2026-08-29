@@ -12,6 +12,7 @@ export type NormalizedUnit =
   | "piece"
   | "set"
   | "box"
+  | "pack"
   | "kg"
   | "g"
   | "l"
@@ -32,6 +33,10 @@ const UNIT_ALIASES: Record<string, NormalizedUnit> = {
   sets: "set",
   box: "box",
   boxes: "box",
+  pack: "pack",
+  packs: "pack",
+  package: "pack",
+  packages: "pack",
   kg: "kg",
   kilogram: "kg",
   kilograms: "kg",
@@ -78,6 +83,7 @@ const SCALE_TO_BASE: Record<NormalizedUnit, number> = {
   piece: 1,
   set: 1,
   box: 1,
+  pack: 1,
   kg: 1,
   g: 0.001,
   l: 1,
@@ -100,7 +106,7 @@ export const normalizeQuantity = (
   if (source === to) return quantity;
 
   const dimensionGroup = (unit: NormalizedUnit): string => {
-    if (["unit", "piece", "set", "box"].includes(unit)) return "count";
+    if (["unit", "piece", "set", "box", "pack"].includes(unit)) return "count";
     if (["kg", "g"].includes(unit)) return "mass";
     if (["l", "ml"].includes(unit)) return "volume";
     if (["sqft", "sqm"].includes(unit)) return "area";
@@ -131,31 +137,10 @@ export const assertPriceSemantics = (price: PriceSemantics): void => {
     throw new Error("Market price cannot be negative");
   }
   if (price.currency !== "INR") {
-    throw new Error("Only INR market prices are supported");
+    throw new Error(`Unsupported market currency: ${price.currency}`);
   }
+  normalizeUnit(price.unit);
   if (price.freshUntil && price.freshUntil < price.observedAt) {
-    throw new Error("Market freshness cannot end before observation");
+    throw new Error("Market freshness cannot expire before observation");
   }
-  if (!price.geography && price.priceType === "DEALER_QUOTE") {
-    throw new Error("Dealer quotes require an explicit geography");
-  }
-};
-
-export const isPriceFresh = (
-  price: Pick<PriceSemantics, "freshUntil">,
-  now = new Date(),
-): boolean => price.freshUntil === null || price.freshUntil >= now;
-
-export const classifyPrice = (input: {
-  amountMinor: bigint;
-  mrpMinor?: bigint;
-  sourceKind: "OFFICIAL" | "DEALER" | "MANUAL" | "INFERRED";
-  unit: string;
-}): PriceSemantics["priceType"] => {
-  if (input.sourceKind === "INFERRED") return "INDICATIVE";
-  if (input.sourceKind === "DEALER") return "DEALER_QUOTE";
-  if (input.mrpMinor !== undefined && input.amountMinor === input.mrpMinor) {
-    return "LIST_MRP";
-  }
-  return "OBSERVED_SELLING";
 };
