@@ -118,7 +118,9 @@ export const buildAlternativeRelationship = (
   right: ProductIdentityCandidate,
 ): ProductMatch => {
   const match = matchProducts(left, right);
-  if (match.kind === "EXACT_SOURCE" || match.kind === "EXACT_SKU") return match;
+  if (match.kind === "EXACT_SOURCE" || match.kind === "EXACT_SKU") {
+    return match;
+  }
   if (match.kind === "EQUIVALENT") {
     return {
       ...match,
