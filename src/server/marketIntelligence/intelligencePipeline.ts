@@ -2,7 +2,10 @@ import type { MarketSourceDefinition } from "./sourceRegistry";
 import type { RawMarketRecord } from "./ingestion";
 import { normalizeMarketRecords } from "./ingestion";
 import { marketRepository } from "./marketRepository";
-import { rankValueCandidates, type RankedValueCandidate } from "./valueEngine";
+import {
+  rankValueCandidates,
+  type RankedValueCandidate,
+} from "./valueEngine";
 
 export interface IntelligencePipelineInput {
   sources: readonly MarketSourceDefinition[];
