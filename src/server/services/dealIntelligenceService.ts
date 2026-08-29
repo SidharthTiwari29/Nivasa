@@ -15,7 +15,8 @@ export const dealIntelligenceService = {
     if (!baseline) throw new NotFoundError("Market observation");
     if (!baseline.variantId) {
       throw new ValidationError({
-        observationId: "A variant/SKU is required for an exact-SKU deal comparison",
+        observationId:
+          "A variant/SKU is required for an exact-SKU deal comparison",
       });
     }
 
