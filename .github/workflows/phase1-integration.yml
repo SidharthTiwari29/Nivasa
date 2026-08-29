@@ -29,7 +29,7 @@ jobs:
           git merge --no-edit -X ours origin/main
           git merge --no-edit -X ours origin/step2-gap-closure-implementation
 
-      - name: Remove invalid catalogue identity relation
+      - name: Reconcile integrated schema
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -40,8 +40,15 @@ jobs:
               path.write_text(text.replace(invalid, ""))
               print("Removed invalid CatalogueItemIdentity relation")
           else:
-              print("No invalid CatalogueItemIdentity relation present")
+              print("CatalogueItemIdentity relation is already absent")
           PY
+
+      - name: Normalize integrated formatting
+        run: |
+          npx prettier --write \
+            src/server/marketIntelligence/ingestionReliability.ts \
+            src/server/marketIntelligence/productMatching.ts \
+            src/server/marketIntelligence/sourceGovernance.ts
 
       - name: Install dependencies
         run: npm ci
@@ -69,6 +76,6 @@ jobs:
 
       - name: Push verified integration
         run: |
-          git add prisma/schema.prisma
-          git diff --cached --quiet || git commit -m "fix(phase1): reconcile catalogue schema during integration"
+          git add -A
+          git diff --cached --quiet || git commit -m "fix(phase1): reconcile integrated source formatting and schema"
           git push origin HEAD:codex/phase1-complete-integration-20260829
