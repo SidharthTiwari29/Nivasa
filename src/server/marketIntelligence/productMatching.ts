@@ -93,7 +93,9 @@ export const matchProducts = (
   const rightName = normalize(right.name);
   const leftAttrs = comparableAttributes(left);
   const rightAttrs = comparableAttributes(right);
-  const sharedKeys = Object.keys(leftAttrs).filter((key) => key in rightAttrs);
+  const sharedKeys = Object.keys(leftAttrs).filter(
+    (key) => key in rightAttrs,
+  );
   const sameAttributes =
     sharedKeys.length > 0 &&
     sharedKeys.every((key) => leftAttrs[key] === rightAttrs[key]);
