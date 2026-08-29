@@ -86,7 +86,9 @@ export const rankValueCandidates = (
       if (dealScoreBps > 0) {
         explanation.push(`Observed saving score ${dealScoreBps}/10000`);
       }
-      explanation.push(...candidate.tradeOffs.map((tradeOff) => `Trade-off: ${tradeOff}`));
+      explanation.push(
+        ...candidate.tradeOffs.map((tradeOff) => `Trade-off: ${tradeOff}`),
+      );
 
       return { ...candidate, valueScoreBps, dealScoreBps, tier, explanation };
     })
