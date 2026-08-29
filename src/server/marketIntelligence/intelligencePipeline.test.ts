@@ -29,7 +29,7 @@ describe("runIntelligencePipeline", () => {
           fetchedAt: new Date("2026-08-25T13:00:00Z"),
           name: "Premium Hinge",
           brand: "Example",
-          category: "HARDWARE",
+          category: "hardware",
           sku: "SKU-1",
           currency: "INR",
           priceMinor: 350000n,
