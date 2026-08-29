@@ -2,10 +2,10 @@ export type DesignRealitySeverity = "INFO" | "WARNING" | "BLOCKING";
 
 export type DesignRealityIssue = {
   code:
-  | "INSUFFICIENT_CIRCULATION"
-  | "DOOR_CLEARANCE_CONFLICT"
-  | "WINDOW_CONFLICT"
-  | "FIXTURE_CLEARANCE_CONFLICT";
+    | "INSUFFICIENT_CIRCULATION"
+    | "DOOR_CLEARANCE_CONFLICT"
+    | "WINDOW_CONFLICT"
+    | "FIXTURE_CLEARANCE_CONFLICT";
   severity: DesignRealitySeverity;
   elementId: string;
   message: string;
@@ -58,8 +58,10 @@ export const runDesignRealityCheck = (
 
   for (const element of elements) {
     if (element.kind !== "FURNITURE" && element.kind !== "FIXTURE") continue;
+
     for (const boundary of elements) {
       if (boundary.id === element.id) continue;
+
       if (boundary.kind === "DOOR" && overlaps(element, boundary)) {
         issues.push({
           code: "DOOR_CLEARANCE_CONFLICT",
@@ -69,6 +71,7 @@ export const runDesignRealityCheck = (
           evidence: "VERIFIED",
         });
       }
+
       if (boundary.kind === "WINDOW" && overlaps(element, boundary)) {
         issues.push({
           code: "WINDOW_CONFLICT",
