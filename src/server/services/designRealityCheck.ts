@@ -45,7 +45,11 @@ export const checkDesignReality = (
   }
 
   for (let index = 0; index < objects.length; index += 1) {
-    for (let otherIndex = index + 1; otherIndex < objects.length; otherIndex += 1) {
+    for (
+      let otherIndex = index + 1;
+      otherIndex < objects.length;
+      otherIndex += 1
+    ) {
       const first = objects[index];
       const second = objects[otherIndex];
       const overlaps =
