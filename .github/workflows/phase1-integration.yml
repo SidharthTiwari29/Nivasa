@@ -29,6 +29,20 @@ jobs:
           git merge --no-edit -X ours origin/main
           git merge --no-edit -X ours origin/step2-gap-closure-implementation
 
+      - name: Remove invalid catalogue identity relation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("prisma/schema.prisma")
+          text = path.read_text()
+          invalid = "  identities  CatalogueItemIdentity[]\n"
+          if invalid in text:
+              path.write_text(text.replace(invalid, ""))
+              print("Removed invalid CatalogueItemIdentity relation")
+          else:
+              print("No invalid CatalogueItemIdentity relation present")
+          PY
+
       - name: Install dependencies
         run: npm ci
 
@@ -54,4 +68,7 @@ jobs:
         run: npm run build
 
       - name: Push verified integration
-        run: git push origin HEAD:codex/phase1-complete-integration-20260829
+        run: |
+          git add prisma/schema.prisma
+          git diff --cached --quiet || git commit -m "fix(phase1): reconcile catalogue schema during integration"
+          git push origin HEAD:codex/phase1-complete-integration-20260829
