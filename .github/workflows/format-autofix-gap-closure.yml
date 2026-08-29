@@ -1,0 +1,32 @@
+name: Format gap closure
+
+on:
+  push:
+    branches:
+      - step2-gap-closure-implementation
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write .
+      - name: Commit formatting fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "Formatting already clean"
+            exit 0
+          fi
+          git add .
+          git commit -m "chore: apply repository formatting"
+          git push

@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, step2-gap-closure-implementation]
   pull_request:
-    branches: [main]
+    branches: [main, step2-gap-closure-implementation]
 
 jobs:
   verify:
