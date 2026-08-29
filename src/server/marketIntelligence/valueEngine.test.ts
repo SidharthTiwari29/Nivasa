@@ -7,7 +7,7 @@ describe("rankValueCandidates", () => {
       [
         {
           id: "cheap",
-          priceMinor: 200000,
+          priceMinor: 200000n,
           qualityScoreBps: 4500,
           compatibilityScoreBps: 9000,
           durabilityScoreBps: 4000,
@@ -17,17 +17,17 @@ describe("rankValueCandidates", () => {
         },
         {
           id: "value",
-          priceMinor: 350000,
+          priceMinor: 350000n,
           qualityScoreBps: 8500,
           compatibilityScoreBps: 9000,
           durabilityScoreBps: 8500,
           designFitScoreBps: 8500,
           evidenceConfidenceBps: 9500,
-          normalPriceMinor: 450000,
+          normalPriceMinor: 450000n,
           tradeOffs: [],
         },
       ],
-      400000,
+      400000n,
     );
 
     expect(ranked[0]?.id).toBe("value");
@@ -38,13 +38,13 @@ describe("rankValueCandidates", () => {
     const ranked = rankValueCandidates([
       {
         id: "claimed-discount",
-        priceMinor: 300000,
+        priceMinor: 300000n,
         qualityScoreBps: 8000,
         compatibilityScoreBps: 8000,
         durabilityScoreBps: 8000,
         designFitScoreBps: 8000,
         evidenceConfidenceBps: 4000,
-        previousPriceMinor: 500000,
+        previousPriceMinor: 500000n,
         tradeOffs: [],
       },
     ]);
