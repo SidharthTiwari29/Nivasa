@@ -3,14 +3,17 @@ import { runDesignRealityCheck } from "./designRealityCheck";
 
 describe("runDesignRealityCheck", () => {
   it("blocks insufficient verified circulation", () => {
-    const issues = runDesignRealityCheck([], [
-      {
-        elementId: "sofa-1",
-        clearanceMinor: 900n,
-        measuredClearanceMinor: 650n,
-        evidence: "VERIFIED",
-      },
-    ]);
+    const issues = runDesignRealityCheck(
+      [],
+      [
+        {
+          elementId: "sofa-1",
+          clearanceMinor: 900n,
+          measuredClearanceMinor: 650n,
+          evidence: "VERIFIED",
+        },
+      ],
+    );
 
     expect(issues).toHaveLength(1);
     expect(issues[0]).toMatchObject({

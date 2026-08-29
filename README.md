@@ -504,30 +504,39 @@ This graph is the bridge between design, real products, materials, prices, build
 The long-term universe is extensible and covers, as applicable:
 
 ### Furniture
+
 Sofas, beds, tables, chairs, dining furniture, side tables, TV units and storage.
 
 ### Modular Interior
+
 Kitchens, wardrobes, vanity units, TV units, study units, storage and utility units.
 
 ### Materials
+
 Plywood, MDF, HDF, particle board, laminates, acrylic, veneer, PU, paint, texture, wallpaper, glass, stone, tiles and countertops.
 
 ### Hardware
+
 Hinges, drawer channels, lift-up systems, handles, baskets, organisers, locks and accessories.
 
 ### Lighting and Electrical
+
 Ceiling lights, spotlights, profile lighting, pendants, wall lights, cabinet lighting, switches, sockets and smart switches.
 
 ### Plumbing and Appliances
+
 Faucets, sinks, sanitaryware, shower systems, refrigerators, ovens, microwaves, dishwashers, hobs, chimneys, washing machines, dryers, ACs and TVs.
 
 ### Soft Furnishing and Decor
+
 Curtains, blinds, rugs, cushions, upholstery, mirrors, artwork, plants and decorative objects.
 
 ### Smart Home
+
 Smart lighting, sensors, locks, automation, security and connected devices.
 
 ### Execution
+
 Carpentry, electrical, plumbing, painting, fabrication, false ceiling, installation, delivery, assembly and site execution.
 
 The taxonomy must remain extensible.
@@ -1163,14 +1172,14 @@ Customers should be able to compare competing design directions using meaningful
 
 Example:
 
-| | Design A | Design B |
-|---|---:|---:|
-| Cost | ₹6.8L | ₹7.2L |
-| Storage | 82% | 94% |
-| Durability | 8.1/10 | 9.0/10 |
-| Maintenance | Low | Medium |
-| Style match | 88% | 94% |
-| Nivasa recommendation | ⭐ | ⭐⭐⭐ |
+|                       | Design A | Design B |
+| --------------------- | -------: | -------: |
+| Cost                  |    ₹6.8L |    ₹7.2L |
+| Storage               |      82% |      94% |
+| Durability            |   8.1/10 |   9.0/10 |
+| Maintenance           |      Low |   Medium |
+| Style match           |      88% |      94% |
+| Nivasa recommendation |       ⭐ |   ⭐⭐⭐ |
 
 Exact metrics and scoring must become evidence-based as the system matures.
 
@@ -1395,12 +1404,12 @@ DNA should make future recommendations more relevant without removing user contr
 
 Nivasa's commercial packaging is a real entitlement system, not merely a pricing page.
 
-| Plan | Price | Core purpose |
-|---|---:|---|
-| **Free** | ₹0 | Discover Nivasa and begin the home journey |
-| **Nivasa Design** | **₹99** | Affordable entry into meaningful design intelligence |
-| **Nivasa Home Book** | **₹2,599** | Deeper project/design/documentation experience |
-| **Nivasa Immersive** | **₹9,999** | Premium future-home immersive experience |
+| Plan                 |      Price | Core purpose                                         |
+| -------------------- | ---------: | ---------------------------------------------------- |
+| **Free**             |         ₹0 | Discover Nivasa and begin the home journey           |
+| **Nivasa Design**    |    **₹99** | Affordable entry into meaningful design intelligence |
+| **Nivasa Home Book** | **₹2,599** | Deeper project/design/documentation experience       |
+| **Nivasa Immersive** | **₹9,999** | Premium future-home immersive experience             |
 
 ### Feature philosophy by plan
 
