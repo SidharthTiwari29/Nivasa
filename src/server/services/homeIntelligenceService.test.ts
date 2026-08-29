@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NotFoundError } from "@/server/errors/AppError";
 
 const repository = {
@@ -15,6 +15,10 @@ vi.mock("@/server/repositories/homeIntelligenceRepository", () => ({
 const { homeIntelligenceService } = await import("./homeIntelligenceService");
 
 describe("homeIntelligenceService collection semantics", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
   it("returns an empty room-understanding collection when the room exists", async () => {
     repository.findRoomForOwner.mockResolvedValue({ id: "room-1" });
     repository.listRoomUnderstandings.mockResolvedValue([]);
