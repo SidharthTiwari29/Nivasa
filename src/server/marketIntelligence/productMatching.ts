@@ -23,7 +23,10 @@ export interface ProductMatch {
 }
 
 const normalize = (value: string | undefined): string =>
-  value?.trim().toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ") ?? "";
+  value?.trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ") ?? "";
 
 const materialIdentityKeys = [
   "material",
