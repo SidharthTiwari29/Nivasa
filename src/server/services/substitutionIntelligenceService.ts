@@ -56,13 +56,9 @@ export const substitutionIntelligenceService = {
       variants.map((variant) => [variant.id, toProductVariant(variant)]),
     );
 
-    // Use the freshest observation for each candidate variant. Historical
-    // observations remain preserved; recommendations should not mix an old
-    // price with a newer price for the same candidate.
-    const latestByVariant = new Map<
-      string,
-      (typeof rows)[number]
-    >();
+    // Historical observations remain preserved; recommendations use only the
+    // freshest observation available for each candidate variant.
+    const latestByVariant = new Map<string, (typeof rows)[number]>();
     for (const row of rows) {
       if (!row.variantId) continue;
       const existing = latestByVariant.get(row.variantId);
@@ -88,18 +84,20 @@ export const substitutionIntelligenceService = {
         } => candidate !== null,
       )
       .filter(
-        ({ observation }) => observation.currency === selectedObservation.currency,
+        ({ observation }) =>
+          observation.currency === selectedObservation.currency,
       );
 
+    const selectedVariant = toProductVariant(selectedRow);
     const ranked = rankSubstitutions(
-      toProductVariant(selectedRow),
+      selectedVariant,
       selectedObservation,
       candidates,
     );
 
     return {
       selected: {
-        variant: toProductVariant(selectedRow),
+        variant: selectedVariant,
         observation: selectedObservation,
       },
       substitutions: ranked.map((option) => ({
@@ -114,7 +112,7 @@ export const substitutionIntelligenceService = {
             ? selectedObservation.amountMinor - option.observation.amountMinor
             : 0n,
         attributeChanges: describeAttributeChanges(
-          toProductVariant(selectedRow).attributes,
+          selectedVariant.attributes,
           option.variant.attributes,
         ),
         tradeoffStatus: "NOT_ESTABLISHED",
