@@ -69,6 +69,19 @@ export const createBudgetSchema = z.object({
 });
 export type CreateBudgetInput = z.infer<typeof createBudgetSchema>;
 
+export const addBudgetScopeLineSchema = budgetLineSchema;
+export type AddBudgetScopeLineInput = z.infer<typeof addBudgetScopeLineSchema>;
+
+export const budgetVersionParamsSchema = z.object({
+  version: z.coerce.number().int().positive(),
+});
+export type BudgetVersionParams = z.infer<typeof budgetVersionParamsSchema>;
+
+export const budgetScopeLineParamsSchema = budgetVersionParamsSchema.extend({
+  scopeLineId: z.string().cuid(),
+});
+export type BudgetScopeLineParams = z.infer<typeof budgetScopeLineParamsSchema>;
+
 export const budgetImpactSchema = z.object({
   baseVersion: z.number().int().positive(),
   proposedLowDeltaMinor: signedMinorMoney,
