@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import { rankSubstitutions } from "./substitutionService";
 import type { MarketObservation, ProductVariant } from "./source-domain";
 
-const variant = (id: string, attributes: Record<string, string>): ProductVariant => ({
+const variant = (
+  id: string,
+  attributes: Record<string, string>,
+): ProductVariant => ({
   id,
   canonicalProductId: "product-1",
   attributes,
@@ -47,7 +50,12 @@ describe("rankSubstitutions", () => {
     const result = rankSubstitutions(
       selected,
       observation("selected", "v1", 100_000n),
-      [{ variant: candidate, observation: observation("candidate", "v2", 80_000n) }],
+      [
+        {
+          variant: candidate,
+          observation: observation("candidate", "v2", 80_000n),
+        },
+      ],
     );
 
     expect(result[0]?.reasons).toContain("LOWER_COST");
@@ -65,7 +73,12 @@ describe("rankSubstitutions", () => {
       rankSubstitutions(
         selected,
         observation("selected", "v1", 100_000n),
-        [{ variant: unrelated, observation: observation("candidate", "v2", 50_000n) }],
+        [
+          {
+            variant: unrelated,
+            observation: observation("candidate", "v2", 50_000n),
+          },
+        ],
       ),
     ).toEqual([]);
   });
