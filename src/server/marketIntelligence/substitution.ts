@@ -35,7 +35,7 @@ export const rankSubstitutions = (
   candidates: readonly SubstitutionCandidate[],
 ): RankedSubstitution[] =>
   candidates
-    .map((candidate) => {
+    .map((candidate): RankedSubstitution => {
       const priceDeltaMinor =
         currentPriceMinor !== null && candidate.priceMinor !== null
           ? candidate.priceMinor - currentPriceMinor
@@ -46,7 +46,7 @@ export const rankSubstitutions = (
         Math.min(10000, 5000 + candidate.evidenceIds.length * 1000),
       );
       const quality = impactScore(candidate.qualityImpact);
-      const decision =
+      const decision: RankedSubstitution["decision"] =
         priceDeltaMinor === null
           ? "UNKNOWN"
           : quality > 0 && priceDeltaMinor > 0n
