@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - codex/phase-1-completion-hardening
+      - codex/phase1-completion-fix-20260829
 
 permissions:
   contents: write
