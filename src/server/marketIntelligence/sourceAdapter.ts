@@ -24,7 +24,9 @@ export class SourceAdapterRegistry {
 
   register(adapter: MarketSourceAdapter): void {
     if (this.adapters.has(adapter.sourceKey)) {
-      throw new Error(`Market source adapter already registered: ${adapter.sourceKey}`);
+      throw new Error(
+        `Market source adapter already registered: ${adapter.sourceKey}`,
+      );
     }
     this.adapters.set(adapter.sourceKey, adapter);
   }
