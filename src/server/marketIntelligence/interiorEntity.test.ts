@@ -7,9 +7,19 @@ import {
 describe("interior entity identity", () => {
   it("creates the same canonical key for normalized equivalent names", () => {
     expect(
-      buildInteriorCanonicalKey("PRODUCT", "Brand A", "Soft Close Hinge", "110°"),
+      buildInteriorCanonicalKey(
+        "PRODUCT",
+        "Brand A",
+        "Soft Close Hinge",
+        "110°",
+      ),
     ).toBe(
-      buildInteriorCanonicalKey("PRODUCT", "brand a", "soft-close hinge", "110"),
+      buildInteriorCanonicalKey(
+        "PRODUCT",
+        "brand a",
+        "soft-close hinge",
+        "110",
+      ),
     );
   });
 
