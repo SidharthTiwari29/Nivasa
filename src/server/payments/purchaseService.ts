@@ -16,7 +16,11 @@ export async function createPurchase(userId: string, packageCode: string) {
       currency: pkg.currency,
       provider: "razorpay",
       payment: {
-        create: { amountMinor: pkg.priceMinor, currency: pkg.currency },
+        create: {
+          id: `payment_${crypto.randomUUID()}`,
+          amountMinor: pkg.priceMinor,
+          currency: pkg.currency,
+        },
       },
     },
   });
