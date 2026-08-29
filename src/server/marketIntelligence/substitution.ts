@@ -40,8 +40,7 @@ export const rankSubstitutions = (
         currentPriceMinor !== null && candidate.priceMinor !== null
           ? candidate.priceMinor - currentPriceMinor
           : null;
-      const savingMinor =
-        priceDeltaMinor === null ? null : -priceDeltaMinor;
+      const savingMinor = priceDeltaMinor === null ? null : -priceDeltaMinor;
       const confidenceBps = Math.max(
         0,
         Math.min(10000, 5000 + candidate.evidenceIds.length * 1000),
