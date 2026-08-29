@@ -55,13 +55,16 @@ export const summarizeIngestionRun = (input: {
     ),
   ];
   let status: IngestionStatus = "SUCCEEDED";
-  if (input.cancelled) status = "CANCELLED";
-  else if (
+  if (input.cancelled) {
+    status = "CANCELLED";
+  } else if (
     input.counters.recordsRejected > 0 &&
     input.counters.recordsAccepted > 0
-  )
+  ) {
     status = "PARTIAL";
-  else if (input.counters.recordsRejected > 0) status = "FAILED";
+  } else if (input.counters.recordsRejected > 0) {
+    status = "FAILED";
+  }
 
   return { ...input.counters, status, errors };
 };
