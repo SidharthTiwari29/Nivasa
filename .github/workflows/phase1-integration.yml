@@ -23,35 +23,38 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Integrate latest main
+      - name: Integrate latest main and Step 2
         run: |
           git fetch origin main step2-gap-closure-implementation
           git merge --no-edit -X ours origin/main
           git merge --no-edit -X ours origin/step2-gap-closure-implementation
 
-      - name: Reconcile integrated schema
+      - name: Reconcile Step 2 Prisma schema
+        run: |
+          git checkout origin/step2-gap-closure-implementation -- prisma/schema.prisma
+
+      - name: Fix required Payment id for Prisma 7
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          path = Path("prisma/schema.prisma")
+          path = Path("src/server/payments/purchaseService.ts")
           text = path.read_text()
-          invalid = "  identities  CatalogueItemIdentity[]\n"
-          if invalid in text:
-              path.write_text(text.replace(invalid, ""))
-              print("Removed invalid CatalogueItemIdentity relation")
-          else:
-              print("CatalogueItemIdentity relation is already absent")
+          text = text.replace(
+              'import { prisma } from "@/server/db/prisma";',
+              'import { randomUUID } from "node:crypto";\nimport { prisma } from "@/server/db/prisma";',
+          )
+          text = text.replace(
+              'create: { amountMinor: pkg.priceMinor, currency: pkg.currency },',
+              'create: {\n          id: randomUUID(),\n          amountMinor: pkg.priceMinor,\n          currency: pkg.currency,\n        },',
+          )
+          path.write_text(text)
           PY
-
-      - name: Normalize integrated formatting
-        run: |
-          npx prettier --write \
-            src/server/marketIntelligence/ingestionReliability.ts \
-            src/server/marketIntelligence/productMatching.ts \
-            src/server/marketIntelligence/sourceGovernance.ts
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Normalize formatting
+        run: npx prettier --write .
 
       - name: Prisma generate
         run: npx prisma generate
@@ -77,5 +80,5 @@ jobs:
       - name: Push verified integration
         run: |
           git add -A
-          git diff --cached --quiet || git commit -m "fix(phase1): reconcile integrated source formatting and schema"
+          git diff --cached --quiet || git commit -m "fix(phase1): reconcile integrated schema and typecheck blockers"
           git push origin HEAD:codex/phase1-complete-integration-20260829
