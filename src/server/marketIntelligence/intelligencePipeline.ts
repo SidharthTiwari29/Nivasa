@@ -2,10 +2,7 @@ import type { MarketSourceDefinition } from "./sourceRegistry";
 import type { RawMarketRecord } from "./ingestion";
 import { normalizeMarketRecords } from "./ingestion";
 import { marketRepository } from "./marketRepository";
-import {
-  rankValueCandidates,
-  type RankedValueCandidate,
-} from "./valueEngine";
+import { rankValueCandidates, type RankedValueCandidate } from "./valueEngine";
 
 export interface IntelligencePipelineInput {
   sources: readonly MarketSourceDefinition[];
@@ -75,9 +72,7 @@ export const runIntelligencePipeline = async (
       compatibilityScoreBps: Number(
         product.attributes.compatibilityScoreBps ?? 5000,
       ),
-      durabilityScoreBps: Number(
-        product.attributes.durabilityScoreBps ?? 5000,
-      ),
+      durabilityScoreBps: Number(product.attributes.durabilityScoreBps ?? 5000),
       designFitScoreBps: Number(product.attributes.designFitScoreBps ?? 5000),
       evidenceConfidenceBps: Number(
         product.attributes.evidenceConfidenceBps ?? 5000,
