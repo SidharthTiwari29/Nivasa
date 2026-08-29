@@ -47,6 +47,7 @@ const UNIT_ALIASES: Record<string, NormalizedUnit> = {
   sqft: "sqft",
   "sq ft": "sqft",
   "sq.ft": "sqft",
+  "sq. ft": "sqft",
   "square foot": "sqft",
   "square feet": "sqft",
   sqm: "sqm",
@@ -126,8 +127,12 @@ export interface PriceSemantics {
 }
 
 export const assertPriceSemantics = (price: PriceSemantics): void => {
-  if (price.amountMinor < 0n) throw new Error("Market price cannot be negative");
-  if (price.currency !== "INR") throw new Error("Only INR market prices are supported");
+  if (price.amountMinor < 0n) {
+    throw new Error("Market price cannot be negative");
+  }
+  if (price.currency !== "INR") {
+    throw new Error("Only INR market prices are supported");
+  }
   if (price.freshUntil && price.freshUntil < price.observedAt) {
     throw new Error("Market freshness cannot end before observation");
   }
@@ -136,8 +141,10 @@ export const assertPriceSemantics = (price: PriceSemantics): void => {
   }
 };
 
-export const isPriceFresh = (price: Pick<PriceSemantics, "freshUntil">, now = new Date()): boolean =>
-  price.freshUntil === null || price.freshUntil >= now;
+export const isPriceFresh = (
+  price: Pick<PriceSemantics, "freshUntil">,
+  now = new Date(),
+): boolean => price.freshUntil === null || price.freshUntil >= now;
 
 export const classifyPrice = (input: {
   amountMinor: bigint;
