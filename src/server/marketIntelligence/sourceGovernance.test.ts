@@ -10,7 +10,9 @@ describe("source governance", () => {
     const audit = auditSourceGovernance();
     expect(audit.total).toBeGreaterThan(0);
     expect(audit.unreviewed.length).toBe(audit.total);
-    expect(GOVERNED_SOURCE_CATALOG.every((source) => !source.ingestionEligible)).toBe(true);
+    expect(
+      GOVERNED_SOURCE_CATALOG.every((source) => !source.ingestionEligible),
+    ).toBe(true);
   });
 
   it("blocks an unreviewed source from acquisition", () => {
