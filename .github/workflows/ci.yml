@@ -4,7 +4,9 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   verify:
@@ -26,13 +28,13 @@ jobs:
           --health-interval=10s --health-timeout=5s --health-retries=5
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx prettier --write docs/PHASE-1-STEP-1-ACCEPTANCE.md src/server/repositories/homeIntelligenceRepository.ts
-      - run: git diff -- docs/PHASE-1-STEP-1-ACCEPTANCE.md src/server/repositories/homeIntelligenceRepository.ts
       - run: npm run format:check
       - run: npm run lint
       - run: npx prisma generate
