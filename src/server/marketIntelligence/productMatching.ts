@@ -41,7 +41,10 @@ const comparableAttributes = (
 ): Record<string, string> =>
   Object.fromEntries(
     materialIdentityKeys
-      .map((key) => [key, normalize(String(candidate.attributes[key] ?? ""))] as const)
+      .map(
+        (key) =>
+          [key, normalize(String(candidate.attributes[key] ?? ""))] as const,
+      )
       .filter(([, value]) => value.length > 0),
   );
 
@@ -49,7 +52,10 @@ export const matchProducts = (
   left: ProductIdentityCandidate,
   right: ProductIdentityCandidate,
 ): ProductMatch => {
-  if (left.sourceKey === right.sourceKey && left.externalId === right.externalId) {
+  if (
+    left.sourceKey === right.sourceKey &&
+    left.externalId === right.externalId
+  ) {
     return {
       kind: "EXACT_SOURCE",
       confidenceBps: 10000,
