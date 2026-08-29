@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { dealIntelligenceService } from "@/server/services/dealIntelligenceService";
 import { withErrorHandling } from "@/server/errors/handler";
+import { requireAuth } from "@/server/middleware/requireAuth";
 import { parseOrThrow } from "@/server/validators/parse";
 import {
   dealQuerySchema,
   observationIdParamSchema,
 } from "@/server/validators/marketIntelligence";
-import { requireAuth } from "@/server/middleware/requireAuth";
 
 type RouteParams = { params: Promise<{ observationId: string }> };
 
