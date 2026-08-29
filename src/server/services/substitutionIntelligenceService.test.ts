@@ -43,12 +43,14 @@ describe("substitutionIntelligenceService", () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-    vi.spyOn(marketIntelligenceRepository, "findObservationForOwnerlessDecision").mockResolvedValue(
-      observation("selected", "variant-1", 100_000n),
-    );
-    vi.spyOn(marketIntelligenceRepository, "listVariantSubstitutions").mockResolvedValue([
-      observation("candidate", "variant-2", 80_000n),
-    ]);
+    vi.spyOn(
+      marketIntelligenceRepository,
+      "findObservationForOwnerlessDecision",
+    ).mockResolvedValue(observation("selected", "variant-1", 100_000n));
+    vi.spyOn(
+      marketIntelligenceRepository,
+      "listVariantSubstitutions",
+    ).mockResolvedValue([observation("candidate", "variant-2", 80_000n)]);
     vi.spyOn(marketIntelligenceRepository, "findVariants").mockResolvedValue([
       {
         id: "variant-2",
