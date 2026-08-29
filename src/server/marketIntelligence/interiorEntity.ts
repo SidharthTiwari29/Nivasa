@@ -76,7 +76,8 @@ export const buildInteriorCanonicalKey = (
       .trim()
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, " ")
-      .replace(/\s+/g, " ");
+      .replace(/\s+/g, " ")
+      .trim();
 
   return [
     type,
