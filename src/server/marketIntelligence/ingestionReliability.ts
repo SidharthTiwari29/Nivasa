@@ -59,9 +59,11 @@ export const summarizeIngestionRun = (input: {
   else if (
     input.counters.recordsRejected > 0 &&
     input.counters.recordsAccepted > 0
-  )
+  ) {
     status = "PARTIAL";
-  else if (input.counters.recordsRejected > 0) status = "FAILED";
+  } else if (input.counters.recordsRejected > 0) {
+    status = "FAILED";
+  }
 
   return { ...input.counters, status, errors };
 };
