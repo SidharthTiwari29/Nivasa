@@ -15,7 +15,11 @@ export type SourceAccessStatus =
 export interface GovernedMarketSource extends MarketSourceDefinition {
   accessStatus: SourceAccessStatus;
   termsReference: string | null;
-  licensingStatus: "UNKNOWN" | "REVIEW_REQUIRED" | "APPROVED" | "RESTRICTED";
+  licensingStatus:
+    | "UNKNOWN"
+    | "REVIEW_REQUIRED"
+    | "APPROVED"
+    | "RESTRICTED";
   freshnessPolicyHours: number | null;
 }
 
