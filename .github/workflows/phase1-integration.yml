@@ -75,6 +75,9 @@ jobs:
         run: npx prisma validate
 
       - name: Build
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/nivasa
+          AUTH_SECRET: phase1-ci-build-secret-012345678901234567890123
         run: npm run build
 
       - name: Push verified integration
