@@ -16,7 +16,7 @@ const { homeIntelligenceService } = await import("./homeIntelligenceService");
 
 describe("homeIntelligenceService collection semantics", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   it("returns an empty room-understanding collection when the room exists", async () => {
