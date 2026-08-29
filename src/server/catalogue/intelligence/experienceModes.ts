@@ -42,7 +42,7 @@ const MODES: Record<ExperienceMode, ExperienceWeights> = {
     priceBps: 1_000,
     confidenceBps: 2_000,
     availabilityBps: 1_500,
-    localBps: 5_000,
+    localBps: 4_500,
     qualityBps: 1_000,
   },
 };
