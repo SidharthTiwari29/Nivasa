@@ -211,22 +211,22 @@ model HomeIntelligence {
 }
 
 model HomeDnaVersion {
-  id                     String       @id @default(cuid())
-  propertyId             String
-  version                Int
+  id                      String   @id @default(cuid())
+  propertyId              String
+  version                 Int
   homeIntelligenceVersion Int
-  household              Json
-  lifestyle              Json
-  designPersonality      Json
-  storageNeeds           Json
-  functionalNeeds        Json
-  futureNeeds            Json
-  smartHomePreferences   Json
-  language               String       @default("en-IN")
-  createdByUserId        String
-  createdAt              DateTime     @default(now())
-  property               Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  createdBy              User         @relation("HomeDnaCreatedBy", fields: [createdByUserId], references: [id])
+  household               Json
+  lifestyle               Json
+  designPersonality       Json
+  storageNeeds            Json
+  functionalNeeds         Json
+  futureNeeds             Json
+  smartHomePreferences    Json
+  language                String   @default("en-IN")
+  createdByUserId         String
+  createdAt               DateTime @default(now())
+  property                Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdBy               User     @relation("HomeDnaCreatedBy", fields: [createdByUserId], references: [id])
 
   @@unique([propertyId, version])
   @@index([propertyId, createdAt])
@@ -263,7 +263,7 @@ model Room {
 }
 
 model RoomUnderstanding {
-  id                String                   @id @default(cuid())
+  id                String                  @id @default(cuid())
   roomId            String
   version           Int
   roomType          RoomType
@@ -274,12 +274,12 @@ model RoomUnderstanding {
   dimensions        Json?
   constraints       Json?
   requirements      Json?
-  status            RoomUnderstandingStatus  @default(UNCONFIRMED)
+  status            RoomUnderstandingStatus @default(UNCONFIRMED)
   confirmedAt       DateTime?
   confirmedByUserId String?
-  createdAt         DateTime                 @default(now())
-  room              Room                     @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  confirmedBy       User?                    @relation("RoomUnderstandingConfirmedBy", fields: [confirmedByUserId], references: [id])
+  createdAt         DateTime                @default(now())
+  room              Room                    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  confirmedBy       User?                   @relation("RoomUnderstandingConfirmedBy", fields: [confirmedByUserId], references: [id])
 
   @@unique([roomId, version])
   @@index([roomId, createdAt])
@@ -476,11 +476,11 @@ model Purchase {
 }
 
 model Payment {
-  id                String        @id @default(cuid())
+  id                String        @id
   purchaseId        String        @unique
   status            PaymentStatus @default(CREATED)
   providerPaymentId String?       @unique
-  amountMinor       BigInt        
+  amountMinor       BigInt
   currency          String
   signature         String?
   rawEventHash      String?
@@ -496,11 +496,11 @@ model Entitlement {
   userId             String
   purchaseId         String?
   packageId          String
-  status              EntitlementStatus @default(ACTIVE)
-  creditsTotal       Int               
+  status             EntitlementStatus @default(ACTIVE)
+  creditsTotal       Int
   creditsReserved    Int               @default(0)
   creditsConsumed    Int               @default(0)
-  idempotencyKey     String            
+  idempotencyKey     String
   expiresAt          DateTime?
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
@@ -539,4 +539,157 @@ model AuditLog {
 
   @@index([entity, entityId, createdAt])
   @@index([userId, createdAt])
+}
+
+// Phase 1 Step 2 market-intelligence persistence parity.
+// Foreign-key columns intentionally remain scalar here; the existing additive
+// migrations own database constraints while services own authorization and
+// cross-entity invariants.
+model MarketSource {
+  id                   String   @id
+  canonicalName        String   @unique
+  domain               String?
+  sourceType           String
+  geographies          Json?
+  categories           Json
+  acquisitionMethod    String
+  accessStatus         String
+  termsReference       String?
+  licensingStatus      String?
+  ingestionEligible    Boolean  @default(false)
+  freshnessPolicyHours Int?
+  provenancePolicy     String?
+  active               Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime
+
+  @@index([sourceType, active])
+  @@index([ingestionEligible, active])
+}
+
+model MarketVendor {
+  id              String   @id
+  sourceId        String
+  canonicalName   String
+  brandName       String?
+  sellerType      String
+  sellerReference String?
+  geography       Json?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+
+  @@unique([sourceId, canonicalName])
+  @@index([canonicalName])
+}
+
+model MarketProduct {
+  id            String   @id
+  canonicalKey  String   @unique
+  brand         String?
+  title         String
+  description   String?
+  category      String
+  subcategory   String?
+  dimensions    Json?
+  material      String?
+  finish        String?
+  configuration Json?
+  customization Json?
+  media         Json?
+  attributes    Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+
+  @@index([category, subcategory])
+  @@index([brand])
+}
+
+model MarketSourceProduct {
+  id               String   @id
+  sourceId         String
+  vendorId         String?
+  productId        String
+  sourceProductId  String
+  sku              String?
+  url              String?
+  titleObserved    String?
+  variant          Json?
+  sourceAttributes Json?
+  firstSeenAt      DateTime @default(now())
+  lastSeenAt       DateTime @default(now())
+  active           Boolean  @default(true)
+
+  @@unique([sourceId, sourceProductId])
+  @@index([productId])
+  @@index([vendorId])
+}
+
+model MarketPriceObservation {
+  id                    String   @id
+  sourceProductId       String
+  observedAt            DateTime
+  amountMinor           BigInt
+  listAmountMinor       BigInt?
+  currency              String   @default("INR")
+  unit                  String
+  taxIncluded           Boolean?
+  shippingIncluded      Boolean?
+  installationIncluded  Boolean?
+  location              Json?
+  availability          String?
+  evidence              Json
+  retrievalMethod       String
+  confidenceBps         Int?
+  freshUntil            DateTime?
+  createdAt             DateTime @default(now())
+
+  @@index([sourceProductId, observedAt])
+  @@index([observedAt])
+  @@index([amountMinor])
+  @@index([freshUntil])
+}
+
+model MarketProductRelationship {
+  id               String   @id
+  fromProductId    String
+  toProductId      String
+  relationshipType String
+  confidenceBps    Int?
+  evidence         Json?
+  createdAt        DateTime @default(now())
+
+  @@unique([fromProductId, toProductId, relationshipType])
+  @@index([fromProductId, relationshipType])
+}
+
+model MarketIngestionRun {
+  id              String   @id
+  sourceId        String
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+  status          String
+  idempotencyKey  String
+  recordsSeen     Int      @default(0)
+  recordsAccepted Int      @default(0)
+  recordsRejected Int      @default(0)
+  errorSummary    Json?
+
+  @@unique([sourceId, idempotencyKey])
+  @@index([sourceId, startedAt])
+}
+
+model MarketEvidence {
+  id              String   @id
+  sourceId        String
+  sourceProductId String?
+  retrievedAt     DateTime
+  retrievalMethod String
+  locator         String?
+  contentHash     String?
+  excerpt         String?
+  metadata        Json?
+
+  @@index([sourceId, retrievedAt])
+  @@index([sourceProductId])
 }
