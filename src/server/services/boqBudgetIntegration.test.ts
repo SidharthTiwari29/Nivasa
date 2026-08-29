@@ -14,14 +14,14 @@ describe("calculateBoqBudgetDelta", () => {
   });
 
   it("reports savings as a negative delta", () => {
-    expect(calculateBoqBudgetDelta(1_100_000n, 1_250_000n).targetDeltaMinor).toBe(
-      -150_000n,
-    );
+    expect(
+      calculateBoqBudgetDelta(1_100_000n, 1_250_000n).targetDeltaMinor,
+    ).toBe(-150_000n);
   });
 
   it("refuses unsafe conversion to the JSON-facing number contract", () => {
-    expect(() => toSafeSignedMinorMoney(BigInt(Number.MAX_SAFE_INTEGER) + 1n)).toThrow(
-      "MINOR_MONEY_OUT_OF_SAFE_NUMBER_RANGE",
-    );
+    expect(() =>
+      toSafeSignedMinorMoney(BigInt(Number.MAX_SAFE_INTEGER) + 1n),
+    ).toThrow("MINOR_MONEY_OUT_OF_SAFE_NUMBER_RANGE");
   });
 });
