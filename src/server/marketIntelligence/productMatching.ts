@@ -10,7 +10,11 @@ export interface ProductIdentityCandidate {
   attributes: Record<string, string | number | boolean>;
 }
 
-export type ProductMatchKind = "EXACT_SOURCE" | "EXACT_SKU" | "EQUIVALENT" | "NO_MATCH";
+export type ProductMatchKind =
+  | "EXACT_SOURCE"
+  | "EXACT_SKU"
+  | "EQUIVALENT"
+  | "NO_MATCH";
 
 export interface ProductMatch {
   kind: ProductMatchKind;
@@ -46,7 +50,11 @@ export const matchProducts = (
   right: ProductIdentityCandidate,
 ): ProductMatch => {
   if (left.sourceKey === right.sourceKey && left.externalId === right.externalId) {
-    return { kind: "EXACT_SOURCE", confidenceBps: 10000, reason: "Same source identity" };
+    return {
+      kind: "EXACT_SOURCE",
+      confidenceBps: 10000,
+      reason: "Same source identity",
+    };
   }
 
   if (
@@ -56,11 +64,19 @@ export const matchProducts = (
     normalize(left.brand) === normalize(right.brand) &&
     left.category === right.category
   ) {
-    return { kind: "EXACT_SKU", confidenceBps: 9950, reason: "Same SKU, brand and category" };
+    return {
+      kind: "EXACT_SKU",
+      confidenceBps: 9950,
+      reason: "Same SKU, brand and category",
+    };
   }
 
   if (left.category !== right.category) {
-    return { kind: "NO_MATCH", confidenceBps: 0, reason: "Different canonical categories" };
+    return {
+      kind: "NO_MATCH",
+      confidenceBps: 0,
+      reason: "Different canonical categories",
+    };
   }
 
   const leftName = normalize(left.name);
@@ -68,8 +84,11 @@ export const matchProducts = (
   const leftAttrs = comparableAttributes(left);
   const rightAttrs = comparableAttributes(right);
   const sharedKeys = Object.keys(leftAttrs).filter((key) => key in rightAttrs);
-  const sameAttributes = sharedKeys.length > 0 && sharedKeys.every((key) => leftAttrs[key] === rightAttrs[key]);
-  const sameBrand = normalize(left.brand) !== "" && normalize(left.brand) === normalize(right.brand);
+  const sameAttributes =
+    sharedKeys.length > 0 &&
+    sharedKeys.every((key) => leftAttrs[key] === rightAttrs[key]);
+  const sameBrand =
+    normalize(left.brand) !== "" && normalize(left.brand) === normalize(right.brand);
   const sameName = leftName !== "" && leftName === rightName;
 
   if (sameBrand && sameName && sameAttributes) {
@@ -80,7 +99,11 @@ export const matchProducts = (
     };
   }
 
-  return { kind: "NO_MATCH", confidenceBps: 0, reason: "Insufficient evidence for equivalence" };
+  return {
+    kind: "NO_MATCH",
+    confidenceBps: 0,
+    reason: "Insufficient evidence for equivalence",
+  };
 };
 
 export const buildAlternativeRelationship = (
