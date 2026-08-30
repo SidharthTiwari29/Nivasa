@@ -104,16 +104,14 @@ export const normalizeQuantity = (
   }
   const source = normalizeUnit(from);
   if (source === to) return quantity;
-
-  const dimensionGroup = (unit: NormalizedUnit): string => {
+  const group = (unit: NormalizedUnit) => {
     if (["unit", "piece", "set", "box", "pack"].includes(unit)) return "count";
     if (["kg", "g"].includes(unit)) return "mass";
     if (["l", "ml"].includes(unit)) return "volume";
     if (["sqft", "sqm"].includes(unit)) return "area";
     return "length";
   };
-
-  if (dimensionGroup(source) !== dimensionGroup(to)) {
+  if (group(source) !== group(to)) {
     throw new Error(`Incompatible market units: ${source} -> ${to}`);
   }
   return (quantity * SCALE_TO_BASE[source]) / SCALE_TO_BASE[to];
@@ -133,9 +131,8 @@ export interface PriceSemantics {
 }
 
 export const assertPriceSemantics = (price: PriceSemantics): void => {
-  if (price.amountMinor < 0n) {
+  if (price.amountMinor < 0n)
     throw new Error("Market price cannot be negative");
-  }
   if (price.currency !== "INR") {
     throw new Error("Only INR market prices are supported");
   }
