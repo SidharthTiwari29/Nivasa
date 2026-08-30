@@ -18,6 +18,8 @@ export type SavingsOpportunity = {
   confidenceBps: number;
 };
 
+type SavingsDecision = SavingsOpportunity["decision"];
+
 const qualityWeight: Record<ProjectChoice["evidenceQuality"], number> = {
   HIGH: 3000,
   MEDIUM: 2000,
@@ -36,13 +38,13 @@ export const optimizeProjectSavings = (
   choices: ProjectChoice[],
 ): SavingsOpportunity[] =>
   choices
-    .map((choice) => {
+    .map((choice): SavingsOpportunity => {
       const savingMinor =
         choice.currentPriceMinor === null ||
         choice.alternativePriceMinor === null
           ? null
           : choice.currentPriceMinor - choice.alternativePriceMinor;
-      const decision =
+      const decision: SavingsDecision =
         savingMinor === null
           ? "UNKNOWN"
           : savingMinor > 0
