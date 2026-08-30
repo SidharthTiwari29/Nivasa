@@ -132,6 +132,9 @@ model User {
   confirmedHomeIntelligences HomeIntelligence[]    @relation("HomeIntelligenceConfirmedBy")
   confirmedRoomUnderstandings RoomUnderstanding[] @relation("RoomUnderstandingConfirmedBy")
   createdHomeDnaVersions     HomeDnaVersion[]      @relation("HomeDnaCreatedBy")
+  createdCatalogueSubstitutions CatalogueSubstitution[]
+  procurementRequests        ProcurementRequest[]
+  notifications              Notification[]
 }
 
 model Account {
@@ -184,6 +187,7 @@ model Property {
   projects         DesignProject[]
   homeIntelligence HomeIntelligence?
   homeDnaVersions  HomeDnaVersion[]
+  procurementRequests ProcurementRequest[]
 
   @@index([ownerId, createdAt])
 }
@@ -390,6 +394,8 @@ model CatalogueItem {
   updatedAt   DateTime         @updatedAt
   prices      CataloguePrice[]
   boqLines    BoqLine[]
+  substitutionsFrom CatalogueSubstitution[] @relation("SubstitutionFrom")
+  substitutionsTo   CatalogueSubstitution[] @relation("SubstitutionTo")
 }
 
 model CataloguePrice {
@@ -692,4 +698,162 @@ model MarketEvidence {
 
   @@index([sourceId, retrievedAt])
   @@index([sourceProductId])
+}
+
+enum SubstitutionImpact {
+  IMPROVED
+  SAME
+  REDUCED
+  UNKNOWN
+}
+
+// Curated, evidence-backed alternative relationship (README §8 ALTERNATIVE_TO).
+// Complementary to marketIntelligence/substitution.ts's pure ranking logic:
+// that module ranks candidate offers by computed score, this model records
+// a human (admin/designer) explicitly stating a trade-off, since quality/
+// maintenance/durability impact cannot be honestly auto-derived without a
+// material-attribute schema this system doesn't have.
+model CatalogueSubstitution {
+  id                  String             @id @default(cuid())
+  fromCatalogueItemId String
+  toCatalogueItemId   String
+  qualityImpact       SubstitutionImpact @default(UNKNOWN)
+  maintenanceImpact   SubstitutionImpact @default(UNKNOWN)
+  appearanceImpact    SubstitutionImpact @default(UNKNOWN)
+  durabilityImpact    SubstitutionImpact @default(UNKNOWN)
+  explanation         String             @db.Text
+  createdByUserId     String
+  createdAt           DateTime           @default(now())
+  fromCatalogueItem   CatalogueItem      @relation("SubstitutionFrom", fields: [fromCatalogueItemId], references: [id])
+  toCatalogueItem     CatalogueItem      @relation("SubstitutionTo", fields: [toCatalogueItemId], references: [id])
+  createdBy           User               @relation(fields: [createdByUserId], references: [id])
+
+  @@unique([fromCatalogueItemId, toCatalogueItemId])
+  @@index([fromCatalogueItemId])
+}
+
+enum ProcurementRequestStatus {
+  DRAFT
+  RFQ_SENT
+  QUOTES_RECEIVED
+  ORDERED
+  CANCELLED
+}
+
+enum QuoteStatus {
+  SUBMITTED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum OrderStatus {
+  PLACED
+  CONFIRMED
+  DISPATCHED
+  DELIVERED
+  CANCELLED
+}
+
+enum ExecutionStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  SNAGGED
+  RESOLVED
+}
+
+// README §26: RFQ -> Quote Comparison -> Order -> Delivery. Only begins
+// from a locked BudgetPlan (the real budget system, in BudgetPlan/
+// BudgetVersion - queried via raw SQL by procurementRepository since those
+// tables have no typed Prisma model here). lockedBudgetPlanId/
+// lockedBudgetVersion are plain scalar references rather than a Prisma
+// relation for that reason - the FK integrity for that side is enforced
+// by the service layer's lock check, not the database schema.
+model ProcurementRequest {
+  id                  String                   @id @default(cuid())
+  propertyId          String
+  ownerId             String
+  lockedBudgetPlanId  String
+  lockedBudgetVersion Int
+  status              ProcurementRequestStatus @default(DRAFT)
+  idempotencyKey      String
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  property            Property                 @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  owner               User                     @relation(fields: [ownerId], references: [id])
+  quotes              Quote[]
+  orders              Order[]
+
+  @@unique([propertyId, idempotencyKey])
+}
+
+model Quote {
+  id                   String             @id @default(cuid())
+  procurementRequestId String
+  supplierName         String
+  totalAmountMinor     BigInt
+  currency             String             @default("INR")
+  status               QuoteStatus        @default(SUBMITTED)
+  validUntil           DateTime?
+  notes                String?            @db.Text
+  createdAt            DateTime           @default(now())
+  procurementRequest   ProcurementRequest @relation(fields: [procurementRequestId], references: [id], onDelete: Cascade)
+  order                Order?
+
+  @@index([procurementRequestId, status])
+}
+
+model Order {
+  id                   String             @id @default(cuid())
+  procurementRequestId String
+  quoteId              String             @unique
+  status               OrderStatus        @default(PLACED)
+  totalAmountMinor     BigInt
+  currency             String             @default("INR")
+  placedAt             DateTime           @default(now())
+  deliveredAt          DateTime?
+  procurementRequest   ProcurementRequest @relation(fields: [procurementRequestId], references: [id])
+  quote                Quote              @relation(fields: [quoteId], references: [id])
+  executions           ExecutionRecord[]
+
+  @@index([procurementRequestId])
+}
+
+model ExecutionRecord {
+  id            String          @id @default(cuid())
+  orderId       String
+  status        ExecutionStatus @default(SCHEDULED)
+  scheduledDate DateTime?
+  completedAt   DateTime?
+  snagNotes     String?         @db.Text
+  resolvedAt    DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  order         Order           @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+}
+
+enum NotificationType {
+  ORDER_STATUS_CHANGED
+  QUOTE_RECEIVED
+  EXECUTION_STATUS_CHANGED
+  BUDGET_LOCKED
+  GENERAL
+}
+
+model Notification {
+  id                String           @id @default(cuid())
+  userId            String
+  type              NotificationType
+  title             String
+  message           String           @db.Text
+  relatedEntityType String?
+  relatedEntityId   String?
+  read              Boolean          @default(false)
+  createdAt         DateTime         @default(now())
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read, createdAt])
 }

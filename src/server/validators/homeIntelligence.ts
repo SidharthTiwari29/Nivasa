@@ -36,7 +36,39 @@ export const roomUnderstandingSchema = z.object({
   confidenceBps: z.number().int().min(0).max(10000).nullable().optional(),
   source: z.enum(["AI", "USER", "IMPORTED"]),
   geometry: z.record(z.string(), z.unknown()).optional(),
-  dimensions: z.record(z.string(), z.unknown()).optional(),
+  // Structured, not a bare record: this is the specific field flagged
+  // during Phase 1's design-quality-check work as unstructured Json with
+  // no guaranteed shape - checkRoomAreaAdequacy and related checks had to
+  // avoid reading from it for exactly that reason. Giving it a real schema
+  // means "the data doesn't have the shape code assumes" becomes a caught
+  // validation error at write time, not a silent wrong answer or a crash
+  // deep in some future feature that assumes a key exists.
+  dimensions: z
+    .object({
+      lengthFt: z.number().positive().max(500).optional(),
+      widthFt: z.number().positive().max(500).optional(),
+      heightFt: z.number().positive().max(50).optional(),
+      areaSqFt: z.number().positive().max(50_000).optional(),
+      doors: z
+        .array(
+          z.object({
+            widthFt: z.number().positive().max(20),
+            wall: z.enum(["NORTH", "SOUTH", "EAST", "WEST"]).optional(),
+          }),
+        )
+        .max(20)
+        .optional(),
+      windows: z
+        .array(
+          z.object({
+            widthFt: z.number().positive().max(20),
+            wall: z.enum(["NORTH", "SOUTH", "EAST", "WEST"]).optional(),
+          }),
+        )
+        .max(20)
+        .optional(),
+    })
+    .optional(),
   constraints: z.record(z.string(), z.unknown()).optional(),
   requirements: z.record(z.string(), z.unknown()).optional(),
   status: z.enum(["UNCONFIRMED", "CONFIRMED", "CORRECTED", "NEEDS_REVIEW"]),
