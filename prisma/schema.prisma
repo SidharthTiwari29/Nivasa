@@ -366,6 +366,13 @@ model AIJob {
   idempotencyKey String
   provider       String?
   providerJobId  String?
+  // Links this job to the exact CreditReservation it consumed, so the
+  // worker's terminal-state transition can confirm (on success) or
+  // release (on failure) the SAME reservation - never a different one,
+  // never none at all. Without this link, credit consumption and job
+  // outcome would be two independent systems with no way to keep them
+  // honest with each other.
+  creditReservationId String?
   input          Json?
   output         Json?
   errorCode      String?
