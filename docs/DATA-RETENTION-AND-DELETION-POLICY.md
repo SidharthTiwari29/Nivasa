@@ -1,6 +1,10 @@
 # Data Retention and Deletion Policy
 
-> **Status: engineering draft, not legal advice.** This document describes what the system's code actually does today. It must be reviewed and approved by qualified legal counsel — particularly for compliance with India's Digital Personal Data Protection Act, 2023 (DPDP Act) and any tax/audit record-retention rules applicable to Nivasa's business — before being published to users or relied upon as a compliance statement.
+> **Status: engineering draft, not legal advice.** This document describes what the system's code actually does today. It must be reviewed and approved by qualified legal counsel before being published to users or relied upon as a compliance statement.
+
+## 0. Applicable law — confirmed facts
+
+Nivasa's obligations here are governed by India's **Digital Personal Data Protection Act, 2023 (DPDP Act)** — enacted 11 August 2023, with Rules notified 13 November 2025 and **full enforcement effective 13 May 2027**. Penalties for non-compliance can reach ₹250 crore per violation. The Act requires: consent-first data collection, clear notice at the point of collection, honoring data principal erasure requests, breach notification, and demonstrable retention/deletion practices. This document, and the account-deletion behavior it describes, is designed to satisfy the erasure-request obligation specifically — but full DPDP compliance (consent-manager registration if applicable, breach-notification procedure, privacy-notice wording) requires counsel engagement before the 2027 deadline, not just this document.
 
 ## 1. Principle
 

@@ -47,7 +47,7 @@ See the Security Policy for details on how your data is protected, including aut
 
 ## 8. Children's privacy
 
-[TO BE DEFINED WITH COUNSEL: does the Service permit users under 18? If not, state that explicitly and describe age-verification measures, if any exist. None currently exist in the codebase.]
+Under the DPDP Act, processing a child's (under-18) personal data requires **verifiable parental or lawful guardian consent** before collection. Nivasa's current sign-up flow has no age-verification or parental-consent mechanism. **Until one is built, the Service should explicitly restrict sign-up to users 18 and older** — this needs both a Terms clause and an actual technical/process control, not just a policy statement.
 
 ## 9. Changes to this policy
 
