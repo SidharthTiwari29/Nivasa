@@ -17,7 +17,9 @@ export type Notification = {
   read: boolean;
 };
 
-export function acknowledgeNotification(notification: Notification): Notification {
+export function acknowledgeNotification(
+  notification: Notification,
+): Notification {
   return { ...notification, read: true };
 }
 
