@@ -16,6 +16,8 @@ vi.mock("@/server/db/prisma", () => ({
       update: vi.fn(),
       findUniqueOrThrow: vi.fn(),
     },
+    designProject: { findUnique: vi.fn() },
+    roomUnderstanding: { findFirst: vi.fn() },
   },
 }));
 
@@ -28,6 +30,8 @@ vi.mock("@/server/services/entitlements", () => ({
 }));
 
 const jobs = vi.mocked(prisma.aIJob);
+const designProjects = vi.mocked(prisma.designProject);
+const roomUnderstandings = vi.mocked(prisma.roomUnderstanding);
 const enqueue = vi.mocked(enqueueJob);
 const reserve = vi.mocked(reserveCredits);
 const confirm = vi.mocked(confirmReservation);
@@ -114,6 +118,73 @@ describe("jobService", () => {
       ).rejects.toThrow("queue down");
 
       expect(release).toHaveBeenCalledWith("reservation-1");
+    });
+
+    it("does not compute or pass a priority for a non-visualization job type", async () => {
+      jobs.findUnique.mockResolvedValue(null);
+      reserve.mockResolvedValue({ id: "reservation-1" } as never);
+      jobs.create.mockResolvedValue({ id: "job-1" } as never);
+      enqueue.mockResolvedValue({ id: "queue-job-1" } as never);
+
+      await createAndEnqueueJob({
+        projectId: "project-1",
+        ownerId: "user-1",
+        type: "DESIGN_GENERATION",
+        idempotencyKey: "key-1",
+        payload: {},
+      });
+
+      expect(designProjects.findUnique).not.toHaveBeenCalled();
+      expect(enqueue).toHaveBeenCalledWith(
+        expect.objectContaining({ priority: undefined }),
+      );
+    });
+
+    it("prioritizes a WALKTHROUGH job for a confirmed, high-confidence room above a job with no room at all", async () => {
+      jobs.findUnique.mockResolvedValue(null);
+      reserve.mockResolvedValue({ id: "reservation-1" } as never);
+      jobs.create.mockResolvedValue({ id: "job-1" } as never);
+      enqueue.mockResolvedValue({ id: "queue-job-1" } as never);
+      designProjects.findUnique.mockResolvedValue({
+        roomId: "room-1",
+      } as never);
+      roomUnderstandings.findFirst.mockResolvedValue({
+        status: "CONFIRMED",
+        confidenceBps: 9000,
+      } as never);
+
+      await createAndEnqueueJob({
+        projectId: "project-1",
+        ownerId: "user-1",
+        type: "WALKTHROUGH",
+        idempotencyKey: "key-1",
+        payload: {},
+      });
+
+      expect(enqueue).toHaveBeenCalledWith(
+        expect.objectContaining({ priority: 1 }),
+      );
+    });
+
+    it("gives the lowest priority to a visualization job whose project has no linked room", async () => {
+      jobs.findUnique.mockResolvedValue(null);
+      reserve.mockResolvedValue({ id: "reservation-1" } as never);
+      jobs.create.mockResolvedValue({ id: "job-1" } as never);
+      enqueue.mockResolvedValue({ id: "queue-job-1" } as never);
+      designProjects.findUnique.mockResolvedValue({ roomId: null } as never);
+
+      await createAndEnqueueJob({
+        projectId: "project-1",
+        ownerId: "user-1",
+        type: "PANORAMA",
+        idempotencyKey: "key-1",
+        payload: {},
+      });
+
+      expect(roomUnderstandings.findFirst).not.toHaveBeenCalled();
+      expect(enqueue).toHaveBeenCalledWith(
+        expect.objectContaining({ priority: 10 }),
+      );
     });
   });
 

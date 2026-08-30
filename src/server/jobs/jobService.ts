@@ -1,6 +1,7 @@
 import type { Prisma, JobType } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 import { enqueueJob } from "./queue";
+import { computeVisualizationPriority } from "./visualizationPriority";
 import {
   reserveCredits,
   confirmReservation,
@@ -8,6 +9,39 @@ import {
 } from "@/server/services/entitlements";
 
 const terminal = new Set(["SUCCEEDED", "FAILED", "CANCELLED"]);
+
+// Only these job types actually produce visual output where render order
+// is user-visible - a ROOM_UNDERSTANDING or DESIGN_GENERATION job has no
+// equivalent "which one should the user see first" concern, so priority
+// computation is skipped for those rather than applying a meaningless
+// number.
+const VISUALIZATION_JOB_TYPES: readonly JobType[] = [
+  "THREE_D_SCENE",
+  "PANORAMA",
+  "WALKTHROUGH",
+  "VIDEO",
+];
+
+async function resolveJobPriority(
+  type: JobType,
+  projectId: string,
+): Promise<number | undefined> {
+  if (!VISUALIZATION_JOB_TYPES.includes(type)) return undefined;
+
+  const project = await prisma.designProject.findUnique({
+    where: { id: projectId },
+    select: { roomId: true },
+  });
+  if (!project?.roomId) return computeVisualizationPriority(null);
+
+  const latestUnderstanding = await prisma.roomUnderstanding.findFirst({
+    where: { roomId: project.roomId },
+    orderBy: { version: "desc" },
+    select: { status: true, confidenceBps: true },
+  });
+
+  return computeVisualizationPriority(latestUnderstanding);
+}
 
 // One AI credit per job, flat rate - the actual per-job-type cost model
 // (a walkthrough is presumably more expensive to generate than a single
@@ -56,10 +90,12 @@ export async function createAndEnqueueJob(input: {
     },
   });
   try {
+    const priority = await resolveJobPriority(input.type, input.projectId);
     await enqueueJob({
       jobId: job.id,
       type: input.type,
       payload: input.payload,
+      priority,
     });
     return job;
   } catch (error) {
