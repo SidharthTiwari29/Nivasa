@@ -12,13 +12,17 @@ describe("render pipeline integration contract", () => {
 
   it("propagates provider submission failures", async () => {
     const provider = {
-      submit: async () => { throw new Error("PROVIDER_UNAVAILABLE"); },
+      submit: async () => {
+        throw new Error("PROVIDER_UNAVAILABLE");
+      },
       getStatus: async () => "FAILED" as const,
     };
-    await expect(submitRender(provider, {
-      jobId: "job-1",
-      type: "DESIGN_IMAGE",
-      input: {},
-    })).rejects.toThrow("PROVIDER_UNAVAILABLE");
+    await expect(
+      submitRender(provider, {
+        jobId: "job-1",
+        type: "DESIGN_IMAGE",
+        input: {},
+      }),
+    ).rejects.toThrow("PROVIDER_UNAVAILABLE");
   });
 });

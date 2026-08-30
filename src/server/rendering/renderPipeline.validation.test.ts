@@ -7,7 +7,8 @@ describe("render pipeline validation", () => {
       submit: async () => ({ provider: "test", providerJobId: "" }),
       getStatus: async () => "QUEUED" as const,
     };
-    await expect(submitRender(provider, { jobId: "job", type: "VIDEO", input: {} }))
-      .rejects.toThrow("PROVIDER_JOB_ID_REQUIRED");
+    await expect(
+      submitRender(provider, { jobId: "job", type: "VIDEO", input: {} }),
+    ).rejects.toThrow("PROVIDER_JOB_ID_REQUIRED");
   });
 });

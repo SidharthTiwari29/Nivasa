@@ -13,33 +13,45 @@ const provider: RenderingProvider = {
 
 describe("renderPipeline", () => {
   it("submits a valid render request and validates provider output", async () => {
-    await expect(submitRender(provider, {
-      jobId: "job-1",
-      type: "DESIGN_IMAGE",
-      input: { designVersionId: "design-1" },
-    })).resolves.toEqual({ provider: "test", providerJobId: "provider-1" });
+    await expect(
+      submitRender(provider, {
+        jobId: "job-1",
+        type: "DESIGN_IMAGE",
+        input: { designVersionId: "design-1" },
+      }),
+    ).resolves.toEqual({ provider: "test", providerJobId: "provider-1" });
   });
 
   it("rejects missing job ids and provider ids", async () => {
-    await expect(submitRender(provider, {
-      jobId: " ",
-      type: "DESIGN_IMAGE",
-      input: {},
-    })).rejects.toThrow("RENDER_JOB_ID_REQUIRED");
+    await expect(
+      submitRender(provider, {
+        jobId: " ",
+        type: "DESIGN_IMAGE",
+        input: {},
+      }),
+    ).rejects.toThrow("RENDER_JOB_ID_REQUIRED");
 
     const badProvider: RenderingProvider = {
-      async submit() { return { provider: "", providerJobId: "x" }; },
-      async getStatus() { return "QUEUED"; },
+      async submit() {
+        return { provider: "", providerJobId: "x" };
+      },
+      async getStatus() {
+        return "QUEUED";
+      },
     };
-    await expect(submitRender(badProvider, {
-      jobId: "job-1",
-      type: "DESIGN_IMAGE",
-      input: {},
-    })).rejects.toThrow("RENDER_PROVIDER_REQUIRED");
+    await expect(
+      submitRender(badProvider, {
+        jobId: "job-1",
+        type: "DESIGN_IMAGE",
+        input: {},
+      }),
+    ).rejects.toThrow("RENDER_PROVIDER_REQUIRED");
   });
 
   it("polls provider status with an explicit provider job id", async () => {
     await expect(pollRender(provider, "provider-1")).resolves.toBe("SUCCEEDED");
-    await expect(pollRender(provider, " ")).rejects.toThrow("PROVIDER_JOB_ID_REQUIRED");
+    await expect(pollRender(provider, " ")).rejects.toThrow(
+      "PROVIDER_JOB_ID_REQUIRED",
+    );
   });
 });
