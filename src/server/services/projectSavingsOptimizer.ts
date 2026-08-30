@@ -32,35 +32,46 @@ const impactWeight: Record<ProjectChoice["qualityImpact"], number> = {
   UNKNOWN: 0,
 };
 
-export const optimizeProjectSavings = (choices: ProjectChoice[]): SavingsOpportunity[] => choices
-  .map((choice) => {
-    const savingMinor = choice.currentPriceMinor === null || choice.alternativePriceMinor === null
-      ? null
-      : choice.currentPriceMinor - choice.alternativePriceMinor;
-    const decision = savingMinor === null
-      ? "UNKNOWN"
-      : savingMinor > 0
-        ? "SAVE"
-        : savingMinor === 0
-          ? "NEUTRAL"
-          : "COST";
-    const confidenceBps = Math.min(
-      10000,
-      5000 + qualityWeight[choice.evidenceQuality] / 2 + impactWeight[choice.qualityImpact] / 2,
-    );
+export const optimizeProjectSavings = (
+  choices: ProjectChoice[],
+): SavingsOpportunity[] =>
+  choices
+    .map((choice) => {
+      const savingMinor =
+        choice.currentPriceMinor === null ||
+        choice.alternativePriceMinor === null
+          ? null
+          : choice.currentPriceMinor - choice.alternativePriceMinor;
+      const decision =
+        savingMinor === null
+          ? "UNKNOWN"
+          : savingMinor > 0
+            ? "SAVE"
+            : savingMinor === 0
+              ? "NEUTRAL"
+              : "COST";
+      const confidenceBps = Math.min(
+        10000,
+        5000 +
+          qualityWeight[choice.evidenceQuality] / 2 +
+          impactWeight[choice.qualityImpact] / 2,
+      );
 
-    return {
-      id: choice.id,
-      description: choice.description.trim(),
-      savingMinor,
-      decision,
-      qualityImpact: choice.qualityImpact,
-      maintenanceImpact: choice.maintenanceImpact,
-      confidenceBps,
-    };
-  })
-  .sort((left, right) => {
-    if (left.decision === "UNKNOWN") return 1;
-    if (right.decision === "UNKNOWN") return -1;
-    return (right.savingMinor ?? Number.NEGATIVE_INFINITY) - (left.savingMinor ?? Number.NEGATIVE_INFINITY);
-  });
+      return {
+        id: choice.id,
+        description: choice.description.trim(),
+        savingMinor,
+        decision,
+        qualityImpact: choice.qualityImpact,
+        maintenanceImpact: choice.maintenanceImpact,
+        confidenceBps,
+      };
+    })
+    .sort((left, right) => {
+      if (left.decision === "UNKNOWN") return 1;
+      if (right.decision === "UNKNOWN") return -1;
+      return (
+        (right.savingMinor ?? Number.NEGATIVE_INFINITY) -
+        (left.savingMinor ?? Number.NEGATIVE_INFINITY)
+      );
+    });

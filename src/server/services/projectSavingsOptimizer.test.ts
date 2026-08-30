@@ -30,15 +30,17 @@ describe("optimizeProjectSavings", () => {
   });
 
   it("does not invent savings when either price is unknown", () => {
-    const result = optimizeProjectSavings([{
-      id: "unknown",
-      description: "Custom item",
-      currentPriceMinor: 100000,
-      alternativePriceMinor: null,
-      qualityImpact: "UNKNOWN",
-      maintenanceImpact: "UNKNOWN",
-      evidenceQuality: "UNKNOWN",
-    }]);
+    const result = optimizeProjectSavings([
+      {
+        id: "unknown",
+        description: "Custom item",
+        currentPriceMinor: 100000,
+        alternativePriceMinor: null,
+        qualityImpact: "UNKNOWN",
+        maintenanceImpact: "UNKNOWN",
+        evidenceQuality: "UNKNOWN",
+      },
+    ]);
 
     expect(result[0].decision).toBe("UNKNOWN");
     expect(result[0].savingMinor).toBeNull();
@@ -46,8 +48,24 @@ describe("optimizeProjectSavings", () => {
 
   it("identifies neutral and cost outcomes", () => {
     const result = optimizeProjectSavings([
-      { id: "neutral", description: "Same price", currentPriceMinor: 100, alternativePriceMinor: 100, qualityImpact: "SIMILAR", maintenanceImpact: "SIMILAR", evidenceQuality: "HIGH" },
-      { id: "cost", description: "Upgrade", currentPriceMinor: 100, alternativePriceMinor: 125, qualityImpact: "BETTER", maintenanceImpact: "BETTER", evidenceQuality: "HIGH" },
+      {
+        id: "neutral",
+        description: "Same price",
+        currentPriceMinor: 100,
+        alternativePriceMinor: 100,
+        qualityImpact: "SIMILAR",
+        maintenanceImpact: "SIMILAR",
+        evidenceQuality: "HIGH",
+      },
+      {
+        id: "cost",
+        description: "Upgrade",
+        currentPriceMinor: 100,
+        alternativePriceMinor: 125,
+        qualityImpact: "BETTER",
+        maintenanceImpact: "BETTER",
+        evidenceQuality: "HIGH",
+      },
     ]);
 
     expect(result.find(({ id }) => id === "neutral")?.decision).toBe("NEUTRAL");
