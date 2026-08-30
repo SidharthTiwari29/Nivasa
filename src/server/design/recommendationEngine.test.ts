@@ -37,7 +37,7 @@ describe("recommendDesignCandidates", () => {
       expect.arrayContaining([
         "matches required category",
         "matches room",
-        "matches preferred style: Minimal",
+        "matches preferred style: minimal",
         "within budget constraint",
       ]),
     );
