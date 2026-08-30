@@ -2,11 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   canTransitionExecution,
   transitionExecution,
+  type ExecutionState,
 } from "./executionWorkflow";
 
 describe("execution workflow", () => {
   it("moves through the controlled execution lifecycle", () => {
-    let state = "DRAFT" as const;
+    let state: ExecutionState = "DRAFT";
     state = transitionExecution(state, "SUBMIT");
     expect(state).toBe("READY");
     state = transitionExecution(state, "SUBMIT");
