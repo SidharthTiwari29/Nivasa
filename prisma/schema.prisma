@@ -137,6 +137,7 @@ model User {
   notifications              Notification[]
   ownReferralCode            ReferralCode?
   referralAsReferred         Referral?
+  createdSupplierInvites     SupplierInvite[]
 }
 
 model Account {
@@ -793,6 +794,7 @@ model ProcurementRequest {
   owner               User                     @relation(fields: [ownerId], references: [id])
   quotes              Quote[]
   orders              Order[]
+  supplierInvites     SupplierInvite[]
 
   @@unique([propertyId, idempotencyKey])
 }
@@ -932,4 +934,27 @@ model Referral {
   referredUser     User           @relation(fields: [referredUserId], references: [id])
 
   @@index([referralCodeId, status])
+}
+
+// Suppliers are external parties who never need a full platform account -
+// building a parallel user/auth system for occasional quote submission
+// would be significant unnecessary scope. Instead, access is a signed,
+// single-use, time-limited token: the raw token is emailed/shared once
+// and never stored - only its SHA-256 hash is persisted, so a database
+// read can never leak a usable credential (the same principle as never
+// storing a plaintext password).
+model SupplierInvite {
+  id                    String              @id @default(cuid())
+  procurementRequestId  String
+  supplierName          String
+  tokenHash             String              @unique
+  expiresAt             DateTime
+  usedAt                DateTime?
+  quoteId               String?
+  createdByUserId       String
+  createdAt             DateTime            @default(now())
+  procurementRequest    ProcurementRequest  @relation(fields: [procurementRequestId], references: [id], onDelete: Cascade)
+  createdBy             User                @relation(fields: [createdByUserId], references: [id])
+
+  @@index([procurementRequestId])
 }
