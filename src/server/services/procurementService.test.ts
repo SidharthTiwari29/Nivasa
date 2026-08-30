@@ -18,6 +18,9 @@ vi.mock("@/server/repositories/procurementRepository", () => ({
     findForOwner: vi.fn(),
     submitQuote: vi.fn(),
     findQuoteForOwner: vi.fn(),
+    findNegotiableQuoteForOwner: vi.fn(),
+    recordNegotiation: vi.fn(),
+    applyAcceptedNegotiation: vi.fn(),
     acceptQuoteAndCreateOrder: vi.fn(),
     findOrderForOwner: vi.fn(),
     updateOrderStatus: vi.fn(),
@@ -192,6 +195,90 @@ describe("procurementService", () => {
           "COMPLETED",
         ),
       ).rejects.toBeInstanceOf(NotFoundError);
+    });
+  });
+
+  describe("proposeNegotiation", () => {
+    const referenceQuote = {
+      id: "quote-1",
+      totalAmountMinor: 1_000_000n,
+      nivasaCommissionBps: 1000,
+      minMarginBps: 500,
+    };
+
+    it("rejects negotiating a quote that does not exist", async () => {
+      repo.findNegotiableQuoteForOwner.mockResolvedValue(null);
+      repo.findQuoteForOwner.mockResolvedValue(null);
+
+      await expect(
+        procurementService.proposeNegotiation(
+          "req-1",
+          "quote-1",
+          "user-1",
+          900_000n,
+        ),
+      ).rejects.toBeInstanceOf(NotFoundError);
+      expect(repo.recordNegotiation).not.toHaveBeenCalled();
+    });
+
+    it("rejects negotiating a quote that is no longer open (already accepted/rejected)", async () => {
+      repo.findNegotiableQuoteForOwner.mockResolvedValue(null);
+      repo.findQuoteForOwner.mockResolvedValue({
+        id: "quote-1",
+        status: "ACCEPTED",
+      } as never);
+
+      await expect(
+        procurementService.proposeNegotiation(
+          "req-1",
+          "quote-1",
+          "user-1",
+          900_000n,
+        ),
+      ).rejects.toBeInstanceOf(ConflictError);
+      expect(repo.recordNegotiation).not.toHaveBeenCalled();
+    });
+
+    it("accepts a proposal at the margin floor and updates the quote's real total", async () => {
+      repo.findNegotiableQuoteForOwner.mockResolvedValue(
+        referenceQuote as never,
+      );
+
+      const result = await procurementService.proposeNegotiation(
+        "req-1",
+        "quote-1",
+        "user-1",
+        950_000n,
+      );
+
+      expect(result.decision).toBe("ACCEPTED");
+      expect(repo.applyAcceptedNegotiation).toHaveBeenCalledWith(
+        "quote-1",
+        950_000n,
+      );
+      expect(repo.recordNegotiation).toHaveBeenCalledWith(
+        "quote-1",
+        950_000n,
+        "ACCEPTED",
+        null,
+      );
+    });
+
+    it("counters a below-floor proposal without touching the quote's real total", async () => {
+      repo.findNegotiableQuoteForOwner.mockResolvedValue(
+        referenceQuote as never,
+      );
+
+      const result = await procurementService.proposeNegotiation(
+        "req-1",
+        "quote-1",
+        "user-1",
+        900_000n,
+      );
+
+      expect(result.decision).toBe("COUNTERED");
+      expect(result.counterAmountMinor).toBe(950_000n);
+      expect(repo.applyAcceptedNegotiation).not.toHaveBeenCalled();
     });
   });
 });

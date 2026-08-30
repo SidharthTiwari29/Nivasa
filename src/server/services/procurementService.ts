@@ -1,6 +1,7 @@
 import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 import { procurementRepository } from "@/server/repositories/procurementRepository";
 import { notificationService } from "@/server/services/notificationService";
+import { evaluateNegotiation } from "@/server/services/negotiationEngine";
 import type {
   CreateProcurementRequestInput,
   SubmitQuoteInput,
@@ -167,5 +168,52 @@ export const procurementService = {
       relatedEntityId: executionId,
     });
     return execution;
+  },
+
+  // The "bargain" feature: a user proposes a lower price on a submitted
+  // quote; evaluateNegotiation decides ACCEPTED/COUNTERED/REJECTED against
+  // the quote's own fixed commission/margin floor (set once, at quote
+  // submission, never renegotiated). An ACCEPTED result immediately
+  // updates the quote's real total, so the negotiated price is what
+  // actually gets ordered later - this isn't a cosmetic discount display,
+  // it changes the number the business is bound to.
+  async proposeNegotiation(
+    procurementRequestId: string,
+    quoteId: string,
+    ownerId: string,
+    proposedAmountMinor: bigint,
+  ) {
+    const quote = await procurementRepository.findNegotiableQuoteForOwner(
+      procurementRequestId,
+      quoteId,
+      ownerId,
+    );
+    if (!quote) {
+      const exists = await procurementRepository.findQuoteForOwner(
+        procurementRequestId,
+        quoteId,
+        ownerId,
+      );
+      if (!exists) throw new NotFoundError("Quote");
+      throw new ConflictError("This quote is no longer open for negotiation");
+    }
+
+    const result = evaluateNegotiation(quote, proposedAmountMinor);
+
+    await procurementRepository.recordNegotiation(
+      quoteId,
+      proposedAmountMinor,
+      result.decision,
+      result.counterAmountMinor,
+    );
+
+    if (result.decision === "ACCEPTED") {
+      await procurementRepository.applyAcceptedNegotiation(
+        quoteId,
+        proposedAmountMinor,
+      );
+    }
+
+    return result;
   },
 };

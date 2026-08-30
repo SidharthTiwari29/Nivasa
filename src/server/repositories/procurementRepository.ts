@@ -73,6 +73,48 @@ export const procurementRepository = {
     });
   },
 
+  // A negotiation can only be proposed on a still-SUBMITTED quote - if the
+  // quote was already accepted/rejected while the user was composing a
+  // proposal, this returns null and the service surfaces a clear error
+  // instead of silently negotiating on a decision that's already final.
+  findNegotiableQuoteForOwner(
+    procurementRequestId: string,
+    quoteId: string,
+    ownerId: string,
+  ) {
+    return prisma.quote.findFirst({
+      where: {
+        id: quoteId,
+        procurementRequestId,
+        status: "SUBMITTED",
+        procurementRequest: { ownerId },
+      },
+    });
+  },
+
+  recordNegotiation(
+    quoteId: string,
+    proposedAmountMinor: bigint,
+    decision: "ACCEPTED" | "COUNTERED" | "REJECTED",
+    counterAmountMinor: bigint | null,
+  ) {
+    return prisma.quoteNegotiation.create({
+      data: { quoteId, proposedAmountMinor, decision, counterAmountMinor },
+    });
+  },
+
+  // An ACCEPTED negotiation updates the quote's own total to the agreed
+  // amount - this is the number that flows into the Order when the quote
+  // is later accepted through the normal acceptQuoteAndCreateOrder path,
+  // so the negotiated price, not the original asking price, is what
+  // actually gets ordered and paid.
+  applyAcceptedNegotiation(quoteId: string, newTotalAmountMinor: bigint) {
+    return prisma.quote.update({
+      where: { id: quoteId },
+      data: { totalAmountMinor: newTotalAmountMinor },
+    });
+  },
+
   // Accepting a quote and creating its order happen in one transaction:
   // only one quote per request may ever be ACCEPTED (enforced here by
   // requiring the quote to still be SUBMITTED, guarding against a

@@ -797,9 +797,19 @@ model Quote {
   status               QuoteStatus        @default(SUBMITTED)
   validUntil           DateTime?
   notes                String?            @db.Text
+  // Nivasa's commission and minimum-acceptable-margin are fixed at
+  // submission time, not recomputed later - this is the actual mechanism
+  // that keeps negotiation profitable: minMarginBps defines the floor
+  // percentage of totalAmountMinor that must remain as Nivasa's margin no
+  // matter how a negotiation ends, so a user can never negotiate away more
+  // than the business decided it could afford to give up when the quote
+  // was first accepted into the system.
+  nivasaCommissionBps  Int                @default(1000)
+  minMarginBps         Int                @default(500)
   createdAt            DateTime           @default(now())
   procurementRequest   ProcurementRequest @relation(fields: [procurementRequestId], references: [id], onDelete: Cascade)
   order                Order?
+  negotiations         QuoteNegotiation[]
 
   @@index([procurementRequestId, status])
 }
@@ -856,4 +866,26 @@ model Notification {
   user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, read, createdAt])
+}
+
+enum NegotiationDecision {
+  ACCEPTED
+  COUNTERED
+  REJECTED
+}
+
+// The floor logic that keeps negotiation profitable for Nivasa is defined
+// entirely on the Quote itself, set at quote-submission time - not derived
+// ad hoc at negotiation time - so the floor a user negotiates against can
+// never be changed retroactively to move the goalposts mid-negotiation.
+model QuoteNegotiation {
+  id                  String              @id @default(cuid())
+  quoteId             String
+  proposedAmountMinor BigInt
+  decision            NegotiationDecision
+  counterAmountMinor  BigInt?
+  createdAt           DateTime            @default(now())
+  quote               Quote               @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId, createdAt])
 }
