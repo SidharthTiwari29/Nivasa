@@ -28,21 +28,43 @@ describe("productIntelligence", () => {
   });
 
   it("matches category, unit, price and availability constraints", () => {
-    expect(matchesProductConstraint(base, {
-      category: "tiles",
-      unit: "sqft",
-      maxPriceMinor: 1200,
-      requireAvailable: true,
-    })).toBe(true);
+    expect(
+      matchesProductConstraint(base, {
+        category: "tiles",
+        unit: "sqft",
+        maxPriceMinor: 1200,
+        requireAvailable: true,
+      }),
+    ).toBe(true);
     expect(matchesProductConstraint(base, { maxPriceMinor: 1199 })).toBe(false);
-    expect(matchesProductConstraint({ ...base, available: false }, { requireAvailable: true })).toBe(false);
+    expect(
+      matchesProductConstraint(
+        { ...base, available: false },
+        { requireAvailable: true },
+      ),
+    ).toBe(false);
   });
 
   it("ranks stronger evidence before weaker evidence, then lower known price", () => {
     const result = rankProductCandidates([
-      { ...base, catalogueItemId: "low", priceMinor: 900, evidenceQuality: "LOW" },
-      { ...base, catalogueItemId: "high-expensive", priceMinor: 1500, evidenceQuality: "HIGH" },
-      { ...base, catalogueItemId: "high-cheap", priceMinor: 1000, evidenceQuality: "HIGH" },
+      {
+        ...base,
+        catalogueItemId: "low",
+        priceMinor: 900,
+        evidenceQuality: "LOW",
+      },
+      {
+        ...base,
+        catalogueItemId: "high-expensive",
+        priceMinor: 1500,
+        evidenceQuality: "HIGH",
+      },
+      {
+        ...base,
+        catalogueItemId: "high-cheap",
+        priceMinor: 1000,
+        evidenceQuality: "HIGH",
+      },
     ]);
     expect(result.map((item) => item.catalogueItemId)).toEqual([
       "high-cheap",
@@ -56,6 +78,9 @@ describe("productIntelligence", () => {
       { ...base, catalogueItemId: "unknown", priceMinor: undefined },
       { ...base, catalogueItemId: "known", priceMinor: 1000 },
     ]);
-    expect(result.map((item) => item.catalogueItemId)).toEqual(["known", "unknown"]);
+    expect(result.map((item) => item.catalogueItemId)).toEqual([
+      "known",
+      "unknown",
+    ]);
   });
 });
