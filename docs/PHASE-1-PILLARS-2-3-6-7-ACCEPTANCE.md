@@ -69,4 +69,6 @@ git diff --check
 
 Repository-wide Prettier formatting is applied automatically on this PR before the authoritative CI gate.
 
+The final PR head must itself receive a green CI result; earlier green runs are not sufficient evidence for merge.
+
 No external product, price, warranty, availability, AI or supplier claim is fabricated by these pillars.
