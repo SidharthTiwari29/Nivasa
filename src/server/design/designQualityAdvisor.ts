@@ -1,7 +1,11 @@
 export type DesignQualitySeverity = "INFO" | "WARNING" | "BLOCKING";
 
 export type DesignQualityFinding = {
-  code: "EMPTY_ROOM" | "ROOM_OVERFILLED" | "NO_PRIMARY_FUNCTION" | "LOW_FUNCTIONAL_COVERAGE";
+  code:
+    | "EMPTY_ROOM"
+    | "ROOM_OVERFILLED"
+    | "NO_PRIMARY_FUNCTION"
+    | "LOW_FUNCTIONAL_COVERAGE";
   severity: DesignQualitySeverity;
   roomId: string;
   message: string;
@@ -58,7 +62,10 @@ export const adviseDesignQuality = (
       });
     }
 
-    const density = room.areaMinor > 0n ? Number(room.placedElementCount) / Number(room.areaMinor) : 0;
+    const density =
+      room.areaMinor > 0n
+        ? Number(room.placedElementCount) / Number(room.areaMinor)
+        : 0;
     if (density > 0.00005) {
       findings.push({
         code: "ROOM_OVERFILLED",
@@ -70,10 +77,16 @@ export const adviseDesignQuality = (
     }
   }
 
-  const score = Math.max(0, 100 - findings.reduce((total, finding) => total + finding.scoreImpact, 0));
+  const score = Math.max(
+    0,
+    100 - findings.reduce((total, finding) => total + finding.scoreImpact, 0),
+  );
   return {
     score,
     findings,
-    summary: findings.length === 0 ? "Design passes the deterministic quality advisor." : `${findings.length} design-quality issue(s) require review.`,
+    summary:
+      findings.length === 0
+        ? "Design passes the deterministic quality advisor."
+        : `${findings.length} design-quality issue(s) require review.`,
   };
 };
