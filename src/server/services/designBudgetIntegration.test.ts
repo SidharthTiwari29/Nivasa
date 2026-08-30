@@ -46,9 +46,27 @@ describe("designBudgetIntegration", () => {
 
   it("sums only known impacts in the requested currency", () => {
     const impacts = calculateDesignBudgetImpact([
-      { selectionId: "1", description: "A", quantity: 1, unitPriceMinor: 1000, currency: "INR" },
-      { selectionId: "2", description: "B", quantity: 3, unitPriceMinor: 2000, currency: "INR" },
-      { selectionId: "3", description: "C", quantity: 1, unitPriceMinor: 9000, currency: "USD" },
+      {
+        selectionId: "1",
+        description: "A",
+        quantity: 1,
+        unitPriceMinor: 1000,
+        currency: "INR",
+      },
+      {
+        selectionId: "2",
+        description: "B",
+        quantity: 3,
+        unitPriceMinor: 2000,
+        currency: "INR",
+      },
+      {
+        selectionId: "3",
+        description: "C",
+        quantity: 1,
+        unitPriceMinor: 9000,
+        currency: "USD",
+      },
       { selectionId: "4", description: "D", quantity: 1, currency: "INR" },
     ]);
 
@@ -56,12 +74,22 @@ describe("designBudgetIntegration", () => {
   });
 
   it("rejects invalid quantities and prices", () => {
-    expect(() => calculateDesignBudgetImpact([
-      { selectionId: "1", description: "A", quantity: 0, currency: "INR" },
-    ])).toThrow("quantity must be greater than zero");
+    expect(() =>
+      calculateDesignBudgetImpact([
+        { selectionId: "1", description: "A", quantity: 0, currency: "INR" },
+      ]),
+    ).toThrow("quantity must be greater than zero");
 
-    expect(() => calculateDesignBudgetImpact([
-      { selectionId: "2", description: "B", quantity: 1, unitPriceMinor: 1.5, currency: "INR" },
-    ])).toThrow("unitPriceMinor must be a non-negative integer");
+    expect(() =>
+      calculateDesignBudgetImpact([
+        {
+          selectionId: "2",
+          description: "B",
+          quantity: 1,
+          unitPriceMinor: 1.5,
+          currency: "INR",
+        },
+      ]),
+    ).toThrow("unitPriceMinor must be a non-negative integer");
   });
 });
