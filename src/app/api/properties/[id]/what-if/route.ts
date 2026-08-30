@@ -13,7 +13,10 @@ const serializeBigInts = (value: unknown): unknown => {
   if (Array.isArray(value)) return value.map(serializeBigInts);
   if (value && typeof value === "object") {
     return Object.fromEntries(
-      Object.entries(value).map(([key, nested]) => [key, serializeBigInts(nested)]),
+      Object.entries(value).map(([key, nested]) => [
+        key,
+        serializeBigInts(nested),
+      ]),
     );
   }
   return value;
@@ -30,8 +33,11 @@ export const POST = withErrorHandling(
         ? whatIfService.preview(input)
         : await whatIfService.commit(id, userId, input);
 
-    return NextResponse.json({ result: serializeBigInts(result) }, {
-      status: input.action === "preview" ? 200 : 201,
-    });
+    return NextResponse.json(
+      { result: serializeBigInts(result) },
+      {
+        status: input.action === "preview" ? 200 : 201,
+      },
+    );
   },
 );

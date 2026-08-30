@@ -1,6 +1,12 @@
 import { budgetService } from "@/server/services/budgetService";
-import { rankSubstitutions, type SubstitutionCandidate } from "@/server/marketIntelligence/substitution";
-import type { WhatIfCommitInput, WhatIfPreviewInput } from "@/server/validators/whatIf";
+import {
+  rankSubstitutions,
+  type SubstitutionCandidate,
+} from "@/server/marketIntelligence/substitution";
+import type {
+  WhatIfCommitInput,
+  WhatIfPreviewInput,
+} from "@/server/validators/whatIf";
 
 const impactScore = (value: "BETTER" | "SIMILAR" | "LOWER" | "UNKNOWN") => {
   switch (value) {
@@ -17,19 +23,25 @@ const impactScore = (value: "BETTER" | "SIMILAR" | "LOWER" | "UNKNOWN") => {
 
 export const whatIfService = {
   preview(input: WhatIfPreviewInput) {
-    const candidates: SubstitutionCandidate[] = input.candidates.map((candidate) => ({
-      ...candidate,
-      priceMinor:
-        candidate.priceMinor === null ? null : BigInt(candidate.priceMinor),
-    }));
+    const candidates: SubstitutionCandidate[] = input.candidates.map(
+      (candidate) => ({
+        ...candidate,
+        priceMinor:
+          candidate.priceMinor === null ? null : BigInt(candidate.priceMinor),
+      }),
+    );
 
     const ranked = rankSubstitutions(
       input.currentPriceMinor === null ? null : BigInt(input.currentPriceMinor),
       candidates,
     );
 
-    const current = input.currentPriceMinor === null ? null : BigInt(input.currentPriceMinor);
-    const proposed = input.proposedPriceMinor === null ? null : BigInt(input.proposedPriceMinor);
+    const current =
+      input.currentPriceMinor === null ? null : BigInt(input.currentPriceMinor);
+    const proposed =
+      input.proposedPriceMinor === null
+        ? null
+        : BigInt(input.proposedPriceMinor);
     const priceDeltaMinor =
       current === null || proposed === null ? null : proposed - current;
     const savingMinor = priceDeltaMinor === null ? null : -priceDeltaMinor;
@@ -62,11 +74,7 @@ export const whatIfService = {
     };
   },
 
-  async commit(
-    propertyId: string,
-    ownerId: string,
-    input: WhatIfCommitInput,
-  ) {
+  async commit(propertyId: string, ownerId: string, input: WhatIfCommitInput) {
     return budgetService.impact(propertyId, ownerId, {
       baseVersion: input.baseVersion,
       proposedLowDeltaMinor: input.proposedLowDeltaMinor,

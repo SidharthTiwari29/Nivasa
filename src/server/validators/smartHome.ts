@@ -38,7 +38,13 @@ export const smartHomePlanSchema = z.object({
   capabilities: z.array(smartHomeCapabilitySchema).max(50),
   scenarios: z.array(smartHomeScenarioSchema).max(50).default([]),
   visualizationState: z.enum(visualizationStates).default("PREVIEW"),
-  budgetMinor: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER).nullable().optional(),
+  budgetMinor: z
+    .number()
+    .int()
+    .nonnegative()
+    .max(Number.MAX_SAFE_INTEGER)
+    .nullable()
+    .optional(),
   notes: z.string().trim().max(1000).optional(),
 });
 
@@ -46,7 +52,13 @@ export const smartHomePatchSchema = z.object({
   capabilities: z.array(smartHomeCapabilitySchema).max(50).optional(),
   scenarios: z.array(smartHomeScenarioSchema).max(50).optional(),
   visualizationState: z.enum(visualizationStates).optional(),
-  budgetMinor: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER).nullable().optional(),
+  budgetMinor: z
+    .number()
+    .int()
+    .nonnegative()
+    .max(Number.MAX_SAFE_INTEGER)
+    .nullable()
+    .optional(),
   notes: z.string().trim().max(1000).optional(),
 });
 

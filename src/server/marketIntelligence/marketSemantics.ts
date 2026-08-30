@@ -131,7 +131,8 @@ export interface PriceSemantics {
 }
 
 export const assertPriceSemantics = (price: PriceSemantics): void => {
-  if (price.amountMinor < 0n) throw new Error("Market price cannot be negative");
+  if (price.amountMinor < 0n)
+    throw new Error("Market price cannot be negative");
   if (price.currency !== "INR") {
     throw new Error("Only INR market prices are supported");
   }

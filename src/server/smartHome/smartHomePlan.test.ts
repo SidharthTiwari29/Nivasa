@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { compileSmartHomePlan, mergeSmartHomePlan } from "@/server/smartHome/smartHomePlan";
+import {
+  compileSmartHomePlan,
+  mergeSmartHomePlan,
+} from "@/server/smartHome/smartHomePlan";
 
 describe("smart home plan", () => {
   it("keeps only scenarios whose capabilities are enabled", () => {

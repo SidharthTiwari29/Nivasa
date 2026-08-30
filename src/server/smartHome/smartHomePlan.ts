@@ -5,8 +5,13 @@ export type SmartHomePlan = SmartHomePlanInput & {
   activeScenarioIds: string[];
 };
 
-export const compileSmartHomePlan = (input: SmartHomePlanInput): SmartHomePlan => {
-  const capabilitiesById = new Map<string, SmartHomePlanInput["capabilities"][number]>();
+export const compileSmartHomePlan = (
+  input: SmartHomePlanInput,
+): SmartHomePlan => {
+  const capabilitiesById = new Map<
+    string,
+    SmartHomePlanInput["capabilities"][number]
+  >();
 
   for (const capability of input.capabilities) {
     const existing = capabilitiesById.get(capability.id);
@@ -20,8 +25,8 @@ export const compileSmartHomePlan = (input: SmartHomePlanInput): SmartHomePlan =
     .filter((capability) => capability.enabled)
     .map((capability) => capability.id);
   const enabledSet = new Set(enabledCapabilityIds);
-  const scenarios = input.scenarios.filter(
-    (scenario) => scenario.capabilityIds.every((id) => enabledSet.has(id)),
+  const scenarios = input.scenarios.filter((scenario) =>
+    scenario.capabilityIds.every((id) => enabledSet.has(id)),
   );
 
   return {
@@ -47,7 +52,7 @@ export const mergeSmartHomePlan = (
       patch.visualizationState ?? existing.visualizationState ?? "PREVIEW",
     budgetMinor:
       patch.budgetMinor === undefined
-        ? existing.budgetMinor ?? null
+        ? (existing.budgetMinor ?? null)
         : patch.budgetMinor,
     notes: patch.notes ?? existing.notes,
   });
