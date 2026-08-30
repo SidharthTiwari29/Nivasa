@@ -36,20 +36,19 @@ export function validateIdempotencyKey(value: string): string {
   if (!IDEMPOTENCY_KEY.test(key)) {
     throw new ValidationError({
       field: "idempotencyKey",
-      reason: "must be 8-128 characters using letters, numbers, ., _, :, or -",
+      reason:
+        "must be 8-128 characters using letters, numbers, ., _, :, or -",
     });
   }
   return key;
 }
 
-const SENSITIVE_KEY = /(authorization|cookie|password|secret|token|signature|access[_-]?key|refresh[_-]?token)/i;
+const SENSITIVE_KEY =
+  /(authorization|cookie|password|secret|token|signature|access[_-]?key|refresh[_-]?token)/i;
 const MAX_AUDIT_STRING_LENGTH = 2_000;
 const MAX_AUDIT_DEPTH = 6;
 
-export function redactAuditMetadata(
-  value: unknown,
-  depth = 0,
-): unknown {
+export function redactAuditMetadata(value: unknown, depth = 0): unknown {
   if (depth > MAX_AUDIT_DEPTH) return "[REDACTED_DEPTH]";
   if (typeof value === "string") {
     return value.length > MAX_AUDIT_STRING_LENGTH
@@ -89,14 +88,22 @@ export function evaluateFixedWindowRateLimit(
   windowMs: number,
 ): RateLimitDecision {
   if (!Number.isSafeInteger(limit) || limit <= 0) {
-    throw new ValidationError({ field: "limit", reason: "must be a positive integer" });
+    throw new ValidationError({
+      field: "limit",
+      reason: "must be a positive integer",
+    });
   }
   if (!Number.isSafeInteger(windowMs) || windowMs <= 0) {
-    throw new ValidationError({ field: "windowMs", reason: "must be a positive integer" });
+    throw new ValidationError({
+      field: "windowMs",
+      reason: "must be a positive integer",
+    });
   }
 
   const active = state !== null && nowMs < state.resetAtMs;
-  const current = active ? state : { count: 0, resetAtMs: nowMs + windowMs };
+  const current = active
+    ? state
+    : { count: 0, resetAtMs: nowMs + windowMs };
   const allowed = current.count < limit;
   const nextCount = allowed ? current.count + 1 : current.count;
   const retryAfterSeconds = allowed
