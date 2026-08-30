@@ -52,18 +52,15 @@ export const designQualityService = {
       }
     }
 
-    const budgetVersions = await budgetRepository.listVersions(
-      propertyId,
-      ownerId,
-    );
-    const latestBudget = budgetVersions[0];
-    if (latestBudget) {
+    const plan = await budgetRepository.findPlan(propertyId, ownerId);
+    const latestVersion = plan?.versions[0];
+    if (latestVersion) {
       const totalAreaSqFt = property.rooms.reduce(
         (sum, r) => sum + (r.areaSqFt !== null ? Number(r.areaSqFt) : 0),
         0,
       );
       flags.push(
-        ...checkBudgetRealism(latestBudget.targetTotalMinor, totalAreaSqFt),
+        ...checkBudgetRealism(latestVersion.totalTargetMinor, totalAreaSqFt),
       );
     }
 

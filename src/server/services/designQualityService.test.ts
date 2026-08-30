@@ -8,7 +8,7 @@ vi.mock("@/server/repositories/homeIntelligenceRepository", () => ({
   homeIntelligenceRepository: { findForOwner: vi.fn() },
 }));
 vi.mock("@/server/repositories/budgetRepository", () => ({
-  budgetRepository: { listVersions: vi.fn() },
+  budgetRepository: { findPlan: vi.fn() },
 }));
 
 const homeIntelligence = vi.mocked(homeIntelligenceRepository);
@@ -36,7 +36,7 @@ describe("designQualityService.runChecks", () => {
         },
       ],
     } as never);
-    budgets.listVersions.mockResolvedValue([]);
+    budgets.findPlan.mockResolvedValue(null);
 
     const flags = await designQualityService.runChecks("property-1", "user-1");
 
@@ -55,9 +55,10 @@ describe("designQualityService.runChecks", () => {
         },
       ],
     } as never);
-    budgets.listVersions.mockResolvedValue([
-      { targetTotalMinor: 500_000n }, // ₹100/sqft over 50 sqft - implausibly low
-    ] as never);
+    budgets.findPlan.mockResolvedValue({
+      plan: { id: "plan-1" },
+      versions: [{ version: 1, totalTargetMinor: 500_000n }], // ₹100/sqft over 50 sqft - implausibly low
+    } as never);
 
     const flags = await designQualityService.runChecks("property-1", "user-1");
 
@@ -78,7 +79,7 @@ describe("designQualityService.runChecks", () => {
         },
       ],
     } as never);
-    budgets.listVersions.mockResolvedValue([]);
+    budgets.findPlan.mockResolvedValue(null);
 
     const flags = await designQualityService.runChecks("property-1", "user-1");
 

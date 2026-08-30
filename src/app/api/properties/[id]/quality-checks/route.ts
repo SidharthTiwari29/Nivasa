@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { withErrorHandling } from "@/server/errors/handler";
 import { parseOrThrow } from "@/server/validators/parse";
-import { propertyIdParamSchema } from "@/server/validators/budget";
 import { designQualityService } from "@/server/services/designQualityService";
+
+const propertyIdParamSchema = z.object({ id: z.string().cuid() });
 
 type RouteParams = { params: Promise<{ id: string }> };
 
