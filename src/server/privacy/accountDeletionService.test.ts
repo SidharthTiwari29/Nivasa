@@ -21,7 +21,12 @@ vi.mock("@/server/db/prisma", () => ({
   },
 }));
 
-const db = vi.mocked(prisma);
+// { deep: true } is required: vi.mocked() without it only types the
+// top-level object as mocked. Nested methods like prisma.user.findUnique
+// would stay typed as their real Prisma method signatures, which have no
+// .mockResolvedValue - the exact TS error this caused (see also
+// designProjectService.test.ts / boqService.test.ts for the same fix).
+const db = vi.mocked(prisma, { deep: true });
 
 describe("accountDeletionService.deleteAccount", () => {
   beforeEach(() => vi.clearAllMocks());
