@@ -135,6 +135,8 @@ model User {
   createdCatalogueSubstitutions CatalogueSubstitution[]
   procurementRequests        ProcurementRequest[]
   notifications              Notification[]
+  ownReferralCode            ReferralCode?
+  referralAsReferred         Referral?
 }
 
 model Account {
@@ -895,4 +897,39 @@ model QuoteNegotiation {
   quote               Quote               @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 
   @@index([quoteId, createdAt])
+}
+
+enum ReferralStatus {
+  PENDING
+  REWARDED
+  EXPIRED
+}
+
+// Every user gets exactly one stable referral code (their own invite
+// link). A referral only pays out once the referred user completes a
+// real, revenue-generating action (an Order actually delivered) - not on
+// sign-up alone, which would be trivially gameable by creating throwaway
+// accounts.
+model ReferralCode {
+  id          String     @id @default(cuid())
+  ownerUserId String     @unique
+  code        String     @unique
+  createdAt   DateTime   @default(now())
+  owner       User       @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  referrals   Referral[]
+}
+
+model Referral {
+  id               String         @id @default(cuid())
+  referralCodeId   String
+  referredUserId   String         @unique
+  status           ReferralStatus @default(PENDING)
+  triggeringOrderId String?
+  bonusCredits     Int?
+  rewardedAt       DateTime?
+  createdAt        DateTime       @default(now())
+  referralCode     ReferralCode   @relation(fields: [referralCodeId], references: [id])
+  referredUser     User           @relation(fields: [referredUserId], references: [id])
+
+  @@index([referralCodeId, status])
 }

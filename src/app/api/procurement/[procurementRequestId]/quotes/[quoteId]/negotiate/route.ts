@@ -5,6 +5,7 @@ import { withErrorHandling } from "@/server/errors/handler";
 import { parseOrThrow } from "@/server/validators/parse";
 import { quoteIdParamSchema } from "@/server/validators/procurement";
 import { procurementService } from "@/server/services/procurementService";
+import { featureAccessService } from "@/server/entitlements/featureAccessService";
 
 type RouteParams = {
   params: Promise<{ procurementRequestId: string; quoteId: string }>;
@@ -17,6 +18,7 @@ const bodySchema = z.object({
 export const POST = withErrorHandling(
   async (request: Request, { params }: RouteParams) => {
     const { userId } = await requireAuth();
+    await featureAccessService.requireFeature(userId, "quote_negotiation");
     const { procurementRequestId, quoteId } = parseOrThrow(
       quoteIdParamSchema,
       await params,

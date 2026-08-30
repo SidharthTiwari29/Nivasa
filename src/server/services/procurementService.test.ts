@@ -2,7 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 import { procurementRepository } from "@/server/repositories/procurementRepository";
 import { notificationService } from "@/server/services/notificationService";
+import { referralService } from "@/server/services/referralService";
 import { procurementService } from "./procurementService";
+
+vi.mock("@/server/services/referralService", () => ({
+  referralService: {
+    rewardReferralIfPending: vi.fn(),
+  },
+}));
 
 vi.mock("@/server/services/notificationService", () => ({
   notificationService: {
@@ -32,6 +39,7 @@ vi.mock("@/server/repositories/procurementRepository", () => ({
 
 const repo = vi.mocked(procurementRepository);
 const notifications = vi.mocked(notificationService);
+const referrals = vi.mocked(referralService);
 
 describe("procurementService", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -170,6 +178,26 @@ describe("procurementService", () => {
           type: "ORDER_STATUS_CHANGED",
         }),
       );
+      expect(referrals.rewardReferralIfPending).toHaveBeenCalledWith(
+        "user-1",
+        "order-1",
+      );
+    });
+
+    it("does not attempt to reward a referral for a non-delivered status change", async () => {
+      repo.updateOrderStatus.mockResolvedValue({ count: 1 });
+      repo.findOrderForOwner.mockResolvedValue({
+        id: "order-1",
+        status: "CONFIRMED",
+      } as never);
+
+      await procurementService.updateOrderStatus(
+        "order-1",
+        "user-1",
+        "CONFIRMED",
+      );
+
+      expect(referrals.rewardReferralIfPending).not.toHaveBeenCalled();
     });
   });
 

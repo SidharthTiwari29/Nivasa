@@ -2,6 +2,7 @@ import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 import { procurementRepository } from "@/server/repositories/procurementRepository";
 import { notificationService } from "@/server/services/notificationService";
 import { evaluateNegotiation } from "@/server/services/negotiationEngine";
+import { referralService } from "@/server/services/referralService";
 import type {
   CreateProcurementRequestInput,
   SubmitQuoteInput,
@@ -116,6 +117,14 @@ export const procurementService = {
       relatedEntityType: "Order",
       relatedEntityId: orderId,
     });
+    // A referral only pays out on a real, completed transaction - checked
+    // here, at the exact moment an order becomes DELIVERED, never at
+    // sign-up. Failure to reward (e.g. no pending referral, no active
+    // entitlement to credit) is not an error for this request - it's an
+    // optional side effect, same reasoning as notification delivery.
+    if (status === "DELIVERED") {
+      await referralService.rewardReferralIfPending(ownerId, orderId);
+    }
     return order;
   },
 
