@@ -18,40 +18,54 @@ export type BudgetImpact = {
 };
 
 const assertPositive = (value: number, field: string): void => {
-  if (!Number.isFinite(value) || value <= 0) throw new Error(`${field} must be greater than zero`);
+  if (!Number.isFinite(value) || value <= 0)
+    throw new Error(`${field} must be greater than zero`);
 };
 
 export const calculateDesignBudgetImpact = (
   selections: DesignBudgetSelection[],
-): BudgetImpact[] => selections.map((selection) => {
-  assertPositive(selection.quantity, "quantity");
-  if (!selection.description.trim()) throw new Error("description is required");
-  if (!selection.currency.trim()) throw new Error("currency is required");
-  if (selection.unitPriceMinor !== undefined) {
-    if (!Number.isInteger(selection.unitPriceMinor) || selection.unitPriceMinor < 0) {
-      throw new Error("unitPriceMinor must be a non-negative integer");
+): BudgetImpact[] =>
+  selections.map((selection) => {
+    assertPositive(selection.quantity, "quantity");
+    if (!selection.description.trim())
+      throw new Error("description is required");
+    if (!selection.currency.trim()) throw new Error("currency is required");
+    if (selection.unitPriceMinor !== undefined) {
+      if (
+        !Number.isInteger(selection.unitPriceMinor) ||
+        selection.unitPriceMinor < 0
+      ) {
+        throw new Error("unitPriceMinor must be a non-negative integer");
+      }
     }
-  }
 
-  const impactMinor = selection.unitPriceMinor === undefined
-    ? undefined
-    : Math.round(selection.quantity * selection.unitPriceMinor);
+    const impactMinor =
+      selection.unitPriceMinor === undefined
+        ? undefined
+        : Math.round(selection.quantity * selection.unitPriceMinor);
 
-  return {
-    selectionId: selection.selectionId,
-    description: selection.description.trim(),
-    quantity: selection.quantity,
-    unitPriceMinor: selection.unitPriceMinor,
-    impactMinor,
-    currency: selection.currency.trim().toUpperCase(),
-    priceKnown: selection.unitPriceMinor !== undefined,
-  };
-});
+    return {
+      selectionId: selection.selectionId,
+      description: selection.description.trim(),
+      quantity: selection.quantity,
+      unitPriceMinor: selection.unitPriceMinor,
+      impactMinor,
+      currency: selection.currency.trim().toUpperCase(),
+      priceKnown: selection.unitPriceMinor !== undefined,
+    };
+  });
 
-export const sumKnownBudgetImpact = (impacts: BudgetImpact[], currency: string): number => {
+export const sumKnownBudgetImpact = (
+  impacts: BudgetImpact[],
+  currency: string,
+): number => {
   const normalizedCurrency = currency.trim().toUpperCase();
   return impacts.reduce((total, impact) => {
-    if (impact.currency !== normalizedCurrency || impact.impactMinor === undefined) return total;
+    if (
+      impact.currency !== normalizedCurrency ||
+      impact.impactMinor === undefined
+    )
+      return total;
     return total + impact.impactMinor;
   }, 0);
 };
