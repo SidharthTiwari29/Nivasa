@@ -11,13 +11,12 @@ export const EXECUTION_STATES = [
 export type ExecutionState = (typeof EXECUTION_STATES)[number];
 
 export type ExecutionAction =
-  | "SUBMIT"
-  | "APPROVE"
-  | "START"
-  | "COMPLETE"
-  | "CANCEL";
+  "SUBMIT" | "APPROVE" | "START" | "COMPLETE" | "CANCEL";
 
-const transitions: Record<ExecutionState, Partial<Record<ExecutionAction, ExecutionState>>> = {
+const transitions: Record<
+  ExecutionState,
+  Partial<Record<ExecutionAction, ExecutionState>>
+> = {
   DRAFT: { SUBMIT: "READY", CANCEL: "CANCELLED" },
   READY: { SUBMIT: "APPROVAL_PENDING", CANCEL: "CANCELLED" },
   APPROVAL_PENDING: { APPROVE: "APPROVED", CANCEL: "CANCELLED" },
