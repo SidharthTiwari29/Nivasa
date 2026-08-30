@@ -18,8 +18,9 @@ export async function submitRender(
 
   const submission: RenderSubmission = await provider.submit(request);
   if (!submission.provider.trim()) throw new Error("RENDER_PROVIDER_REQUIRED");
-  if (!submission.providerJobId.trim())
+  if (!submission.providerJobId.trim()) {
     throw new Error("PROVIDER_JOB_ID_REQUIRED");
+  }
 
   return submission;
 }
