@@ -67,4 +67,6 @@ npm run build
 git diff --check
 ```
 
+Repository-wide Prettier formatting is applied automatically on this PR before the authoritative CI gate.
+
 No external product, price, warranty, availability, AI or supplier claim is fabricated by these pillars.
