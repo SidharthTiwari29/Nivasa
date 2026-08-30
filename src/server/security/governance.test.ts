@@ -14,22 +14,38 @@ const context = (userId: string, role: Role = "USER") => ({ userId, role });
 
 describe("P2.10 security governance", () => {
   it("enforces owner isolation while allowing privileged roles", () => {
-    expect(() => assertResourceAccess(context("u1"), "u2")).toThrow(ForbiddenError);
+    expect(() => assertResourceAccess(context("u1"), "u2")).toThrow(
+      ForbiddenError,
+    );
     expect(() => assertResourceAccess(context("u1"), "u1")).not.toThrow();
-    expect(() => assertResourceAccess(context("admin", "ADMIN"), "u2")).not.toThrow();
-    expect(() => assertResourceAccess(context("root", "SUPER_ADMIN"), "u2")).not.toThrow();
+    expect(
+      () => assertResourceAccess(context("admin", "ADMIN"), "u2"),
+    ).not.toThrow();
+    expect(
+      () => assertResourceAccess(context("root", "SUPER_ADMIN"), "u2"),
+    ).not.toThrow();
   });
 
   it("enforces explicit role allowlists", () => {
-    expect(() => assertAllowedRole(context("u1"), "ADMIN")).toThrow(ForbiddenError);
-    expect(() => assertAllowedRole(context("a", "ADMIN"), "ADMIN", "SUPER_ADMIN")).not.toThrow();
+    expect(() => assertAllowedRole(context("u1"), "ADMIN")).toThrow(
+      ForbiddenError,
+    );
+    expect(
+      () => assertAllowedRole(context("a", "ADMIN"), "ADMIN", "SUPER_ADMIN"),
+    ).not.toThrow();
   });
 
   it("accepts safe idempotency keys and rejects malformed keys", () => {
-    expect(validateIdempotencyKey("order-2026-08-30_01")).toBe("order-2026-08-30_01");
+    expect(validateIdempotencyKey("order-2026-08-30_01")).toBe(
+      "order-2026-08-30_01",
+    );
     expect(() => validateIdempotencyKey("short")).toThrow(ValidationError);
-    expect(() => validateIdempotencyKey("bad key 123")).toThrow(ValidationError);
-    expect(() => validateIdempotencyKey("a".repeat(129))).toThrow(ValidationError);
+    expect(() => validateIdempotencyKey("bad key 123")).toThrow(
+      ValidationError,
+    );
+    expect(() => validateIdempotencyKey("a".repeat(129))).toThrow(
+      ValidationError,
+    );
   });
 
   it("redacts sensitive audit metadata and bounds strings/depth", () => {
