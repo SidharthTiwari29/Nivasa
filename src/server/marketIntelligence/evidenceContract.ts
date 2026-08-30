@@ -34,18 +34,23 @@ export const validateEvidenceObservation = (
   if (observation.sourceProductId !== undefined) {
     assertNonBlank(observation.sourceProductId, "sourceProductId");
   }
-  if (!(observation.retrievedAt instanceof Date) || Number.isNaN(observation.retrievedAt.getTime())) {
+  if (
+    !(observation.retrievedAt instanceof Date) ||
+    Number.isNaN(observation.retrievedAt.getTime())
+  ) {
     throw new Error("retrievedAt must be a valid Date");
   }
-  if (observation.locator !== undefined) assertNonBlank(observation.locator, "locator");
-  if (observation.contentHash !== undefined) assertNonBlank(observation.contentHash, "contentHash");
-}
+  if (observation.locator !== undefined)
+    assertNonBlank(observation.locator, "locator");
+  if (observation.contentHash !== undefined)
+    assertNonBlank(observation.contentHash, "contentHash");
+};
 
 export const validateEvidencePolicy = (policy: EvidencePolicy): void => {
   if (!Number.isFinite(policy.freshnessHours) || policy.freshnessHours <= 0) {
     throw new Error("freshnessHours must be greater than zero");
   }
-}
+};
 
 export const evaluateEvidence = (
   observation: EvidenceObservation,
@@ -59,13 +64,16 @@ export const evaluateEvidence = (
   }
 
   const reasons: string[] = [];
-  const ageHours = (now.getTime() - observation.retrievedAt.getTime()) / 3_600_000;
+  const ageHours =
+    (now.getTime() - observation.retrievedAt.getTime()) / 3_600_000;
   const fresh = ageHours >= 0 && ageHours <= policy.freshnessHours;
 
   if (ageHours < 0) reasons.push("observation timestamp is in the future");
   if (!fresh) reasons.push("observation is outside the freshness policy");
-  if (policy.requireLocator && !observation.locator) reasons.push("locator is required");
-  if (policy.requireContentHash && !observation.contentHash) reasons.push("contentHash is required");
+  if (policy.requireLocator && !observation.locator)
+    reasons.push("locator is required");
+  if (policy.requireContentHash && !observation.contentHash)
+    reasons.push("contentHash is required");
 
   const hasRequiredFields =
     (!policy.requireLocator || Boolean(observation.locator)) &&
@@ -73,7 +81,8 @@ export const evaluateEvidence = (
 
   let quality: EvidenceQuality = "UNKNOWN";
   if (fresh && hasRequiredFields) {
-    quality = observation.retrievalMethod === "OFFICIAL_SITE" ? "HIGH" : "MEDIUM";
+    quality =
+      observation.retrievalMethod === "OFFICIAL_SITE" ? "HIGH" : "MEDIUM";
   } else if (fresh) {
     quality = "LOW";
   }

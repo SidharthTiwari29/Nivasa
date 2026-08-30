@@ -37,7 +37,9 @@ describe("evidenceContract", () => {
     );
     expect(result.quality).toBe("UNKNOWN");
     expect(result.fresh).toBe(false);
-    expect(result.reasons).toContain("observation is outside the freshness policy");
+    expect(result.reasons).toContain(
+      "observation is outside the freshness policy",
+    );
   });
 
   it("does not upgrade incomplete evidence to high quality", () => {
