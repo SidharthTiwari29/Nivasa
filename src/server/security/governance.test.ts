@@ -18,11 +18,11 @@ describe("P2.10 security governance", () => {
       ForbiddenError,
     );
     expect(() => assertResourceAccess(context("u1"), "u1")).not.toThrow();
-    expect(
-      () => assertResourceAccess(context("admin", "ADMIN"), "u2"),
+    expect(() =>
+      assertResourceAccess(context("admin", "ADMIN"), "u2"),
     ).not.toThrow();
-    expect(
-      () => assertResourceAccess(context("root", "SUPER_ADMIN"), "u2"),
+    expect(() =>
+      assertResourceAccess(context("root", "SUPER_ADMIN"), "u2"),
     ).not.toThrow();
   });
 
@@ -30,8 +30,8 @@ describe("P2.10 security governance", () => {
     expect(() => assertAllowedRole(context("u1"), "ADMIN")).toThrow(
       ForbiddenError,
     );
-    expect(
-      () => assertAllowedRole(context("a", "ADMIN"), "ADMIN", "SUPER_ADMIN"),
+    expect(() =>
+      assertAllowedRole(context("a", "ADMIN"), "ADMIN", "SUPER_ADMIN"),
     ).not.toThrow();
   });
 

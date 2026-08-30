@@ -12,10 +12,7 @@ export function assertResourceAccess(
   context: GovernanceContext,
   ownerId: string,
 ): void {
-  if (
-    context.userId !== ownerId &&
-    !PRIVILEGED_ROLES.includes(context.role)
-  ) {
+  if (context.userId !== ownerId && !PRIVILEGED_ROLES.includes(context.role)) {
     throw new ForbiddenError("You do not have access to this resource");
   }
 }
@@ -36,8 +33,7 @@ export function validateIdempotencyKey(value: string): string {
   if (!IDEMPOTENCY_KEY.test(key)) {
     throw new ValidationError({
       field: "idempotencyKey",
-      reason:
-        "must be 8-128 characters using letters, numbers, ., _, :, or -",
+      reason: "must be 8-128 characters using letters, numbers, ., _, :, or -",
     });
   }
   return key;
@@ -101,9 +97,7 @@ export function evaluateFixedWindowRateLimit(
   }
 
   const active = state !== null && nowMs < state.resetAtMs;
-  const current = active
-    ? state
-    : { count: 0, resetAtMs: nowMs + windowMs };
+  const current = active ? state : { count: 0, resetAtMs: nowMs + windowMs };
   const allowed = current.count < limit;
   const nextCount = allowed ? current.count + 1 : current.count;
   const retryAfterSeconds = allowed
