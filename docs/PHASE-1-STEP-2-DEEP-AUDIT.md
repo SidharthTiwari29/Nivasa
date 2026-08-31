@@ -1,4 +1,4 @@
-# Nivasa Phase 1 — Step 2 Deep Production Audit
+# Niwasthan Phase 1 — Step 2 Deep Production Audit
 
 ## Scope
 
@@ -6,10 +6,10 @@ This audit treats market intelligence as a production procurement and transparen
 
 ## External research findings
 
-1. Official manufacturer/retailer pages can expose materially different price semantics. IKEA India exposes product price, dimensions, variants, reviews and promotional validity windows; Nivasa therefore must retain observed price, list price, variant identity and observation/freshness timestamps rather than one mutable price.
-2. Hindware publishes catalogue/MRP material through its official catalogue flow; Nivasa therefore needs catalogue-document evidence in addition to product-page evidence.
-3. BathStory exposes both product pricing and service/site-visit pricing, with units such as per-square-foot and service bookings. Nivasa must model product, service, unit and installation scope separately.
-4. Interior material rate references commonly vary by city and quality grade. Nivasa must never present an indicative city-adjusted rate as an exact seller quote.
+1. Official manufacturer/retailer pages can expose materially different price semantics. IKEA India exposes product price, dimensions, variants, reviews and promotional validity windows; Niwasthan therefore must retain observed price, list price, variant identity and observation/freshness timestamps rather than one mutable price.
+2. Hindware publishes catalogue/MRP material through its official catalogue flow; Niwasthan therefore needs catalogue-document evidence in addition to product-page evidence.
+3. BathStory exposes both product pricing and service/site-visit pricing, with units such as per-square-foot and service bookings. Niwasthan must model product, service, unit and installation scope separately.
+4. Interior material rate references commonly vary by city and quality grade. Niwasthan must never present an indicative city-adjusted rate as an exact seller quote.
 5. Indian e-commerce consumer-protection requirements make price transparency and fair presentation material product requirements. Source evidence, timestamps and price semantics are therefore first-class data rather than UI decoration.
 
 ## Required production layers

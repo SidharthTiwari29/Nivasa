@@ -1,4 +1,4 @@
-# Nivasa Production Operations
+# Niwasthan Production Operations
 
 ## Scope
 

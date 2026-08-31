@@ -6,13 +6,13 @@
 
 ## 1. Who this applies to
 
-This policy applies to anyone who creates an account on Nivasa ("the Service"), a home-interior design platform.
+This policy applies to anyone who creates an account on Niwasthan ("the Service"), a home-interior design platform.
 
 ## 2. What we collect
 
 - **Account information**: email address, name, profile image (via Google OAuth or email sign-in).
 - **Property and design data you provide**: floor plans, room photographs, room dimensions, design preferences, budget information — this is the core content you create using the Service.
-- **Payment information**: processed through Razorpay; Nivasa does not store your raw card/UPI details — only transaction records (amount, status, order reference).
+- **Payment information**: processed through Razorpay; Niwasthan does not store your raw card/UPI details — only transaction records (amount, status, order reference).
 - **Usage and audit data**: actions taken on your account are logged for security and support purposes (see `AuditLog` in the Data Retention Policy).
 
 ## 3. How we use it
@@ -26,7 +26,7 @@ This policy applies to anyone who creates an account on Nivasa ("the Service"), 
 
 - We do not sell your personal data to third parties.
 - We do not display advertisements or share your data with advertisers.
-- [TO BE CONFIRMED WITH COUNSEL: any additional commitments Nivasa wants to make]
+- [TO BE CONFIRMED WITH COUNSEL: any additional commitments Niwasthan wants to make]
 
 ## 5. Third parties who may process your data
 
@@ -47,7 +47,7 @@ See the Security Policy for details on how your data is protected, including aut
 
 ## 8. Children's privacy
 
-Under the DPDP Act, processing a child's (under-18) personal data requires **verifiable parental or lawful guardian consent** before collection. Nivasa's current sign-up flow has no age-verification or parental-consent mechanism. **Until one is built, the Service should explicitly restrict sign-up to users 18 and older** — this needs both a Terms clause and an actual technical/process control, not just a policy statement.
+Under the DPDP Act, processing a child's (under-18) personal data requires **verifiable parental or lawful guardian consent** before collection. Niwasthan's current sign-up flow has no age-verification or parental-consent mechanism. **Until one is built, the Service should explicitly restrict sign-up to users 18 and older** — this needs both a Terms clause and an actual technical/process control, not just a policy statement.
 
 ## 9. Changes to this policy
 

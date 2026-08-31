@@ -1,4 +1,4 @@
-# Nivasa Architecture
+# Niwasthan Architecture
 
 ## Boundary
 

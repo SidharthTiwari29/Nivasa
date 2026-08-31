@@ -4,14 +4,14 @@
 
 ## 0. Applicable law — confirmed facts
 
-Nivasa's obligations here are governed by India's **Digital Personal Data Protection Act, 2023 (DPDP Act)** — enacted 11 August 2023, with Rules notified 13 November 2025 and **full enforcement effective 13 May 2027**. Penalties for non-compliance can reach ₹250 crore per violation. The Act requires: consent-first data collection, clear notice at the point of collection, honoring data principal erasure requests, breach notification, and demonstrable retention/deletion practices. This document, and the account-deletion behavior it describes, is designed to satisfy the erasure-request obligation specifically — but full DPDP compliance (consent-manager registration if applicable, breach-notification procedure, privacy-notice wording) requires counsel engagement before the 2027 deadline, not just this document.
+Niwasthan's obligations here are governed by India's **Digital Personal Data Protection Act, 2023 (DPDP Act)** — enacted 11 August 2023, with Rules notified 13 November 2025 and **full enforcement effective 13 May 2027**. Penalties for non-compliance can reach ₹250 crore per violation. The Act requires: consent-first data collection, clear notice at the point of collection, honoring data principal erasure requests, breach notification, and demonstrable retention/deletion practices. This document, and the account-deletion behavior it describes, is designed to satisfy the erasure-request obligation specifically — but full DPDP compliance (consent-manager registration if applicable, breach-notification procedure, privacy-notice wording) requires counsel engagement before the 2027 deadline, not just this document.
 
 ## 1. Principle
 
-Nivasa distinguishes between:
+Niwasthan distinguishes between:
 
 - **Personal content the user created and controls** — deleted on request.
-- **Transactional and audit records Nivasa is legally required to retain** — never deleted on request; the user's identity is disconnected from them instead (anonymization), not the record itself.
+- **Transactional and audit records Niwasthan is legally required to retain** — never deleted on request; the user's identity is disconnected from them instead (anonymization), not the record itself.
 
 A user's "right to erasure" is not absolute where a legal retention obligation exists. This is the standard, defensible position under most data protection regimes, including DPDP — but the exact retention periods below are placeholders and **must be confirmed against actual Indian tax, GST, and financial-record-keeping law by counsel**, not assumed from this document.
 
@@ -26,7 +26,7 @@ Implemented in `accountDeletionService.deleteAccount`:
 
 - `Payment`, `Purchase`, `Entitlement`, `AuditLog` — financial and audit records. **Placeholder retention period: 7 years**, matching common Indian tax record-keeping expectations — **this number is not verified against actual law and must be confirmed by counsel before publication.**
 - `ProcurementRequest`, `Quote`, `Order`, `ExecutionRecord` — commercial transaction history with suppliers, retained for the same reason (a completed purchase/order is a business record, not purely personal content).
-- The `User` row itself is never deleted (many retained records reference it via foreign key). Instead, `email`/`name`/`image` are overwritten with a stable, non-identifying placeholder derived from the user's own id (`{userId}@deleted.nivasa.local`), so the linkage between retained records and a real identifiable person is severed.
+- The `User` row itself is never deleted (many retained records reference it via foreign key). Instead, `email`/`name`/`image` are overwritten with a stable, non-identifying placeholder derived from the user's own id (`{userId}@deleted.niwasthan.local`), so the linkage between retained records and a real identifiable person is severed.
 
 ## 4. Idempotency and auditability
 
@@ -37,8 +37,8 @@ Implemented in `accountDeletionService.deleteAccount`:
 
 - **Data export ("right to portability")**: not yet implemented. A user should be able to download their own Property/Design/Budget data in a structured format before or instead of deletion. This is a real, near-term engineering task, not yet built.
 - **Backup retention**: this policy describes the primary database. Any database backups, log aggregation, or analytics systems that separately retain copies of this data are **not yet covered** and need their own retention/deletion procedure before this policy can be called complete.
-- **Sub-processor data**: any third-party service Nivasa sends user data to (a future AI/rendering provider, a payment processor, an email provider) has its own retention practices that must be documented here once those integrations exist for real.
-- **Consent withdrawal for marketing communications**, if Nivasa ever sends any, is not addressed here.
+- **Sub-processor data**: any third-party service Niwasthan sends user data to (a future AI/rendering provider, a payment processor, an email provider) has its own retention practices that must be documented here once those integrations exist for real.
+- **Consent withdrawal for marketing communications**, if Niwasthan ever sends any, is not addressed here.
 
 ## 6. Verification
 

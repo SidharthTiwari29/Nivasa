@@ -1,14 +1,14 @@
-# Nivasa Phase 1 Architecture
+# Niwasthan Phase 1 Architecture
 
 **Status:** Architecture freeze baseline
 
 **Baseline:** `main` @ `00e55add09d655a4a9aae0c0576a7d85b9e39aee`
 
-**Canonical product issue:** `#20 — NIVASA Phase 1 — Home Intelligence to Design-to-Execution Product`
+**Canonical product issue:** `#20 — NIWASTHAN Phase 1 — Home Intelligence to Design-to-Execution Product`
 
 ## 1. Purpose
 
-Phase 1 turns the production foundation into the first complete user-facing Nivasa product journey:
+Phase 1 turns the production foundation into the first complete user-facing Niwasthan product journey:
 
 `Create Home -> Understand Home -> Understand User -> Budget -> Design -> Explain -> Real Products -> What-If -> Savings -> Smart Home -> Buildability -> BOQ -> Visualize -> Experience -> Execute`
 
@@ -54,7 +54,7 @@ There is no first-class budget-plan/recommendation/lock model. Phase 1 needs imm
 
 ### Product/material provenance
 
-`CatalogueItem` and `CataloguePrice` provide a foundation, but Phase 1 needs source/provenance, verification/freshness, brand/product identifiers, media, material/specification attributes, warranty claims and recommendation rationale. Real source data must be distinguishable from Nivasa estimates and recommendations.
+`CatalogueItem` and `CataloguePrice` provide a foundation, but Phase 1 needs source/provenance, verification/freshness, brand/product identifiers, media, material/specification attributes, warranty claims and recommendation rationale. Real source data must be distinguishable from Niwasthan estimates and recommendations.
 
 ### Design decision/explainability
 
@@ -187,8 +187,8 @@ Owns execution project state, site checks, quote versions, negotiation and miles
 Every externally visible product-related value must be classified as exactly one of:
 
 - **VERIFIED** — supported by a recorded source and verification/freshness timestamp.
-- **ESTIMATE** — generated/calculated by Nivasa and explicitly labelled.
-- **RECOMMENDATION** — Nivasa's contextual assessment, with reason/evidence references.
+- **ESTIMATE** — generated/calculated by Niwasthan and explicitly labelled.
+- **RECOMMENDATION** — Niwasthan's contextual assessment, with reason/evidence references.
 
 A missing value remains missing. The system must not turn absence into a guessed value.
 

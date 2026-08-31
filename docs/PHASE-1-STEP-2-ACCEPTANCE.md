@@ -1,9 +1,9 @@
-# Nivasa Phase 1 Step 2 — Budget Reality Engine
+# Niwasthan Phase 1 Step 2 — Budget Reality Engine
 
 ## Acceptance criteria
 
 1. An authenticated property owner can create and read a versioned budget plan for their property.
-2. Budget estimates are represented as low/target/high planning bands and every band is explicitly classified as an estimate, verified input, or Nivasa recommendation.
+2. Budget estimates are represented as low/target/high planning bands and every band is explicitly classified as an estimate, verified input, or Niwasthan recommendation.
 3. Budget versions preserve the exact scope, assumptions, source references and Home Intelligence/Home DNA versions used to produce them.
 4. A budget version can be locked by its owner; locking records the actor and makes that decision immutable.
 5. A locked budget is never overwritten by a later recalculation; later changes create a new version.

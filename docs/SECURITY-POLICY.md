@@ -24,9 +24,9 @@
 
 - **No client-side trust for payment success.** Entitlements/purchases are activated **only** after Razorpay's webhook is received and its HMAC-SHA256 signature is verified server-side (`verifyRazorpayWebhookSignature`, tested against both authentic and forged signatures). A client reporting "payment succeeded" cannot unlock a paid feature on its own.
 - **Webhook idempotency**: repeated delivery of the same webhook event (which Razorpay can do) does not double-activate an entitlement — enforced by conditional database updates keyed on the transaction reference, not a simple "if not exists, create" check that could race.
-- **No raw card/UPI data stored.** All payment method details are handled by Razorpay directly; Nivasa's database only stores transaction metadata (amount, status, references).
+- **No raw card/UPI data stored.** All payment method details are handled by Razorpay directly; Niwasthan's database only stores transaction metadata (amount, status, references).
 
-**Not yet implemented**: PCI-DSS formal compliance documentation (likely not required if no card data ever touches Nivasa's servers, but should be confirmed with Razorpay's own compliance guidance and, ideally, a qualified auditor).
+**Not yet implemented**: PCI-DSS formal compliance documentation (likely not required if no card data ever touches Niwasthan's servers, but should be confirmed with Razorpay's own compliance guidance and, ideally, a qualified auditor).
 
 ## 4. Organizational/data-access security
 

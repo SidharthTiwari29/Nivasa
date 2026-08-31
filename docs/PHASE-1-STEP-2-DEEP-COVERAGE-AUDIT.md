@@ -2,7 +2,7 @@
 
 ## Objective
 
-Nivasa must build a production-grade Indian home-interior intelligence layer, not a small furniture catalogue. Every material, product, service, design reference and price-bearing component that can materially affect a residential interior should have a source and data strategy.
+Niwasthan must build a production-grade Indian home-interior intelligence layer, not a small furniture catalogue. Every material, product, service, design reference and price-bearing component that can materially affect a residential interior should have a source and data strategy.
 
 ## Research-derived source families
 
@@ -275,7 +275,7 @@ Nivasa must build a production-grade Indian home-interior intelligence layer, no
 
 ## Product granularity requirements
 
-Nivasa must support more than a category and price. Canonical product intelligence should capture, where applicable:
+Niwasthan must support more than a category and price. Canonical product intelligence should capture, where applicable:
 
 - source and seller
 - manufacturer/brand
@@ -334,7 +334,7 @@ Rates must never be silently compared across incompatible units.
 
 ## Design-reference model
 
-Design inspiration and purchasable products are different evidence classes. Nivasa should store both:
+Design inspiration and purchasable products are different evidence classes. Niwasthan should store both:
 
 - design image/reference
 - room/context
@@ -410,4 +410,4 @@ Preferred acquisition order:
 
 ## Definition of done
 
-Step 2 is not complete when a list of websites exists. It is complete when Nivasa can take a real interior requirement such as “3BHK contemporary pooja room with a wall-mounted mandir, painting, lighting, storage and budget of ₹X”, identify appropriate design references and purchasable components, compare compatible products/rates from governed sources, show the evidence and timestamp, explain the unit/price assumptions, and generate a reproducible budget calculation.
+Step 2 is not complete when a list of websites exists. It is complete when Niwasthan can take a real interior requirement such as “3BHK contemporary pooja room with a wall-mounted mandir, painting, lighting, storage and budget of ₹X”, identify appropriate design references and purchasable components, compare compatible products/rates from governed sources, show the evidence and timestamp, explain the unit/price assumptions, and generate a reproducible budget calculation.

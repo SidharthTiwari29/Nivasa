@@ -22,8 +22,8 @@ Every observation stores integer minor-unit amount, currency, unit, observed-at 
 
 SOURCE_OBSERVED = directly represented by permitted source evidence.
 VERIFIED = independently validated under a documented rule.
-ESTIMATE = Nivasa-derived calculation/range.
-RECOMMENDATION = Nivasa ranking/selection and never a source fact.
+ESTIMATE = Niwasthan-derived calculation/range.
+RECOMMENDATION = Niwasthan ranking/selection and never a source fact.
 
 ## Retry/idempotency
 

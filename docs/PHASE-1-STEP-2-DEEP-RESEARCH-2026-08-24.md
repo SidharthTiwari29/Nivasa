@@ -2,7 +2,7 @@
 
 ## Product implication
 
-Nivasa must treat India's interior market as a fragmented evidence graph, not a conventional catalogue. Current research identifies fragmented supply, inconsistent specifications/pricing, independent designers, small workshops, local vendors, organized platforms, manufacturers and specialist channels as structural characteristics of the market.
+Niwasthan must treat India's interior market as a fragmented evidence graph, not a conventional catalogue. Current research identifies fragmented supply, inconsistent specifications/pricing, independent designers, small workshops, local vendors, organized platforms, manufacturers and specialist channels as structural characteristics of the market.
 
 ## Step 2 implementation consequence
 
@@ -23,7 +23,7 @@ Coverage must include both major and small decisions: furniture, wardrobes, kitc
 - Euromonitor's May 2026 India home-products research describes home-products specialists as highly fragmented with limited consolidation.
 - NIQ's August 2026 smart-home research highlights interoperability, setup complexity and trust as barriers to connected living adoption in India.
 
-These sources validate the Nivasa thesis but do not replace primary product evidence. Research reports are market context only; product facts must come from product/manufacturer/retailer/vendor evidence and must retain provenance.
+These sources validate the Niwasthan thesis but do not replace primary product evidence. Research reports are market context only; product facts must come from product/manufacturer/retailer/vendor evidence and must retain provenance.
 
 ## Hard guardrails
 
