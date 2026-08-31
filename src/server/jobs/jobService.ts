@@ -2,6 +2,9 @@ import type { Prisma, JobType } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 import { enqueueJob } from "./queue";
 import { computeVisualizationPriority } from "./visualizationPriority";
+import { anyPlanIncludesRenderType } from "@/server/entitlements/renderTierGating";
+import type { RenderType } from "@/server/rendering/provider";
+import { ForbiddenError } from "@/server/errors/AppError";
 import {
   reserveCredits,
   confirmReservation,
@@ -21,6 +24,36 @@ const VISUALIZATION_JOB_TYPES: readonly JobType[] = [
   "WALKTHROUGH",
   "VIDEO",
 ];
+
+// The plan-to-visualization-tier enforcement point: these four JobType
+// values share identical string values with RenderType, so the same
+// plan-gating table (FREE gets a static image only, Pro gets the full
+// walkthrough/video experience) applies directly. Enforced BEFORE credits
+// are reserved or a job is created - a user on the wrong plan never
+// consumes a credit or occupies a queue slot for a render they were never
+// entitled to request.
+async function assertRenderTypeAllowed(ownerId: string, type: JobType) {
+  if (!VISUALIZATION_JOB_TYPES.includes(type)) return;
+
+  const entitlements = await prisma.entitlement.findMany({
+    where: {
+      userId: ownerId,
+      status: "ACTIVE",
+      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+    },
+    select: { package: { select: { code: true } } },
+  });
+
+  const allowed = anyPlanIncludesRenderType(
+    entitlements.map((e) => e.package.code),
+    type as RenderType,
+  );
+  if (!allowed) {
+    throw new ForbiddenError(
+      `Your current plan does not include ${type.toLowerCase().replace(/_/g, " ")} visualization`,
+    );
+  }
+}
 
 async function resolveJobPriority(
   type: JobType,
@@ -67,6 +100,8 @@ export async function createAndEnqueueJob(input: {
     },
   });
   if (existing) return existing;
+
+  await assertRenderTypeAllowed(input.ownerId, input.type);
 
   // Reserve BEFORE creating the job record - if the user has insufficient
   // credits, reserveCredits throws and no job is ever created or queued.

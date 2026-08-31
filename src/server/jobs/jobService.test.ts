@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/server/db/prisma";
 import { enqueueJob } from "./queue";
+import { ForbiddenError } from "@/server/errors/AppError";
 import {
   reserveCredits,
   confirmReservation,
@@ -18,6 +19,7 @@ vi.mock("@/server/db/prisma", () => ({
     },
     designProject: { findUnique: vi.fn() },
     roomUnderstanding: { findFirst: vi.fn() },
+    entitlement: { findMany: vi.fn() },
   },
 }));
 
@@ -32,6 +34,7 @@ vi.mock("@/server/services/entitlements", () => ({
 const jobs = vi.mocked(prisma.aIJob);
 const designProjects = vi.mocked(prisma.designProject);
 const roomUnderstandings = vi.mocked(prisma.roomUnderstanding);
+const entitlements = vi.mocked(prisma.entitlement);
 const enqueue = vi.mocked(enqueueJob);
 const reserve = vi.mocked(reserveCredits);
 const confirm = vi.mocked(confirmReservation);
@@ -152,6 +155,9 @@ describe("jobService", () => {
         status: "CONFIRMED",
         confidenceBps: 9000,
       } as never);
+      entitlements.findMany.mockResolvedValue([
+        { package: { code: "NIVASA_PRO" } },
+      ] as never);
 
       await createAndEnqueueJob({
         projectId: "project-1",
@@ -172,6 +178,9 @@ describe("jobService", () => {
       jobs.create.mockResolvedValue({ id: "job-1" } as never);
       enqueue.mockResolvedValue({ id: "queue-job-1" } as never);
       designProjects.findUnique.mockResolvedValue({ roomId: null } as never);
+      entitlements.findMany.mockResolvedValue([
+        { package: { code: "NIVASA_PRO" } },
+      ] as never);
 
       await createAndEnqueueJob({
         projectId: "project-1",
@@ -271,6 +280,81 @@ describe("jobService", () => {
 
       expect(confirm).not.toHaveBeenCalled();
       expect(release).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("plan-gated visualization types", () => {
+    it("rejects a WALKTHROUGH job for a user whose plan does not include it, before reserving credits or creating a job", async () => {
+      jobs.findUnique.mockResolvedValue(null);
+      entitlements.findMany.mockResolvedValue([
+        { package: { code: "FREE" } },
+      ] as never);
+
+      await expect(
+        createAndEnqueueJob({
+          projectId: "project-1",
+          ownerId: "user-1",
+          type: "WALKTHROUGH",
+          idempotencyKey: "key-1",
+          payload: {},
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenError);
+      expect(reserve).not.toHaveBeenCalled();
+      expect(jobs.create).not.toHaveBeenCalled();
+    });
+
+    it("allows a WALKTHROUGH job for a user on the Pro plan", async () => {
+      jobs.findUnique.mockResolvedValue(null);
+      entitlements.findMany.mockResolvedValue([
+        { package: { code: "NIVASA_PRO" } },
+      ] as never);
+      reserve.mockResolvedValue({ id: "reservation-1" } as never);
+      jobs.create.mockResolvedValue({ id: "job-1" } as never);
+      enqueue.mockResolvedValue({ id: "queue-job-1" } as never);
+
+      await expect(
+        createAndEnqueueJob({
+          projectId: "project-1",
+          ownerId: "user-1",
+          type: "WALKTHROUGH",
+          idempotencyKey: "key-1",
+          payload: {},
+        }),
+      ).resolves.toEqual({ id: "job-1" });
+    });
+
+    it("does not check plan entitlements at all for a non-visualization job type (DESIGN_GENERATION)", async () => {
+      jobs.findUnique.mockResolvedValue(null);
+      reserve.mockResolvedValue({ id: "reservation-1" } as never);
+      jobs.create.mockResolvedValue({ id: "job-1" } as never);
+      enqueue.mockResolvedValue({ id: "queue-job-1" } as never);
+
+      await createAndEnqueueJob({
+        projectId: "project-1",
+        ownerId: "user-1",
+        type: "DESIGN_GENERATION",
+        idempotencyKey: "key-1",
+        payload: {},
+      });
+
+      expect(entitlements.findMany).not.toHaveBeenCalled();
+    });
+
+    it("gates PANORAMA the same way for a plan that lacks it", async () => {
+      jobs.findUnique.mockResolvedValue(null);
+      entitlements.findMany.mockResolvedValue([
+        { package: { code: "FREE" } },
+      ] as never);
+
+      await expect(
+        createAndEnqueueJob({
+          projectId: "project-1",
+          ownerId: "user-1",
+          type: "PANORAMA",
+          idempotencyKey: "key-1",
+          payload: {},
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenError);
     });
   });
 });

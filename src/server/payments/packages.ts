@@ -15,8 +15,14 @@ export const COMMERCIAL_PACKAGES = [
     credits: 100,
   },
   {
-    code: "NIVASA_PRO",
-    name: "Nivasa Pro",
+    code: "NIVASA_HOME_INTELLIGENCE",
+    name: "Nivasa Home Intelligence",
+    priceMinor: 259900n,
+    credits: 300,
+  },
+  {
+    code: "NIVASA_IMMERSIVE",
+    name: "Nivasa Immersive",
     priceMinor: 999900n,
     credits: 1000,
   },
