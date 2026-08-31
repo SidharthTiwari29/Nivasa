@@ -138,6 +138,7 @@ model User {
   ownReferralCode            ReferralCode?
   referralAsReferred         Referral?
   createdSupplierInvites     SupplierInvite[]
+  onboardingRenderGrant      OnboardingRenderGrant?
 }
 
 model Account {
@@ -957,4 +958,20 @@ model SupplierInvite {
   createdBy             User                @relation(fields: [createdByUserId], references: [id])
 
   @@index([procurementRequestId])
+}
+
+// The trust-building mechanism: every user gets exactly one HD-quality
+// visualization for free, regardless of their plan - a bounded,
+// per-user, one-time cost (not per-transaction margin erosion) meant to
+// let a prospective customer see genuinely great output before they've
+// paid anything, which is the actual conversion lever, not a recurring
+// discount. Tracked as its own row (not a boolean flag on User) so the
+// grant is auditable: which asset it produced, when it was used.
+model OnboardingRenderGrant {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  usedAt     DateTime?
+  assetId    String?
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

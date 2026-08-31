@@ -35,4 +35,34 @@ describe("decideQualityTier", () => {
     });
     expect(tier).toBe("HD");
   });
+
+  it("grants HD via an unused onboarding grant even on a free plan with unconfirmed room data", () => {
+    // The trust-building override: a brand-new free-plan user with no
+    // confirmed room data yet should still see one genuinely great HD
+    // render, because the whole point is showing quality BEFORE either
+    // condition would normally be met.
+    const tier = decideQualityTier({
+      roomConfirmedHighConfidence: false,
+      planIncludesPriorityVisualization: false,
+      hasUnusedOnboardingGrant: true,
+    });
+    expect(tier).toBe("HD");
+  });
+
+  it("does not grant HD when hasUnusedOnboardingGrant is explicitly false", () => {
+    const tier = decideQualityTier({
+      roomConfirmedHighConfidence: false,
+      planIncludesPriorityVisualization: false,
+      hasUnusedOnboardingGrant: false,
+    });
+    expect(tier).toBe("STANDARD");
+  });
+
+  it("defaults to STANDARD when hasUnusedOnboardingGrant is omitted entirely", () => {
+    const tier = decideQualityTier({
+      roomConfirmedHighConfidence: false,
+      planIncludesPriorityVisualization: false,
+    });
+    expect(tier).toBe("STANDARD");
+  });
 });
