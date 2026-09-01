@@ -1,9 +1,9 @@
 # HANDOFF — Read this first in any new session
 
-**Repo**: https://github.com/SidharthTiwari29/Nivasa
+**Repo**: https://github.com/SidharthTiwari29/Niwasthan (renamed from `Nivasa` — the old URL redirects automatically, all history/branches/PRs intact under the same numbers)
 **Branch**: `codex/phase-2-completion`
-**PR**: #55 (open, not yet merged as of this document)
-**Last commit as of writing**: `612176f`
+**PR**: #55 (open, not yet merged as of this document — now at `github.com/SidharthTiwari29/Niwasthan/pull/55`)
+**Last commit as of writing**: `3772808`
 
 > This document is a snapshot, not a substitute for reality. Before acting on anything below, run `git log --oneline -30` and `git status` to confirm current state — this file can go stale the moment someone else pushes.
 
@@ -50,6 +50,17 @@ This development sandbox cannot reach Prisma's binary CDN, so `npx prisma genera
 
 - `npx vitest run` will always show **3 pre-existing test file failures** (files that import the real Prisma client unmocked) — this is expected, not a regression, as long as the count stays at exactly 3 and the same files.
 - `npx prisma generate`, `npx prisma validate`, and `npm run build` cannot be verified in this sandbox at all — only real GitHub Actions CI can confirm these. Always push and check the real CI result before treating anything as "done."
+
+## Production database (Neon) — in progress, not finished
+
+User registered `niwasthan.com`/`.in`, set up Cloudflare DNS, and created a free Neon Postgres project. Current state:
+
+- `prisma.config.ts` was fixed to support Neon's pooled-vs-direct connection split (commit `cc25a8b`) — `DATABASE_URL` (pooled, used by the running app via the `PrismaPg` driver adapter) must be a **different** value from `DIRECT_URL` (non-pooled, used by Prisma CLI for `migrate deploy`). This is a real Prisma 7 requirement for Neon, confirmed against Prisma's own official docs, not assumed.
+- A manually-triggered GitHub Actions workflow (`.github/workflows/migrate-production.yml`) was built to actually run `prisma migrate deploy` against the real Neon database, since **this development sandbox cannot reach Neon's network at all** (confirmed via a direct connection test — the sandbox's network is allowlisted to GitHub/npm/etc. only) and a GitHub PAT cannot push new workflow files without the `workflow` OAuth scope (a GitHub-enforced restriction, not something fixable from this side).
+- **As of this document, that workflow file has not yet successfully landed on `codex/phase-2-completion`** — the user attempted to add it via GitHub's web UI but it landed with a `format:check` failure (likely browser copy-paste corrupting quote characters) and possibly on the wrong branch (`main` instead of `codex/phase-2-completion` — the `nivasa@0.1.0` in their CI output, instead of `niwasthan@0.1.0`, was the tell). Was in the middle of walking them through re-adding it via direct file upload (to avoid paste corruption) when the repo got renamed mid-conversation.
+- **The user pasted their real Neon connection string (both pooled and direct variants) in plaintext, twice.** They were told to rotate the password in Neon's dashboard immediately. Any new session should NOT ask for or need this credential directly — it belongs in GitHub Secrets only (`DATABASE_URL`, `DIRECT_URL`), never in chat.
+
+**Next step for whoever picks this up**: confirm whether `.github/workflows/migrate-production.yml` exists on `codex/phase-2-completion` (check `git ls-remote` or the Actions tab directly), fix/re-add it if not, confirm the two GitHub Secrets are set, then have the user trigger it.
 
 ## How pushes actually happened this session
 
