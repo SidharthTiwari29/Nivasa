@@ -1,4 +1,4 @@
-# NIVASA
+# NIWASTHAN
 
 **Your home. Designed your way.**
 
@@ -6,9 +6,9 @@
 
 ## The Home Intelligence Platform
 
-Nivasa is an AI-native home-interior platform for India that takes a homeowner from their **real property and floor plan** to an exceptionally well-designed, transparent, budget-aware, purchasable, buildable and experienceable home.
+Niwasthan is an AI-native home-interior platform for India that takes a homeowner from their **real property and floor plan** to an exceptionally well-designed, transparent, budget-aware, purchasable, buildable and experienceable home.
 
-Nivasa is **not** merely an AI image generator, catalogue, BOQ calculator, marketplace, designer directory, project-management tool or 360° viewer. Its differentiation is the connected intelligence system that links the customer's actual home to design, real materials and products, choices, savings, buildability, visualization, procurement, execution and persistent home intelligence.
+Niwasthan is **not** merely an AI image generator, catalogue, BOQ calculator, marketplace, designer directory, project-management tool or 360° viewer. Its differentiation is the connected intelligence system that links the customer's actual home to design, real materials and products, choices, savings, buildability, visualization, procurement, execution and persistent home intelligence.
 
 > **Status rule:** This README is the canonical end-to-end product and engineering contract. It describes the agreed target vision and implementation foundations. It must never be used to claim that an unfinished capability is already production-complete.
 
@@ -16,7 +16,7 @@ Nivasa is **not** merely an AI image generator, catalogue, BOQ calculator, marke
 
 # 1. NORTH STAR
 
-Nivasa should take a homeowner through:
+Niwasthan should take a homeowner through:
 
 ```text
 REAL PROPERTY
@@ -72,7 +72,7 @@ Product promise:
 
 ---
 
-# 2. WHAT NIVASA IS SOLVING
+# 2. WHAT NIWASTHAN IS SOLVING
 
 Interior design is fragmented across:
 
@@ -116,7 +116,7 @@ PROCUREMENT
 EXECUTION
 ```
 
-Nivasa optimizes for **design quality + practicality + transparency + affordability + value + execution confidence**, not merely the lowest price.
+Niwasthan optimizes for **design quality + practicality + transparency + affordability + value + execution confidence**, not merely the lowest price.
 
 ---
 
@@ -179,7 +179,7 @@ For important decisions the homeowner should understand:
 - confidence / evidence
 - downstream impact
 
-Nivasa must never invent facts to make a recommendation look complete.
+Niwasthan must never invent facts to make a recommendation look complete.
 
 ## 3.4 Value First
 
@@ -187,7 +187,7 @@ Nivasa must never invent facts to make a recommendation look complete.
 CHEAPEST ≠ BEST VALUE ≠ BEST QUALITY ≠ BEST DEAL
 ```
 
-A genuine deal requires evidence. Nivasa should explain trade-offs rather than blindly recommend the cheapest option.
+A genuine deal requires evidence. Niwasthan should explain trade-offs rather than blindly recommend the cheapest option.
 
 ## 3.5 User Control
 
@@ -224,7 +224,7 @@ ESTIMATED / INFERRED
 
 with appropriate confidence until confirmed.
 
-Nivasa must never fabricate:
+Niwasthan must never fabricate:
 
 - dimensions
 - prices
@@ -274,7 +274,7 @@ A feature must not bypass its intelligence and data foundations merely because i
 
 ---
 
-# 5. THE NIVASA DEVELOPMENT RULE
+# 5. THE NIWASTHAN DEVELOPMENT RULE
 
 > **No feature gets built just because it sounds exciting.**
 
@@ -294,7 +294,7 @@ If not, it does not enter the production build queue.
 
 # 6. PROPERTY + SPATIAL INTELLIGENCE
 
-Nivasa must create a persistent spatial representation of the customer's actual home.
+Niwasthan must create a persistent spatial representation of the customer's actual home.
 
 Where supported by evidence it should represent:
 
@@ -339,7 +339,7 @@ Incorrect geometry can corrupt design, product selection, BOQ, visualization and
 
 # 7. LAYOUT UPLOAD → EXCEPTIONAL INTERIOR DESIGNER
 
-A defining Nivasa capability is that when a customer uploads their apartment layout, Nivasa should be capable of reasoning like an exceptionally strong interior designer grounded in that **actual home**.
+A defining Niwasthan capability is that when a customer uploads their apartment layout, Niwasthan should be capable of reasoning like an exceptionally strong interior designer grounded in that **actual home**.
 
 It should reason about:
 
@@ -366,7 +366,7 @@ It should reason about:
 - budget
 - buildability
 
-Nivasa should challenge a poor decision rather than blindly follow it:
+Niwasthan should challenge a poor decision rather than blindly follow it:
 
 ```text
 USER REQUEST
@@ -390,7 +390,7 @@ The signature long-term experience is:
 
 # 8. MULTIPLE DESIGNS + USER-CONTROLLED REVISIONS
 
-Nivasa should generate multiple strong design directions rather than one generic AI image.
+Niwasthan should generate multiple strong design directions rather than one generic AI image.
 
 Directions may include:
 
@@ -453,7 +453,7 @@ Important changes must preserve:
 
 # 9. INTERIOR INTELLIGENCE GRAPH
 
-Nivasa models the interior universe rather than treating products as isolated rows.
+Niwasthan models the interior universe rather than treating products as isolated rows.
 
 Canonical entities include:
 
@@ -545,7 +545,7 @@ The taxonomy must remain extensible.
 
 # 11. SOURCE → OBSERVATION → EVIDENCE → CANONICAL ENTITY
 
-Nivasa must never treat imported, scraped or supplied information as automatically authoritative.
+Niwasthan must never treat imported, scraped or supplied information as automatically authoritative.
 
 ```text
 SOURCE
@@ -606,7 +606,7 @@ SOURCE C → PRODUCT X → ₹13,499
 
 Meaningful variants remain distinct when size, finish, colour, material, capacity, specification, model or SKU changes meaningfully.
 
-Nivasa must not merge unrelated products merely because names are similar.
+Niwasthan must not merge unrelated products merely because names are similar.
 
 ---
 
@@ -642,7 +642,7 @@ A source appearing in a registry does not automatically mean its data is ingesti
 
 # 14. MORE OPTIONS
 
-Nivasa should provide substantially more useful choices across:
+Niwasthan should provide substantially more useful choices across:
 
 - premium
 - mid-range
@@ -662,7 +662,7 @@ The system must group and rank choices rather than overwhelm the homeowner with 
 
 # 15. BETTER OPTIONS
 
-Nivasa should identify better options using evidence-backed signals such as:
+Niwasthan should identify better options using evidence-backed signals such as:
 
 - quality
 - compatibility
@@ -691,7 +691,7 @@ Labels must be explainable and must not imply unsupported guarantees.
 
 # 16. BETTER DEALS
 
-Nivasa must distinguish:
+Niwasthan must distinguish:
 
 ```text
 CHEAPEST
@@ -748,13 +748,13 @@ DESIGN / MAINTENANCE IMPACT
 USER DECISION
 ```
 
-Nivasa should explain what changes, what remains unchanged, expected quality differences, maintenance differences, durability differences and visual impact.
+Niwasthan should explain what changes, what remains unchanged, expected quality differences, maintenance differences, durability differences and visual impact.
 
 ---
 
 # 18. PROJECT-LEVEL OPTIMIZATION
 
-Nivasa should eventually optimize the entire interior project, not merely one product.
+Niwasthan should eventually optimize the entire interior project, not merely one product.
 
 ```text
 ORIGINAL PROJECT  ₹12,50,000
@@ -872,7 +872,7 @@ Deterministic costing must use persisted catalogue/market data. No fabricated ca
 
 # 22. BUDGET INTELLIGENCE
 
-Nivasa should continuously answer:
+Niwasthan should continuously answer:
 
 - What will this design cost?
 - What is driving the cost?
@@ -919,7 +919,7 @@ VISUALIZATION
 PROCUREMENT
 ```
 
-Nivasa should identify affected downstream objects and explain the impact.
+Niwasthan should identify affected downstream objects and explain the impact.
 
 Example:
 
@@ -967,11 +967,11 @@ USER DECISION
 
 ---
 
-# 25. NIVASA REALITY CHECK
+# 25. NIWASTHAN REALITY CHECK
 
 Beautiful AI concepts are not enough.
 
-**Nivasa Reality Check** asks:
+**Niwasthan Reality Check** asks:
 
 > **Looks beautiful. Now let's check whether it actually works.**
 
@@ -997,7 +997,7 @@ The output should distinguish verified constraints from estimates.
 
 # 26. BEFORE-YOU-BUY INTELLIGENCE
 
-Before a customer commits to a product or design choice, Nivasa should identify relevant risks and requirements.
+Before a customer commits to a product or design choice, Niwasthan should identify relevant risks and requirements.
 
 Examples:
 
@@ -1023,7 +1023,7 @@ Principle:
 
 Smart-home intelligence should be part of the broader home system, not a disconnected gadget catalogue.
 
-Nivasa should consider:
+Niwasthan should consider:
 
 - lighting
 - switches
@@ -1043,7 +1043,7 @@ Recommendations should account for the actual property and project context.
 
 # 28. LOCALIZATION + NIVASA ASSISTANT
 
-Nivasa should feel native to the customer.
+Niwasthan should feel native to the customer.
 
 The platform should be localization-ready for major Indian languages and regional contexts while supporting English as a first-class language.
 
@@ -1066,15 +1066,15 @@ Example:
 
 > “Aapka kitchen layout thoda tight hai — agar hob yahan shift karein, toh approximately ₹8,000 save ho sakte hain.”
 
-The **Nivasa Assistant** should understand the customer's project context and explain decisions in human language.
+The **Niwasthan Assistant** should understand the customer's project context and explain decisions in human language.
 
 It should not become a generic chatbot disconnected from the home model.
 
 ---
 
-# 29. NIVASA PERSONALITY
+# 29. NIWASTHAN PERSONALITY
 
-Nivasa should be intelligent, warm, slightly quirky, useful and brandable.
+Niwasthan should be intelligent, warm, slightly quirky, useful and brandable.
 
 It should never become childish, spammy or distracting.
 
@@ -1098,11 +1098,11 @@ Humour is optional and must never obscure financial, safety, legal or execution 
 
 ---
 
-# 30. NIVASA MOMENTS — QUIRKY, USEFUL NOTIFICATIONS
+# 30. NIWASTHAN MOMENTS — QUIRKY, USEFUL NOTIFICATIONS
 
 Notifications should be **useful first and delightful second**.
 
-The system can turn meaningful project events into contextual **Nivasa Moments**:
+The system can turn meaningful project events into contextual **Niwasthan Moments**:
 
 ```text
 EVENT
@@ -1113,7 +1113,7 @@ CONTEXT
   ↓
 PERSONALITY
   ↓
-NIVASA MOMENT
+NIWASTHAN MOMENT
 ```
 
 Examples:
@@ -1148,7 +1148,7 @@ Customers should be able to ask:
 
 > **“What would you do if this were your home?”**
 
-Nivasa should answer using the actual project context:
+Niwasthan should answer using the actual project context:
 
 - apartment dimensions
 - lifestyle
@@ -1185,13 +1185,13 @@ Exact metrics and scoring must become evidence-based as the system matures.
 
 ---
 
-# 33. NIVASA FINDS
+# 33. Niwasthan FINDS
 
-**Nivasa Finds** is the proactive discovery layer.
+**Niwasthan Finds** is the proactive discovery layer.
 
 Example:
 
-> **Nivasa Found a Better Deal**
+> **Niwasthan Found a Better Deal**
 >
 > Selected pendant: ₹8,900  
 > Similar verified option: ₹5,999  
@@ -1213,13 +1213,13 @@ No fabricated price, availability or product evidence is acceptable.
 
 ---
 
-# 34. NIVASA MAGIC
+# 34. NIWASTHAN MAGIC
 
-**Nivasa Magic** is reserved for occasional, genuinely useful discoveries.
+**Niwasthan Magic** is reserved for occasional, genuinely useful discoveries.
 
 Example:
 
-> ✨ **Nivasa Magic**
+> ✨ **Niwasthan Magic**
 >
 > We noticed your living room gets strong evening sunlight.
 >
@@ -1255,13 +1255,13 @@ The output should feel like **“This is my apartment”**, not a generic room i
 
 ---
 
-# 36. NIVASA IMMERSIVE — ENTER YOUR FUTURE HOME™
+# 36. NIWASTHAN IMMERSIVE — ENTER YOUR FUTURE HOME™
 
-This is one of Nivasa's signature experiences.
+This is one of Niwasthan's signature experiences.
 
 ## Critical definition
 
-**Nivasa Immersive is NOT merely a 360° panorama or rotating video.**
+**Niwasthan Immersive is NOT merely a 360° panorama or rotating video.**
 
 The target experience is a **first-person, spatially consistent representation of the customer's own apartment** where the customer can enter and navigate through the designed home at human scale.
 
@@ -1316,7 +1316,7 @@ Target capabilities progressively include:
 - optional video recording/export
 - future VR/AR pathways
 
-A rotating panorama can be an intermediate or supporting asset, but **it does not satisfy the full Nivasa Immersive acceptance target by itself**.
+A rotating panorama can be an intermediate or supporting asset, but **it does not satisfy the full Niwasthan Immersive acceptance target by itself**.
 
 ### Touch and feel
 
@@ -1330,7 +1330,7 @@ If the customer walks from the living room into the kitchen, it must be the **sa
 
 # 37. HOME BOOK
 
-**Nivasa Home Book** is the structured, durable record of the customer's home project.
+**Niwasthan Home Book** is the structured, durable record of the customer's home project.
 
 It should progressively bring together:
 
@@ -1352,9 +1352,9 @@ It should remain useful beyond a one-time design transaction.
 
 ---
 
-# 38. NIVASA DNA™
+# 38. NIWASTHAN DNA™
 
-Nivasa DNA™ is the persistent intelligence identity of the customer's home/project.
+Niwasthan DNA™ is the persistent intelligence identity of the customer's home/project.
 
 Subject to user controls, privacy and security, it progressively captures:
 
@@ -1393,7 +1393,7 @@ MY DECISIONS
  ↓
 MY PROJECT HISTORY
  ↓
-MY NIVASA DNA™
+MY Niwasthan DNA™
 ```
 
 DNA should make future recommendations more relevant without removing user control.
@@ -1402,14 +1402,14 @@ DNA should make future recommendations more relevant without removing user contr
 
 # 39. COMMERCIAL PRODUCT LADDER
 
-Nivasa's commercial packaging is a real entitlement system, not merely a pricing page.
+Niwasthan's commercial packaging is a real entitlement system, not merely a pricing page.
 
 | Plan                 |      Price | Core purpose                                         |
 | -------------------- | ---------: | ---------------------------------------------------- |
 | **Free**             |         ₹0 | Discover Nivasa and begin the home journey           |
-| **Nivasa Design**    |    **₹99** | Affordable entry into meaningful design intelligence |
-| **Nivasa Home Book** | **₹2,599** | Deeper project/design/documentation experience       |
-| **Nivasa Immersive** | **₹9,999** | Premium future-home immersive experience             |
+| **Niwasthan Design**    |    **₹99** | Affordable entry into meaningful design intelligence |
+| **Niwasthan Home Book** | **₹2,599** | Deeper project/design/documentation experience       |
+| **Niwasthan Immersive** | **₹9,999** | Premium future-home immersive experience             |
 
 ### Feature philosophy by plan
 
@@ -1428,7 +1428,7 @@ Target capabilities may include:
 - selected free insights
 - upgrade pathways
 
-#### NIVASA DESIGN — ₹99
+#### NIWASTHAN DESIGN — ₹99
 
 The affordable entry into meaningful design intelligence.
 
@@ -1445,7 +1445,7 @@ Target capabilities may include:
 - initial savings/value insights
 - controlled design revision flow
 
-#### NIVASA HOME BOOK — ₹2,599
+#### NIWASTHAN HOME BOOK — ₹2,599
 
 The deeper project record and decision package.
 
@@ -1464,7 +1464,7 @@ Target capabilities may include:
 - stronger procurement preparation
 - persistent project intelligence
 
-#### NIVASA IMMERSIVE — ₹9,999
+#### NIWASTHAN IMMERSIVE — ₹9,999
 
 The premium experience centered on **Enter Your Future Home™**.
 
@@ -1488,7 +1488,7 @@ Pricing may evolve through deliberate product decisions; unrelated domain logic 
 
 # 40. PROCUREMENT
 
-Nivasa must eventually connect approved design decisions to purchasing:
+Niwasthan must eventually connect approved design decisions to purchasing:
 
 ```text
 APPROVED DESIGN
@@ -1532,7 +1532,7 @@ The final goal is not a beautiful screen.
 
 It is a better home delivered in the real world.
 
-Nivasa should progressively connect:
+Niwasthan should progressively connect:
 
 ```text
 DESIGN
@@ -1779,9 +1779,9 @@ README status claims must remain evidence-based.
 
 ---
 
-# 51. THE NIVASA DIFFERENCE
+# 51. THE NIWASTHAN DIFFERENCE
 
-Nivasa aims to combine capabilities that are normally fragmented:
+Niwasthan aims to combine capabilities that are normally fragmented:
 
 ```text
 INTERIOR DESIGN
@@ -1817,7 +1817,7 @@ PERSISTENT NIVASA DNA™
 
 The homeowner should not have to become an interior designer, quantity surveyor, procurement specialist and contractor just to make a good home.
 
-> **Nivasa should make the complexity understandable.**
+> **Niwasthan should make the complexity understandable.**
 
 ---
 
@@ -1845,11 +1845,11 @@ The homeowner should not have to become an interior designer, quantity surveyor,
 
 # 53. PRODUCT NORTH STAR — THE CUSTOMER'S EXPERIENCE
 
-The long-term Nivasa experience is:
+The long-term Niwasthan experience is:
 
 > **Upload your home.**
 >
-> **Let Nivasa understand it.**
+> **Let Niwasthan understand it.**
 >
 > **Get exceptional design directions.**
 >
@@ -1885,12 +1885,12 @@ The long-term Nivasa experience is:
 
 # 54. STATUS OF THIS DOCUMENT
 
-This README is the **canonical Nivasa product vision and engineering north star**.
+This README is the **canonical Niwasthan product vision and engineering north star**.
 
 It is **not** a claim that every capability described above is already implemented.
 
 Current implementation status must be established separately through repository audits, tests, CI and acceptance evidence.
 
-If a new requirement is discovered, the vision should be amended deliberately, reviewed for dependency impact and then locked again. We should not maintain competing versions of the Nivasa vision.
+If a new requirement is discovered, the vision should be amended deliberately, reviewed for dependency impact and then locked again. We should not maintain competing versions of the Niwasthan vision.
 
-> **Nivasa is not building another interior-design app. It is building an intelligent system for understanding, designing, experiencing, buying and building a home.**
+> **Niwasthan is not building another interior-design app. It is building an intelligent system for understanding, designing, experiencing, buying and building a home.**
