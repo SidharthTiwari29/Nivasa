@@ -20,6 +20,8 @@ export const catalogueCurationRepository = {
         name: string;
         brand: string | null;
         unitPriceMinor: bigint;
+        mrpMinor: bigint | null;
+        priceEffectiveFrom: Date;
       }>
     >();
 
@@ -32,6 +34,8 @@ export const catalogueCurationRepository = {
         name: item.name,
         brand: item.brand,
         unitPriceMinor: price.amountMinor,
+        mrpMinor: price.mrpMinor,
+        priceEffectiveFrom: price.effectiveFrom,
       });
       byCategory.set(item.category, list);
     }

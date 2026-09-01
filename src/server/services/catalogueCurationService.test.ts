@@ -24,6 +24,8 @@ describe("catalogueCurationService.curate", () => {
               name: "Sofa A",
               brand: "Brand A",
               unitPriceMinor: 20_000n,
+              mrpMinor: 24_000n,
+              priceEffectiveFrom: new Date("2026-08-25T00:00:00Z"),
             },
           ],
         ],
