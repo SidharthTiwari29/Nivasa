@@ -27,6 +27,10 @@ export async function enqueueJob(input: {
   jobId: string;
   type: QueueJobType;
   payload: Record<string, unknown>;
+  priority?: number;
 }) {
-  return getJobQueue().add(input.type, input.payload, { jobId: input.jobId });
+  return getJobQueue().add(input.type, input.payload, {
+    jobId: input.jobId,
+    priority: input.priority,
+  });
 }

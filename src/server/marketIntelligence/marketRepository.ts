@@ -298,4 +298,65 @@ export const marketRepository = {
     `);
     return id;
   },
+
+  // Reads for the alternative/comparison side of the pipeline - these were
+  // missing entirely: relationships and price observations could be
+  // written, but nothing could read them back for ranking. This is what
+  // makes rankValueCandidates/rankSubstitutions (valueEngine.ts,
+  // substitution.ts) actually usable against real data instead of only
+  // unit-tested against hand-built fixtures.
+  async listRelationshipsForProduct(
+    productId: string,
+    relationshipType?: string,
+  ) {
+    return prisma.$queryRaw<
+      Array<{
+        id: string;
+        toProductId: string;
+        relationshipType: string;
+        confidenceBps: number | null;
+        evidence: unknown;
+        title: string;
+        category: string;
+      }>
+    >(Prisma.sql`
+      SELECT r."id", r."toProductId", r."relationshipType", r."confidenceBps", r."evidence",
+             p."title", p."category"
+      FROM "MarketProductRelationship" r
+      JOIN "MarketProduct" p ON p."id" = r."toProductId"
+      WHERE r."fromProductId" = ${productId}
+        ${relationshipType ? Prisma.sql`AND r."relationshipType" = ${relationshipType}` : Prisma.empty}
+      ORDER BY r."confidenceBps" DESC NULLS LAST
+    `);
+  },
+
+  // Latest active source-product listing (one per source/vendor) plus its
+  // most recent price observation, for every product in a category - the
+  // candidate set More/Better Options and value ranking need to compare
+  // against, rather than a single product's history in isolation.
+  async listActiveCandidatesByCategory(category: string) {
+    return prisma.$queryRaw<
+      Array<{
+        sourceProductId: string;
+        productId: string;
+        title: string;
+        amountMinor: bigint | null;
+        confidenceBps: number | null;
+        observedAt: Date | null;
+      }>
+    >(Prisma.sql`
+      SELECT sp."id" AS "sourceProductId", sp."productId", p."title",
+             latest."amountMinor", latest."confidenceBps", latest."observedAt"
+      FROM "MarketSourceProduct" sp
+      JOIN "MarketProduct" p ON p."id" = sp."productId"
+      LEFT JOIN LATERAL (
+        SELECT "amountMinor", "confidenceBps", "observedAt"
+        FROM "MarketPriceObservation" po
+        WHERE po."sourceProductId" = sp."id"
+        ORDER BY po."observedAt" DESC
+        LIMIT 1
+      ) latest ON true
+      WHERE sp."active" = true AND p."category" = ${category}
+    `);
+  },
 };

@@ -1,4 +1,6 @@
 import { marketRepository } from "./marketRepository";
+import { rankValueCandidates } from "./valueEngine";
+import { rankSubstitutions } from "./substitution";
 
 export interface MarketPricePresentation {
   amountMinor: bigint;
@@ -54,5 +56,53 @@ export const marketService = {
           ? (row.evidence as Record<string, unknown>)
           : {},
     }));
+  },
+};
+
+// Connects the previously-unused rankValueCandidates/rankSubstitutions pure
+// functions to real MarketProduct/MarketSourceProduct/MarketPriceObservation/
+// MarketProductRelationship data - before this, those functions were only
+// ever exercised against hand-built test fixtures, with no path from an
+// actual product to a ranked result.
+export const marketRankingService = {
+  async moreAndBetterOptions(category: string) {
+    const candidates =
+      await marketRepository.listActiveCandidatesByCategory(category);
+    const priced = candidates.filter(
+      (c) => c.amountMinor !== null && c.confidenceBps !== null,
+    );
+    return rankValueCandidates(
+      priced.map((c) => ({
+        id: c.sourceProductId,
+        priceMinor: c.amountMinor as bigint,
+        qualityScoreBps: c.confidenceBps as number,
+        compatibilityScoreBps: c.confidenceBps as number,
+        durabilityScoreBps: c.confidenceBps as number,
+        designFitScoreBps: c.confidenceBps as number,
+        evidenceConfidenceBps: c.confidenceBps as number,
+        tradeOffs: [],
+      })),
+    );
+  },
+
+  async substitutionsFor(productId: string, currentPriceMinor: bigint | null) {
+    const relationships = await marketRepository.listRelationshipsForProduct(
+      productId,
+      "ALTERNATIVE_TO",
+    );
+    return rankSubstitutions(
+      currentPriceMinor,
+      relationships.map((r) => ({
+        id: r.toProductId,
+        name: r.title,
+        priceMinor: null,
+        qualityImpact: "UNKNOWN" as const,
+        maintenanceImpact: "UNKNOWN" as const,
+        durabilityImpact: "UNKNOWN" as const,
+        appearanceImpact: "UNKNOWN" as const,
+        explanation: `Alternative in category ${r.category}`,
+        evidenceIds: r.confidenceBps ? [r.id] : [],
+      })),
+    );
   },
 };

@@ -49,7 +49,7 @@ LOCALIZATION / ASSISTANT / NOTIFICATIONS
       ↓
 COMMERCIAL / VISUALIZATION
       ↓
-NIVASA IMMERSIVE
+NIWASTHAN IMMERSIVE
       ↓
 WALK THROUGH MY FUTURE HOME
       ↓
@@ -59,7 +59,7 @@ EXECUTION
       ↓
 QUALITY / SNAGGING / HANDOVER
       ↓
-HOME MEMORY / NIVASA DNA™
+HOME MEMORY / NIWASTHAN DNA™
 ```
 
 Product promise:
@@ -90,7 +90,7 @@ Interior design is fragmented across:
 
 The homeowner often becomes the researcher, coordinator, negotiator and quality controller.
 
-Nivasa aims to make this coherent:
+Niwasthan aims to make this coherent:
 
 ```text
 DESIGN
@@ -281,7 +281,7 @@ A feature must not bypass its intelligence and data foundations merely because i
 Every proposed capability must answer:
 
 1. Does it strengthen the homeowner journey?
-2. Does it use or strengthen Nivasa's intelligence graph?
+2. Does it use or strengthen Niwasthan's intelligence graph?
 3. Does it create measurable value through better design, transparency, affordability, quality, confidence or execution?
 4. Does it have a clear dependency position?
 5. Can it be implemented production-grade rather than as a demo?
@@ -1015,7 +1015,7 @@ Examples:
 
 Principle:
 
-> **Before you buy, Nivasa checks what you might otherwise discover too late.**
+> **Before you buy, Niwasthan checks what you might otherwise discover too late.**
 
 ---
 
@@ -1041,7 +1041,7 @@ Recommendations should account for the actual property and project context.
 
 ---
 
-# 28. LOCALIZATION + NIVASA ASSISTANT
+# 28. LOCALIZATION + NIWASTHAN ASSISTANT
 
 Niwasthan should feel native to the customer.
 
@@ -1172,20 +1172,20 @@ Customers should be able to compare competing design directions using meaningful
 
 Example:
 
-|                       | Design A | Design B |
-| --------------------- | -------: | -------: |
-| Cost                  |    ₹6.8L |    ₹7.2L |
-| Storage               |      82% |      94% |
-| Durability            |   8.1/10 |   9.0/10 |
-| Maintenance           |      Low |   Medium |
-| Style match           |      88% |      94% |
-| Nivasa recommendation |       ⭐ |   ⭐⭐⭐ |
+|                          | Design A | Design B |
+| ------------------------ | -------: | -------: |
+| Cost                     |    ₹6.8L |    ₹7.2L |
+| Storage                  |      82% |      94% |
+| Durability               |   8.1/10 |   9.0/10 |
+| Maintenance              |      Low |   Medium |
+| Style match              |      88% |      94% |
+| Niwasthan recommendation |       ⭐ |   ⭐⭐⭐ |
 
 Exact metrics and scoring must become evidence-based as the system matures.
 
 ---
 
-# 33. Niwasthan FINDS
+# 33. NIWASTHAN FINDS
 
 **Niwasthan Finds** is the proactive discovery layer.
 
@@ -1393,7 +1393,7 @@ MY DECISIONS
  ↓
 MY PROJECT HISTORY
  ↓
-MY Niwasthan DNA™
+MY NIWASTHAN DNA™
 ```
 
 DNA should make future recommendations more relevant without removing user control.
@@ -1404,9 +1404,9 @@ DNA should make future recommendations more relevant without removing user contr
 
 Niwasthan's commercial packaging is a real entitlement system, not merely a pricing page.
 
-| Plan                 |      Price | Core purpose                                         |
-| -------------------- | ---------: | ---------------------------------------------------- |
-| **Free**             |         ₹0 | Discover Nivasa and begin the home journey           |
+| Plan                    |      Price | Core purpose                                         |
+| ----------------------- | ---------: | ---------------------------------------------------- |
+| **Free**                |         ₹0 | Discover Niwasthan and begin the home journey        |
 | **Niwasthan Design**    |    **₹99** | Affordable entry into meaningful design intelligence |
 | **Niwasthan Home Book** | **₹2,599** | Deeper project/design/documentation experience       |
 | **Niwasthan Immersive** | **₹9,999** | Premium future-home immersive experience             |
@@ -1415,7 +1415,7 @@ Niwasthan's commercial packaging is a real entitlement system, not merely a pric
 
 #### FREE — Discover
 
-Designed to let a customer understand the value of Nivasa without giving away the complete commercial engine.
+Designed to let a customer understand the value of Niwasthan without giving away the complete commercial engine.
 
 Target capabilities may include:
 
@@ -1577,7 +1577,7 @@ The long-term system should support:
 - final handover
 - warranty/project record
 
-The project history should remain connected to the Home Book and Nivasa DNA where appropriate.
+The project history should remain connected to the Home Book and Niwasthan DNA where appropriate.
 
 ---
 
@@ -1598,13 +1598,13 @@ Where possible, the customer should see:
 - buildability implications
 - savings methodology
 
-Nivasa should never manufacture certainty where evidence is unavailable.
+Niwasthan should never manufacture certainty where evidence is unavailable.
 
 ---
 
 # 44. TRUST, SECURITY + USER CONTROL
 
-Nivasa handles valuable home, financial, design and project information.
+Niwasthan handles valuable home, financial, design and project information.
 
 The platform therefore requires:
 
@@ -1802,7 +1802,7 @@ LOCALIZATION
        +
 ASSISTANT
        +
-NIVASA MOMENTS
+NIWASTHAN MOMENTS
        +
 COMMERCIAL
        +
@@ -1812,7 +1812,7 @@ PROCUREMENT
        +
 EXECUTION
        +
-PERSISTENT NIVASA DNA™
+PERSISTENT NIWASTHAN DNA™
 ```
 
 The homeowner should not have to become an interior designer, quantity surveyor, procurement specialist and contractor just to make a good home.
@@ -1830,9 +1830,9 @@ The homeowner should not have to become an interior designer, quantity surveyor,
 5. **Transparency over persuasion.** Show reasoning, evidence and trade-offs.
 6. **Affordable entry, meaningful upgrade paths.** Every commercial tier must deliver genuine value.
 7. **Beautiful must also be buildable.** Reality Check is part of the product philosophy.
-8. **Personality without noise.** Nivasa can be witty, but never at the expense of clarity.
+8. **Personality without noise.** Niwasthan can be witty, but never at the expense of clarity.
 9. **Immersive means entering the home.** A panorama alone is not the destination.
-10. **Persistent intelligence.** The home should become smarter over time through Nivasa DNA™.
+10. **Persistent intelligence.** The home should become smarter over time through Niwasthan DNA™.
 11. **Execution matters.** The ultimate measure is the home delivered, not the screen displayed.
 12. **User remains in control.** Recommendations assist; they do not silently decide.
 13. **No fabricated certainty.** Unknown information remains unknown until verified.
@@ -1879,7 +1879,7 @@ The long-term Niwasthan experience is:
 >
 > **Build with transparency.**
 >
-> **Keep your home's intelligence with you through Nivasa DNA™.**
+> **Keep your home's intelligence with you through Niwasthan DNA™.**
 
 ---
 

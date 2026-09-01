@@ -254,4 +254,49 @@ export const budgetRepository = {
     `);
     return { id, ...input };
   },
+
+  // The user-facing "what changed and why" timeline: merges BudgetVersion
+  // history (each version's real totals) with the BudgetImpact records
+  // that explain WHY a later version differs from an earlier one. Both
+  // queries are scoped through the same BudgetPlan ownership check used
+  // everywhere else in this file - a caller can never see another
+  // owner's budget history by guessing a property id.
+  async listTimeline(propertyId: string, ownerId: string) {
+    const plan = await prisma.$queryRaw<Array<{ id: string }>>(Prisma.sql`
+      SELECT "id" FROM "BudgetPlan"
+      WHERE "propertyId" = ${propertyId} AND "ownerId" = ${ownerId}
+    `);
+    if (!plan[0]) return null;
+
+    const versions = await prisma.$queryRaw<
+      Array<{
+        version: number;
+        totalLowMinor: bigint;
+        totalTargetMinor: bigint;
+        totalHighMinor: bigint;
+        createdAt: Date;
+      }>
+    >(Prisma.sql`
+      SELECT "version", "totalLowMinor", "totalTargetMinor", "totalHighMinor", "createdAt"
+      FROM "BudgetVersion"
+      WHERE "planId" = ${plan[0].id}
+      ORDER BY "version" ASC
+    `);
+
+    const impacts = await prisma.$queryRaw<
+      Array<{
+        baseVersion: number;
+        proposedTargetDeltaMinor: bigint;
+        reason: string;
+        createdAt: Date;
+      }>
+    >(Prisma.sql`
+      SELECT "baseVersion", "proposedTargetDeltaMinor", "reason", "createdAt"
+      FROM "BudgetImpact"
+      WHERE "planId" = ${plan[0].id}
+      ORDER BY "createdAt" ASC
+    `);
+
+    return { versions, impacts };
+  },
 };

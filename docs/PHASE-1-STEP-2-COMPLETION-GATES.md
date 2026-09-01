@@ -1,8 +1,8 @@
-# Nivasa Phase 1 — Step 2 Completion Gates
+# Niwasthan Phase 1 — Step 2 Completion Gates
 
 ## Purpose
 
-Step 2 completes only when market intelligence becomes production-grade infrastructure for the frozen Nivasa journey. A source list alone is not completion.
+Step 2 completes only when market intelligence becomes production-grade infrastructure for the frozen Niwasthan journey. A source list alone is not completion.
 
 ## Mandatory pipeline
 
@@ -73,7 +73,7 @@ A product record must support, where available:
 - freshness timestamp
 - confidence
 - alternative products
-- why Nivasa recommends it
+- why Niwasthan recommends it
 - why an alternative may be better/worse
 
 ## Architecture alignment

@@ -1,4 +1,4 @@
-# Nivasa Phase 1 Step 1 — Home Intelligence + Home DNA
+# Niwasthan Phase 1 Step 1 — Home Intelligence + Home DNA
 
 ## Acceptance criteria
 

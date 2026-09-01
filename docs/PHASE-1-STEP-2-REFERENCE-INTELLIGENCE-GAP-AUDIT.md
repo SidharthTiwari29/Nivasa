@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Nivasa must use external interior sources as governed evidence, not as a user-facing website list. The reference layer must support design discovery, product specifications, pricing benchmarks, alternatives, and provenance.
+Niwasthan must use external interior sources as governed evidence, not as a user-facing website list. The reference layer must support design discovery, product specifications, pricing benchmarks, alternatives, and provenance.
 
 ## Reference families
 

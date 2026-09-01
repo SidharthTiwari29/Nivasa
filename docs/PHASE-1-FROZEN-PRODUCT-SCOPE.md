@@ -1,4 +1,4 @@
-# NIVASA — PHASE 1 FROZEN PRODUCT SCOPE
+# NIWASTHAN — PHASE 1 FROZEN PRODUCT SCOPE
 
 Status: FROZEN
 
@@ -21,7 +21,7 @@ This document is the implementation guardrail for Phase 1. No Phase 1 feature ma
    - future needs
 3. Money
    - budget conversation
-   - Nivasa Budget Reality
+   - Niwasthan Budget Reality
    - recommended budget
    - user adjustment
    - locked budget
@@ -48,7 +48,7 @@ This document is the implementation guardrail for Phase 1. No Phase 1 feature ma
    - live design cost
    - What-If simulator
    - cheaper/better alternatives
-   - Nivasa Savings Mode
+   - Niwasthan Savings Mode
 7. Smart Home
    - switches
    - lighting scenes
@@ -75,21 +75,21 @@ This document is the implementation guardrail for Phase 1. No Phase 1 feature ma
 - BOQ lock
 - GST quotation
 - manpower/labour/logistics/material/other costs
-- Nivasa margin
+- Niwasthan margin
 - negotiation
 - contract
 - immersive final walkthrough
 - execution
 - project tracking
 - handover
-- Nivasa Home
+- Niwasthan Home
 
 ## Cross-cutting requirements
 
 - language selection
 - multilingual UI
 - contextual AI help
-- Nivasa notifications
+- Niwasthan notifications
 - transparent product provenance
 - server-side entitlements
 - auditability
@@ -119,7 +119,7 @@ Dependencies must be respected. Later domains must not silently invent or bypass
 
 ## Source and market-intelligence standard
 
-Nivasa's fragmented-market advantage depends on broad, governed evidence rather than a list of websites. Sources may include manufacturers, authorized dealers, marketplaces, interior platforms, design studios, local vendors, artisans, material suppliers and service providers.
+Niwasthan's fragmented-market advantage depends on broad, governed evidence rather than a list of websites. Sources may include manufacturers, authorized dealers, marketplaces, interior platforms, design studios, local vendors, artisans, material suppliers and service providers.
 
 The source universe must cover every meaningful interior component from major systems to small decorative and functional items, including furniture, wardrobes, kitchens, hardware, plywood, laminates, surfaces, tiles, sanitaryware, plumbing, electrical, lighting, fans, smart home, appliances, furnishings, curtains/blinds, rugs, artwork, paintings, mandir/pooja components, décor, accessories, local fabrication and installation services.
 

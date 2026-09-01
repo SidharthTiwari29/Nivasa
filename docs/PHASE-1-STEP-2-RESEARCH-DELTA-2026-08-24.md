@@ -46,7 +46,7 @@ The ingestion layer must preserve the original price semantics instead of normal
 
 ## Product identity
 
-Equivalent products can have different merchant identifiers. Nivasa therefore requires a canonical product identity separate from source SKU identity, with variant-level attributes and evidence. This is consistent with current research on multi-merchant product identity and semantic product hierarchies.
+Equivalent products can have different merchant identifiers. Niwasthan therefore requires a canonical product identity separate from source SKU identity, with variant-level attributes and evidence. This is consistent with current research on multi-merchant product identity and semantic product hierarchies.
 
 ## Small-item coverage
 
@@ -66,4 +66,4 @@ Current sources demonstrate the required granularity:
 
 ## Implementation rule
 
-These findings extend the existing frozen Nivasa architecture; they do not create a new product direction. Research becomes useful only when transformed into governed evidence, normalized product/price observations, provenance and user-facing transparency.
+These findings extend the existing frozen Niwasthan architecture; they do not create a new product direction. Research becomes useful only when transformed into governed evidence, normalized product/price observations, provenance and user-facing transparency.

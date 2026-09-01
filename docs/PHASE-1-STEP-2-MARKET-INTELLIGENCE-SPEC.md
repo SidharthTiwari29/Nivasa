@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Nivasa's Budget Reality engine must be backed by a source-provenant interior market intelligence layer. The system is source-agnostic and must scale beyond 500 sources without schema redesign.
+Niwasthan's Budget Reality engine must be backed by a source-provenant interior market intelligence layer. The system is source-agnostic and must scale beyond 500 sources without schema redesign.
 
 ## Canonical pipeline
 
@@ -22,7 +22,7 @@ Do not stop at room-level products. Component-level data is first-class where ex
 
 ## Price truth
 
-Observed source prices are immutable historical observations. Never overwrite history. Preserve observation time, source, variant, seller, geography and evidence. Distinguish source-observed facts from Nivasa-verified facts, estimates and recommendations. Never fabricate missing prices or specifications.
+Observed source prices are immutable historical observations. Never overwrite history. Preserve observation time, source, variant, seller, geography and evidence. Distinguish source-observed facts from Niwasthan-verified facts, estimates and recommendations. Never fabricate missing prices or specifications.
 
 ## Acquisition
 

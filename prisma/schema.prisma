@@ -132,6 +132,13 @@ model User {
   confirmedHomeIntelligences HomeIntelligence[]    @relation("HomeIntelligenceConfirmedBy")
   confirmedRoomUnderstandings RoomUnderstanding[] @relation("RoomUnderstandingConfirmedBy")
   createdHomeDnaVersions     HomeDnaVersion[]      @relation("HomeDnaCreatedBy")
+  createdCatalogueSubstitutions CatalogueSubstitution[]
+  procurementRequests        ProcurementRequest[]
+  notifications              Notification[]
+  ownReferralCode            ReferralCode?
+  referralAsReferred         Referral?
+  createdSupplierInvites     SupplierInvite[]
+  onboardingRenderGrant      OnboardingRenderGrant?
 }
 
 model Account {
@@ -184,6 +191,7 @@ model Property {
   projects         DesignProject[]
   homeIntelligence HomeIntelligence?
   homeDnaVersions  HomeDnaVersion[]
+  procurementRequests ProcurementRequest[]
 
   @@index([ownerId, createdAt])
 }
@@ -362,6 +370,13 @@ model AIJob {
   idempotencyKey String
   provider       String?
   providerJobId  String?
+  // Links this job to the exact CreditReservation it consumed, so the
+  // worker's terminal-state transition can confirm (on success) or
+  // release (on failure) the SAME reservation - never a different one,
+  // never none at all. Without this link, credit consumption and job
+  // outcome would be two independent systems with no way to keep them
+  // honest with each other.
+  creditReservationId String?
   input          Json?
   output         Json?
   errorCode      String?
@@ -390,6 +405,8 @@ model CatalogueItem {
   updatedAt   DateTime         @updatedAt
   prices      CataloguePrice[]
   boqLines    BoqLine[]
+  substitutionsFrom CatalogueSubstitution[] @relation("SubstitutionFrom")
+  substitutionsTo   CatalogueSubstitution[] @relation("SubstitutionTo")
 }
 
 model CataloguePrice {
@@ -692,4 +709,269 @@ model MarketEvidence {
 
   @@index([sourceId, retrievedAt])
   @@index([sourceProductId])
+}
+
+enum SubstitutionImpact {
+  IMPROVED
+  SAME
+  REDUCED
+  UNKNOWN
+}
+
+// Curated, evidence-backed alternative relationship (README §8 ALTERNATIVE_TO).
+// Complementary to marketIntelligence/substitution.ts's pure ranking logic:
+// that module ranks candidate offers by computed score, this model records
+// a human (admin/designer) explicitly stating a trade-off, since quality/
+// maintenance/durability impact cannot be honestly auto-derived without a
+// material-attribute schema this system doesn't have.
+model CatalogueSubstitution {
+  id                  String             @id @default(cuid())
+  fromCatalogueItemId String
+  toCatalogueItemId   String
+  qualityImpact       SubstitutionImpact @default(UNKNOWN)
+  maintenanceImpact   SubstitutionImpact @default(UNKNOWN)
+  appearanceImpact    SubstitutionImpact @default(UNKNOWN)
+  durabilityImpact    SubstitutionImpact @default(UNKNOWN)
+  explanation         String             @db.Text
+  createdByUserId     String
+  createdAt           DateTime           @default(now())
+  fromCatalogueItem   CatalogueItem      @relation("SubstitutionFrom", fields: [fromCatalogueItemId], references: [id])
+  toCatalogueItem     CatalogueItem      @relation("SubstitutionTo", fields: [toCatalogueItemId], references: [id])
+  createdBy           User               @relation(fields: [createdByUserId], references: [id])
+
+  @@unique([fromCatalogueItemId, toCatalogueItemId])
+  @@index([fromCatalogueItemId])
+}
+
+enum ProcurementRequestStatus {
+  DRAFT
+  RFQ_SENT
+  QUOTES_RECEIVED
+  ORDERED
+  CANCELLED
+}
+
+enum QuoteStatus {
+  SUBMITTED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum OrderStatus {
+  PLACED
+  CONFIRMED
+  DISPATCHED
+  DELIVERED
+  CANCELLED
+}
+
+enum ExecutionStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  SNAGGED
+  RESOLVED
+}
+
+// README §26: RFQ -> Quote Comparison -> Order -> Delivery. Only begins
+// from a locked BudgetPlan (the real budget system, in BudgetPlan/
+// BudgetVersion - queried via raw SQL by procurementRepository since those
+// tables have no typed Prisma model here). lockedBudgetPlanId/
+// lockedBudgetVersion are plain scalar references rather than a Prisma
+// relation for that reason - the FK integrity for that side is enforced
+// by the service layer's lock check, not the database schema.
+model ProcurementRequest {
+  id                  String                   @id @default(cuid())
+  propertyId          String
+  ownerId             String
+  lockedBudgetPlanId  String
+  lockedBudgetVersion Int
+  status              ProcurementRequestStatus @default(DRAFT)
+  idempotencyKey      String
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  property            Property                 @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  owner               User                     @relation(fields: [ownerId], references: [id])
+  quotes              Quote[]
+  orders              Order[]
+  supplierInvites     SupplierInvite[]
+
+  @@unique([propertyId, idempotencyKey])
+}
+
+model Quote {
+  id                   String             @id @default(cuid())
+  procurementRequestId String
+  supplierName         String
+  totalAmountMinor     BigInt
+  currency             String             @default("INR")
+  status               QuoteStatus        @default(SUBMITTED)
+  validUntil           DateTime?
+  notes                String?            @db.Text
+  // Nivasa's commission and minimum-acceptable-margin are fixed at
+  // submission time, not recomputed later - this is the actual mechanism
+  // that keeps negotiation profitable: minMarginBps defines the floor
+  // percentage of totalAmountMinor that must remain as Nivasa's margin no
+  // matter how a negotiation ends, so a user can never negotiate away more
+  // than the business decided it could afford to give up when the quote
+  // was first accepted into the system.
+  nivasaCommissionBps  Int                @default(1000)
+  minMarginBps         Int                @default(500)
+  createdAt            DateTime           @default(now())
+  procurementRequest   ProcurementRequest @relation(fields: [procurementRequestId], references: [id], onDelete: Cascade)
+  order                Order?
+  negotiations         QuoteNegotiation[]
+
+  @@index([procurementRequestId, status])
+}
+
+model Order {
+  id                   String             @id @default(cuid())
+  procurementRequestId String
+  quoteId              String             @unique
+  status               OrderStatus        @default(PLACED)
+  totalAmountMinor     BigInt
+  currency             String             @default("INR")
+  placedAt             DateTime           @default(now())
+  deliveredAt          DateTime?
+  procurementRequest   ProcurementRequest @relation(fields: [procurementRequestId], references: [id])
+  quote                Quote              @relation(fields: [quoteId], references: [id])
+  executions           ExecutionRecord[]
+
+  @@index([procurementRequestId])
+}
+
+model ExecutionRecord {
+  id            String          @id @default(cuid())
+  orderId       String
+  status        ExecutionStatus @default(SCHEDULED)
+  scheduledDate DateTime?
+  completedAt   DateTime?
+  snagNotes     String?         @db.Text
+  resolvedAt    DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  order         Order           @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+}
+
+enum NotificationType {
+  ORDER_STATUS_CHANGED
+  QUOTE_RECEIVED
+  EXECUTION_STATUS_CHANGED
+  BUDGET_LOCKED
+  GENERAL
+}
+
+model Notification {
+  id                String           @id @default(cuid())
+  userId            String
+  type              NotificationType
+  title             String
+  message           String           @db.Text
+  relatedEntityType String?
+  relatedEntityId   String?
+  read              Boolean          @default(false)
+  createdAt         DateTime         @default(now())
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read, createdAt])
+}
+
+enum NegotiationDecision {
+  ACCEPTED
+  COUNTERED
+  REJECTED
+}
+
+// The floor logic that keeps negotiation profitable for Nivasa is defined
+// entirely on the Quote itself, set at quote-submission time - not derived
+// ad hoc at negotiation time - so the floor a user negotiates against can
+// never be changed retroactively to move the goalposts mid-negotiation.
+model QuoteNegotiation {
+  id                  String              @id @default(cuid())
+  quoteId             String
+  proposedAmountMinor BigInt
+  decision            NegotiationDecision
+  counterAmountMinor  BigInt?
+  createdAt           DateTime            @default(now())
+  quote               Quote               @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId, createdAt])
+}
+
+enum ReferralStatus {
+  PENDING
+  REWARDED
+  EXPIRED
+}
+
+// Every user gets exactly one stable referral code (their own invite
+// link). A referral only pays out once the referred user completes a
+// real, revenue-generating action (an Order actually delivered) - not on
+// sign-up alone, which would be trivially gameable by creating throwaway
+// accounts.
+model ReferralCode {
+  id          String     @id @default(cuid())
+  ownerUserId String     @unique
+  code        String     @unique
+  createdAt   DateTime   @default(now())
+  owner       User       @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  referrals   Referral[]
+}
+
+model Referral {
+  id               String         @id @default(cuid())
+  referralCodeId   String
+  referredUserId   String         @unique
+  status           ReferralStatus @default(PENDING)
+  triggeringOrderId String?
+  bonusCredits     Int?
+  rewardedAt       DateTime?
+  createdAt        DateTime       @default(now())
+  referralCode     ReferralCode   @relation(fields: [referralCodeId], references: [id])
+  referredUser     User           @relation(fields: [referredUserId], references: [id])
+
+  @@index([referralCodeId, status])
+}
+
+// Suppliers are external parties who never need a full platform account -
+// building a parallel user/auth system for occasional quote submission
+// would be significant unnecessary scope. Instead, access is a signed,
+// single-use, time-limited token: the raw token is emailed/shared once
+// and never stored - only its SHA-256 hash is persisted, so a database
+// read can never leak a usable credential (the same principle as never
+// storing a plaintext password).
+model SupplierInvite {
+  id                    String              @id @default(cuid())
+  procurementRequestId  String
+  supplierName          String
+  tokenHash             String              @unique
+  expiresAt             DateTime
+  usedAt                DateTime?
+  quoteId               String?
+  createdByUserId       String
+  createdAt             DateTime            @default(now())
+  procurementRequest    ProcurementRequest  @relation(fields: [procurementRequestId], references: [id], onDelete: Cascade)
+  createdBy             User                @relation(fields: [createdByUserId], references: [id])
+
+  @@index([procurementRequestId])
+}
+
+// The trust-building mechanism: every user gets exactly one HD-quality
+// visualization for free, regardless of their plan - a bounded,
+// per-user, one-time cost (not per-transaction margin erosion) meant to
+// let a prospective customer see genuinely great output before they've
+// paid anything, which is the actual conversion lever, not a recurring
+// discount. Tracked as its own row (not a boolean flag on User) so the
+// grant is auditable: which asset it produced, when it was used.
+model OnboardingRenderGrant {
+  id         String    @id @default(cuid())
+  userId     String    @unique
+  usedAt     DateTime?
+  assetId    String?
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

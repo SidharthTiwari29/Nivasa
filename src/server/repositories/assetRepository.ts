@@ -6,6 +6,16 @@ export const assetRepository = {
     return prisma.asset.findUnique({ where: { id } });
   },
 
+  // The actual cache-hit lookup: checksum here stores the render cache key
+  // (see renderCache.ts), not a file-content hash - reusing this existing
+  // column rather than adding a new one, since the semantic overlap
+  // (a stable identifier for "this exact content already exists") is
+  // genuine, and adding a duplicate column with the same purpose would be
+  // unnecessary schema growth.
+  findByChecksum(checksum: string) {
+    return prisma.asset.findFirst({ where: { checksum } });
+  },
+
   findDesignVersionContext(id: string) {
     return prisma.designVersion.findUnique({
       where: { id },
