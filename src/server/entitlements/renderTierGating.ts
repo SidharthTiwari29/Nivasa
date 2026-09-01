@@ -7,16 +7,27 @@ import type { RenderType } from "@/server/rendering/provider";
 // experience (walkthrough/video) is deliberately reserved for the top
 // tier, since it's the most expensive to produce and the most compelling
 // reason to upgrade.
+//
+// Package codes below MUST match src/server/payments/packages.ts exactly
+// - see the same warning in featureGating.ts, which went stale once
+// already for the same reason (keyed on old NIVASA_* codes after
+// packages.ts had already moved to NIWASTHAN_*).
 const PLAN_RENDER_TYPES: Record<string, readonly RenderType[]> = {
   FREE: ["DESIGN_IMAGE"],
-  NIVASA_DESIGN: ["DESIGN_IMAGE", "BEFORE_AFTER", "PANORAMA"],
-  NIVASA_COMPLETE: [
+  NIWASTHAN_DESIGN: ["DESIGN_IMAGE", "BEFORE_AFTER", "PANORAMA"],
+  NIWASTHAN_COMPLETE: [
     "DESIGN_IMAGE",
     "BEFORE_AFTER",
     "PANORAMA",
     "THREE_D_SCENE",
   ],
-  NIVASA_PRO: [
+  NIWASTHAN_HOME_INTELLIGENCE: [
+    "DESIGN_IMAGE",
+    "BEFORE_AFTER",
+    "PANORAMA",
+    "THREE_D_SCENE",
+  ],
+  NIWASTHAN_IMMERSIVE: [
     "DESIGN_IMAGE",
     "BEFORE_AFTER",
     "PANORAMA",

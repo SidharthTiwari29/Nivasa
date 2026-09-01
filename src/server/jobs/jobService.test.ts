@@ -156,7 +156,7 @@ describe("jobService", () => {
         confidenceBps: 9000,
       } as never);
       entitlements.findMany.mockResolvedValue([
-        { package: { code: "NIVASA_PRO" } },
+        { package: { code: "NIWASTHAN_IMMERSIVE" } },
       ] as never);
 
       await createAndEnqueueJob({
@@ -179,7 +179,7 @@ describe("jobService", () => {
       enqueue.mockResolvedValue({ id: "queue-job-1" } as never);
       designProjects.findUnique.mockResolvedValue({ roomId: null } as never);
       entitlements.findMany.mockResolvedValue([
-        { package: { code: "NIVASA_PRO" } },
+        { package: { code: "NIWASTHAN_IMMERSIVE" } },
       ] as never);
 
       await createAndEnqueueJob({
@@ -306,7 +306,7 @@ describe("jobService", () => {
     it("allows a WALKTHROUGH job for a user on the Pro plan", async () => {
       jobs.findUnique.mockResolvedValue(null);
       entitlements.findMany.mockResolvedValue([
-        { package: { code: "NIVASA_PRO" } },
+        { package: { code: "NIWASTHAN_IMMERSIVE" } },
       ] as never);
       reserve.mockResolvedValue({ id: "reservation-1" } as never);
       jobs.create.mockResolvedValue({ id: "job-1" } as never);
