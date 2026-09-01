@@ -863,6 +863,14 @@ enum NotificationType {
   EXECUTION_STATUS_CHANGED
   BUDGET_LOCKED
   GENERAL
+  // README §30 Niwasthan Moments - real, useful project events given
+  // personality-infused framing (see momentTemplates.ts), never replacing
+  // the underlying factual notification, only adding brand voice to it.
+  PRICE_DROP
+  BETTER_ALTERNATIVE_FOUND
+  BUDGET_EXCEEDED
+  DESIGN_APPROVED
+  WALKTHROUGH_READY
 }
 
 model Notification {

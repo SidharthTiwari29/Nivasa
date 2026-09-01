@@ -5,6 +5,8 @@ import { computeVisualizationPriority } from "./visualizationPriority";
 import { anyPlanIncludesRenderType } from "@/server/entitlements/renderTierGating";
 import type { RenderType } from "@/server/rendering/provider";
 import { ForbiddenError } from "@/server/errors/AppError";
+import { notificationService } from "@/server/services/notificationService";
+import { buildMoment } from "@/server/personality/momentTemplates";
 import {
   reserveCredits,
   confirmReservation,
@@ -194,6 +196,30 @@ export async function transitionJob(input: {
       await confirmReservation(current.creditReservationId);
     } else {
       await releaseReservation(current.creditReservationId);
+    }
+  }
+
+  // README §30 Niwasthan Moment: "Your future home is ready. Shall we go
+  // inside?" - fired at the exact real event the README specifies
+  // (a completed WALKTHROUGH render), not a generic job-done notification
+  // wearing a costume. Best-effort - notificationService.notify already
+  // swallows its own errors, so a notification failure never affects the
+  // job transition itself.
+  if (input.status === "SUCCEEDED" && current.type === "WALKTHROUGH") {
+    const project = await prisma.designProject.findUnique({
+      where: { id: current.projectId },
+      select: { ownerId: true },
+    });
+    if (project) {
+      const moment = buildMoment("WALKTHROUGH_READY");
+      await notificationService.notify({
+        userId: project.ownerId,
+        type: "WALKTHROUGH_READY",
+        title: moment.title,
+        message: moment.message,
+        relatedEntityType: "AIJob",
+        relatedEntityId: current.id,
+      });
     }
   }
 
