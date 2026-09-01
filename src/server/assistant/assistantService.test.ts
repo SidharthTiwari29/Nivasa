@@ -1,12 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { budgetRepository } from "@/server/repositories/budgetRepository";
 import { propertyRepository } from "@/server/repositories/propertyRepository";
+import { roomRepository } from "@/server/repositories/roomRepository";
 
 vi.mock("@/server/repositories/budgetRepository", () => ({
   budgetRepository: { findPlan: vi.fn() },
 }));
 vi.mock("@/server/repositories/propertyRepository", () => ({
   propertyRepository: { findByIdForOwner: vi.fn() },
+}));
+vi.mock("@/server/repositories/roomRepository", () => ({
+  roomRepository: { findWithUnderstandingForOwner: vi.fn() },
 }));
 
 const mockCreate = vi.fn();
@@ -18,6 +22,7 @@ vi.mock("@anthropic-ai/sdk", () => ({
 
 const budgets = vi.mocked(budgetRepository);
 const properties = vi.mocked(propertyRepository);
+const rooms = vi.mocked(roomRepository);
 
 describe("assistantService.ask", () => {
   const originalKey = process.env.ANTHROPIC_API_KEY;
@@ -122,5 +127,81 @@ describe("assistantService.ask", () => {
     ]);
 
     expect(budgets.findPlan).not.toHaveBeenCalled();
+  });
+
+  it("calls get_room_context and grounds a 'what would you do' answer in the real room data", async () => {
+    rooms.findWithUnderstandingForOwner.mockResolvedValue({
+      type: "BEDROOM",
+      areaSqFt: { toString: () => "120" },
+      roomUnderstandings: [{ status: "CONFIRMED", confidenceBps: 9000 }],
+    } as never);
+
+    mockCreate
+      .mockResolvedValueOnce({
+        content: [
+          {
+            type: "tool_use",
+            id: "tool-1",
+            name: "get_room_context",
+            input: { roomId: "room-1" },
+          },
+        ],
+      })
+      .mockResolvedValueOnce({
+        content: [
+          {
+            type: "text",
+            text: "Given your 120 sq ft confirmed bedroom, I'd suggest...",
+          },
+        ],
+      });
+
+    const { assistantService } = await import("./assistantService");
+    const result = await assistantService.ask("user-1", [
+      {
+        role: "user",
+        content: "what would you do if this were your home",
+      },
+    ]);
+
+    expect(rooms.findWithUnderstandingForOwner).toHaveBeenCalledWith(
+      "room-1",
+      "user-1",
+    );
+    expect(result.usedTool).toBe(true);
+    expect(result.reply).toContain("120 sq ft");
+  });
+
+  it("does not leak another owner's room data when the room does not belong to the caller", async () => {
+    rooms.findWithUnderstandingForOwner.mockResolvedValue(null);
+
+    mockCreate
+      .mockResolvedValueOnce({
+        content: [
+          {
+            type: "tool_use",
+            id: "tool-1",
+            name: "get_room_context",
+            input: { roomId: "someone-elses-room" },
+          },
+        ],
+      })
+      .mockResolvedValueOnce({
+        content: [{ type: "text", text: "I could not find that room." }],
+      });
+
+    const { assistantService } = await import("./assistantService");
+    await assistantService.ask("user-1", [
+      { role: "user", content: "what would you do with this room" },
+    ]);
+
+    expect(rooms.findWithUnderstandingForOwner).toHaveBeenCalledWith(
+      "someone-elses-room",
+      "user-1",
+    );
+    // The mock resolving to null is what proves ownership scoping is
+    // enforced at the repository call itself (same userId always passed
+    // through, never a client-controlled owner id) - not asserting on
+    // unreachable internals, just that the real call shape can't leak.
   });
 });

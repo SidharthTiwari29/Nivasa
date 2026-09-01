@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { budgetRepository } from "@/server/repositories/budgetRepository";
 import { propertyRepository } from "@/server/repositories/propertyRepository";
+import { roomRepository } from "@/server/repositories/roomRepository";
 import { FAQ_ENTRIES, searchFaq } from "@/server/assistant/faq";
 
 export type AssistantMessage = {
@@ -61,6 +62,16 @@ const tools: Anthropic.Tool[] = [
       required: ["propertyId"],
     },
   },
+  {
+    name: "get_room_context",
+    description:
+      "Get the caller's own room details - type, area, and spatial understanding confidence - for the 'What would you do if this were your home?' decision-intelligence mode (README section 31). Use this before answering any question that asks for a recommendation specific to a room.",
+    input_schema: {
+      type: "object",
+      properties: { roomId: { type: "string" } },
+      required: ["roomId"],
+    },
+  },
 ];
 
 async function runTool(
@@ -91,6 +102,32 @@ async function runTool(
       highMinor: latest.totalHighMinor?.toString(),
     });
   }
+  if (name === "get_room_context") {
+    const roomId = String(input.roomId ?? "");
+    const room = await roomRepository.findWithUnderstandingForOwner(
+      roomId,
+      ownerId,
+    );
+    if (!room) return "No room found with that id for this account.";
+    const understanding = room.roomUnderstandings[0];
+    // Deliberately honest about what this system does NOT structurally
+    // capture (lifestyle, family needs, maintenance preference) rather
+    // than letting the model assume or invent those - README section 31
+    // lists them as inputs the answer should consider, but this schema
+    // has no dedicated field for them yet. The model is told this
+    // explicitly so it asks the user directly instead of guessing.
+    return JSON.stringify({
+      roomType: room.type,
+      areaSqFt: room.areaSqFt?.toString() ?? null,
+      spatialUnderstanding: understanding
+        ? {
+            status: understanding.status,
+            confidenceBps: understanding.confidenceBps,
+          }
+        : null,
+      note: "Lifestyle, family needs, and maintenance preferences are not captured as structured data yet - ask the user directly for these if relevant to the question.",
+    });
+  }
   return "Unknown tool.";
 }
 
@@ -115,7 +152,7 @@ export const assistantService = {
         model: "claude-sonnet-4-6",
         max_tokens: 1000,
         system:
-          "You are Nivasa's assistant. Only answer using search_faq or get_my_budget_summary results - never invent a price, policy, or feature. If neither tool has the answer, say you don't know and suggest contacting support.",
+          "You are Niwasthan Humsafar, the Niwasthan assistant. Only answer using search_faq, get_my_budget_summary, or get_room_context results - never invent a price, policy, feature, or lifestyle detail the user hasn't told you. If asked 'what would you do if this were your home?' or a similarly open decision question, use get_room_context and get_my_budget_summary first, then give a real recommendation that explains your reasoning and trade-offs grounded in that actual data - this is decision intelligence, not generic conversation. If the tools don't have the lifestyle/family/maintenance context needed to answer well, ask the user directly rather than assuming. If no tool has the answer at all, say you don't know and suggest contacting support.",
         tools,
         messages,
       });
