@@ -397,6 +397,7 @@ model CatalogueItem {
   id          String           @id @default(cuid())
   sku         String           @unique
   name        String
+  brand       String?
   description String?          @db.Text
   category    String
   unit        String
@@ -412,6 +413,15 @@ model CatalogueItem {
 model CataloguePrice {
   id            String        @id @default(cuid())
   itemId        String
+  // MRP is the listed maximum retail price - what's printed on the
+  // brand's own pricing, often higher than what's actually charged.
+  // amountMinor remains the actual selling price used in real BOQ/budget
+  // arithmetic; mrpMinor is optional (some sources genuinely have no
+  // separate MRP concept) and is never used for financial calculations
+  // itself - it exists to let the curation engine and customer-facing
+  // display show "MRP vs actual price" transparently, matching real
+  // Indian retail convention, without ever substituting one for the other.
+  mrpMinor      BigInt?
   amountMinor   BigInt
   currency      String        @default("INR")
   effectiveFrom DateTime
