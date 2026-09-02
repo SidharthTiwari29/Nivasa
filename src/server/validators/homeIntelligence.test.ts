@@ -5,6 +5,7 @@ const base = {
   roomType: "BEDROOM" as const,
   name: "Master Bedroom",
   source: "AI" as const,
+  confidenceBps: 9000,
   status: "UNCONFIRMED" as const,
 };
 
@@ -67,5 +68,78 @@ describe("roomUnderstandingSchema.dimensions", () => {
       },
     });
     expect(result.success).toBe(false);
+  });
+});
+
+describe("roomUnderstandingSchema source/confidence cross-validation", () => {
+  it("rejects an AI-sourced submission with no confidence score at all", () => {
+    const result = roomUnderstandingSchema.safeParse({
+      roomType: "BEDROOM",
+      name: "Master Bedroom",
+      source: "AI",
+      status: "UNCONFIRMED",
+      // confidenceBps intentionally omitted
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(
+        result.error.issues.some((i) => i.path.includes("confidenceBps")),
+      ).toBe(true);
+    }
+  });
+
+  it("accepts an AI-sourced submission with a real confidence score", () => {
+    const result = roomUnderstandingSchema.safeParse({
+      roomType: "BEDROOM",
+      name: "Master Bedroom",
+      source: "AI",
+      confidenceBps: 8500,
+      status: "UNCONFIRMED",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a USER-sourced submission that includes a confidence score", () => {
+    const result = roomUnderstandingSchema.safeParse({
+      roomType: "BEDROOM",
+      name: "Master Bedroom",
+      source: "USER",
+      confidenceBps: 5000,
+      status: "CONFIRMED",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(
+        result.error.issues.some((i) => i.path.includes("confidenceBps")),
+      ).toBe(true);
+    }
+  });
+
+  it("accepts a USER-sourced submission with no confidence score - a stated fact needs none", () => {
+    const result = roomUnderstandingSchema.safeParse({
+      roomType: "BEDROOM",
+      name: "Master Bedroom",
+      source: "USER",
+      status: "CONFIRMED",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("does not require or forbid a confidence score for IMPORTED source - genuinely ambiguous provenance", () => {
+    const withConfidence = roomUnderstandingSchema.safeParse({
+      roomType: "BEDROOM",
+      name: "Master Bedroom",
+      source: "IMPORTED",
+      confidenceBps: 6000,
+      status: "NEEDS_REVIEW",
+    });
+    const withoutConfidence = roomUnderstandingSchema.safeParse({
+      roomType: "BEDROOM",
+      name: "Master Bedroom",
+      source: "IMPORTED",
+      status: "NEEDS_REVIEW",
+    });
+    expect(withConfidence.success).toBe(true);
+    expect(withoutConfidence.success).toBe(true);
   });
 });
