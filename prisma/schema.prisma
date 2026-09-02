@@ -171,6 +171,7 @@ model User {
   createdSupplierInvites     SupplierInvite[]
   onboardingRenderGrant      OnboardingRenderGrant?
   curationRecommendations    CurationRecommendation[]
+  planUpgradeOffers          PlanUpgradeOffer[]
 }
 
 model Account {
@@ -1051,4 +1052,26 @@ model CurationRecommendation {
   project         DesignProject  @relation(fields: [projectId], references: [id])
 
   @@index([projectId, status])
+}
+
+// Real, persisted state for the plan-upgrade discount offer: how many
+// times this specific customer has genuinely returned to this specific
+// upgrade offer after the previous one expired, and when the current
+// offer's 4-hour window began. visitNumber only increments when a new
+// visit is recorded AFTER the previous offer's window has expired -
+// refreshing the page within an active window returns the SAME offer,
+// never advances the discount tier. Without this rule, a customer could
+// trivially refresh repeatedly to instantly reach the maximum discount,
+// defeating the entire point of a visit-based, time-boxed incentive.
+model PlanUpgradeOffer {
+  id                String   @id @default(cuid())
+  userId            String
+  targetPackageCode String
+  visitNumber       Int      @default(1)
+  offerShownAt      DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, targetPackageCode])
 }
