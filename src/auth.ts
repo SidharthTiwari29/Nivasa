@@ -4,6 +4,7 @@ import Email from "next-auth/providers/email";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { getEnv } from "@/server/config/env";
 import { prisma } from "@/server/db/prisma";
+import { handleUserCreated } from "@/server/auth/onUserCreated";
 import type { Role } from "@prisma/client";
 
 const env = getEnv();
@@ -43,6 +44,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.role = (token.role as Role) ?? "USER";
       }
       return session;
+    },
+  },
+  events: {
+    // Fires exactly once, when a brand-new user account is actually
+    // created (not on every subsequent login) - the real, correct hook
+    // for a one-time signup grant. See onUserCreated.ts for the actual
+    // logic and its tests - kept out of this file since NextAuth config
+    // objects aren't unit-testable the way a plain function is.
+    async createUser({ user }) {
+      if (user.id) await handleUserCreated(user.id);
     },
   },
 });
