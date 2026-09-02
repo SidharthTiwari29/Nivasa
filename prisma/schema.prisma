@@ -151,6 +151,18 @@ model User {
   name                       String?
   image                      String?
   role                       Role                  @default(USER)
+  // Real, honest fraud-risk signals captured at signup - NOT a claim of
+  // true device fingerprinting or VPN detection, which would need a paid
+  // third-party IP-intelligence service this system doesn't have. IP
+  // address and User-Agent are real, cheaply-observable signals with
+  // real, known limitations (shared home/office/mobile-carrier IPs
+  // produce false positives; a VPN or incognito window defeats this
+  // signal entirely). This is used as ONE input to a graduated,
+  // human-reviewable risk flag, never as an automatic, high-confidence
+  // fraud verdict - see referralFraudSignal.ts for the honest scope of
+  // what this can and cannot detect.
+  signupIpAddress            String?
+  signupUserAgent            String?               @db.Text
   createdAt                  DateTime              @default(now())
   updatedAt                  DateTime              @updatedAt
   accounts                   Account[]
