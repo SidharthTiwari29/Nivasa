@@ -14,7 +14,7 @@ describe("featureAccessService", () => {
   describe("hasFeature", () => {
     it("returns true when an active entitlement's plan includes the feature", async () => {
       db.entitlement.findMany.mockResolvedValue([
-        { package: { code: "NIVASA_COMPLETE" } },
+        { package: { code: "NIWASTHAN_COMPLETE" } },
       ] as never);
       const { featureAccessService } = await import("./featureAccessService");
 
@@ -59,7 +59,7 @@ describe("featureAccessService", () => {
 
     it("resolves without throwing when the feature is included", async () => {
       db.entitlement.findMany.mockResolvedValue([
-        { package: { code: "NIVASA_PRO" } },
+        { package: { code: "NIWASTHAN_IMMERSIVE" } },
       ] as never);
       const { featureAccessService } = await import("./featureAccessService");
 

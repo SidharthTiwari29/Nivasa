@@ -2,12 +2,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/server/db/prisma";
 import { enqueueJob } from "./queue";
 import { ForbiddenError } from "@/server/errors/AppError";
+import { notificationService } from "@/server/services/notificationService";
 import {
   reserveCredits,
   confirmReservation,
   releaseReservation,
 } from "@/server/services/entitlements";
 import { createAndEnqueueJob, transitionJob } from "./jobService";
+
+vi.mock("@/server/services/notificationService", () => ({
+  notificationService: { notify: vi.fn() },
+}));
 
 vi.mock("@/server/db/prisma", () => ({
   prisma: {
@@ -35,6 +40,7 @@ const jobs = vi.mocked(prisma.aIJob);
 const designProjects = vi.mocked(prisma.designProject);
 const roomUnderstandings = vi.mocked(prisma.roomUnderstanding);
 const entitlements = vi.mocked(prisma.entitlement);
+const notifications = vi.mocked(notificationService);
 const enqueue = vi.mocked(enqueueJob);
 const reserve = vi.mocked(reserveCredits);
 const confirm = vi.mocked(confirmReservation);
@@ -156,7 +162,7 @@ describe("jobService", () => {
         confidenceBps: 9000,
       } as never);
       entitlements.findMany.mockResolvedValue([
-        { package: { code: "NIVASA_PRO" } },
+        { package: { code: "NIWASTHAN_IMMERSIVE" } },
       ] as never);
 
       await createAndEnqueueJob({
@@ -179,7 +185,7 @@ describe("jobService", () => {
       enqueue.mockResolvedValue({ id: "queue-job-1" } as never);
       designProjects.findUnique.mockResolvedValue({ roomId: null } as never);
       entitlements.findMany.mockResolvedValue([
-        { package: { code: "NIVASA_PRO" } },
+        { package: { code: "NIWASTHAN_IMMERSIVE" } },
       ] as never);
 
       await createAndEnqueueJob({
@@ -281,6 +287,70 @@ describe("jobService", () => {
       expect(confirm).not.toHaveBeenCalled();
       expect(release).not.toHaveBeenCalled();
     });
+
+    it("fires a WALKTHROUGH_READY Niwasthan Moment when a WALKTHROUGH job succeeds", async () => {
+      jobs.findUniqueOrThrow.mockResolvedValue({
+        id: "job-1",
+        status: "RUNNING",
+        creditReservationId: null,
+        type: "WALKTHROUGH",
+        projectId: "project-1",
+      } as never);
+      jobs.update.mockResolvedValue({
+        id: "job-1",
+        status: "SUCCEEDED",
+      } as never);
+      designProjects.findUnique.mockResolvedValue({
+        ownerId: "user-1",
+      } as never);
+
+      await transitionJob({ jobId: "job-1", status: "SUCCEEDED" });
+
+      expect(notifications.notify).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: "user-1",
+          type: "WALKTHROUGH_READY",
+          message: "Your future home is ready. Shall we go inside?",
+        }),
+      );
+    });
+
+    it("does not fire a walkthrough moment for a non-WALKTHROUGH job succeeding", async () => {
+      jobs.findUniqueOrThrow.mockResolvedValue({
+        id: "job-1",
+        status: "RUNNING",
+        creditReservationId: null,
+        type: "DESIGN_GENERATION",
+        projectId: "project-1",
+      } as never);
+      jobs.update.mockResolvedValue({
+        id: "job-1",
+        status: "SUCCEEDED",
+      } as never);
+
+      await transitionJob({ jobId: "job-1", status: "SUCCEEDED" });
+
+      expect(designProjects.findUnique).not.toHaveBeenCalled();
+      expect(notifications.notify).not.toHaveBeenCalled();
+    });
+
+    it("does not fire a walkthrough moment when a WALKTHROUGH job fails rather than succeeds", async () => {
+      jobs.findUniqueOrThrow.mockResolvedValue({
+        id: "job-1",
+        status: "RUNNING",
+        creditReservationId: null,
+        type: "WALKTHROUGH",
+        projectId: "project-1",
+      } as never);
+      jobs.update.mockResolvedValue({
+        id: "job-1",
+        status: "FAILED",
+      } as never);
+
+      await transitionJob({ jobId: "job-1", status: "FAILED" });
+
+      expect(notifications.notify).not.toHaveBeenCalled();
+    });
   });
 
   describe("plan-gated visualization types", () => {
@@ -306,7 +376,7 @@ describe("jobService", () => {
     it("allows a WALKTHROUGH job for a user on the Pro plan", async () => {
       jobs.findUnique.mockResolvedValue(null);
       entitlements.findMany.mockResolvedValue([
-        { package: { code: "NIVASA_PRO" } },
+        { package: { code: "NIWASTHAN_IMMERSIVE" } },
       ] as never);
       reserve.mockResolvedValue({ id: "reservation-1" } as never);
       jobs.create.mockResolvedValue({ id: "job-1" } as never);
