@@ -33,6 +33,45 @@ export const referralRepository = {
     });
   },
 
+  // Regardless of status - the plan-purchase referral discount is a
+  // genuinely different trigger and timing from the bonus-credit reward
+  // (which only fires on real order delivery). A referral relationship
+  // existing at all is what this discount cares about; whether the
+  // later delivery-based bonus has separately been paid out is
+  // irrelevant to it.
+  findAnyReferralForUser(referredUserId: string) {
+    return prisma.referral.findUnique({ where: { referredUserId } });
+  },
+
+  // "Goes with the interior with us" means a genuine paid-plan purchase,
+  // not merely creating a free account - checked against a real,
+  // currently-active entitlement to a package with priceMinor > 0,
+  // never inferred from account age or activity alone.
+  async hasActivePaidPlan(userId: string): Promise<boolean> {
+    const entitlement = await prisma.entitlement.findFirst({
+      where: {
+        userId,
+        status: "ACTIVE",
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+        package: { priceMinor: { gt: 0 } },
+      },
+    });
+    return entitlement !== null;
+  },
+
+  // A referral code can have multiple different people use it over time
+  // (one code, many referred users) - this returns every referred user
+  // id under a given code so the caller can check each one's real
+  // conversion status individually, rather than assuming a code with
+  // any referral at all automatically qualifies its owner.
+  async findReferredUserIdsForCode(referralCodeId: string): Promise<string[]> {
+    const referrals = await prisma.referral.findMany({
+      where: { referralCodeId },
+      select: { referredUserId: true },
+    });
+    return referrals.map((r) => r.referredUserId);
+  },
+
   // The reward is applied via a conditional update (status must still be
   // PENDING) inside the same transaction that grants the bonus credits -
   // the same "conditional update, not read-then-write" pattern already
