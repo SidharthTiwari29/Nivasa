@@ -37,6 +37,13 @@ enum DecisionStatus {
   LOCKED
 }
 
+enum CatalogueAvailability {
+  IN_STOCK
+  LIMITED_STOCK
+  OUT_OF_STOCK
+  UNKNOWN
+}
+
 enum Role {
   USER
   DESIGNER
@@ -171,6 +178,7 @@ model User {
   createdSupplierInvites     SupplierInvite[]
   onboardingRenderGrant      OnboardingRenderGrant?
   curationRecommendations    CurationRecommendation[]
+  verifiedCataloguePrices    CataloguePrice[] @relation("CataloguePriceVerifiedBy")
 }
 
 model Account {
@@ -463,9 +471,23 @@ model CataloguePrice {
   // engine (catalogueCuration.ts) actually reads to enforce real
   // warranty-quality gating before a customer ever sees an option.
   warrantyMonths Int?
+  // Structured, not buried in unstructured Json - real stock status a
+  // customer can trust, distinct from a listing simply existing.
+  availability  CatalogueAvailability @default(UNKNOWN)
+  // The real, honest version of a "verified" badge: an explicit human
+  // attestation, not a marketing label. verifiedByUserId/verifiedAt are
+  // both null until a real admin/curator has actually checked this
+  // specific listing's price, warranty, and availability against its
+  // source and confirms it's accurate as of that date - this is an
+  // audit trail, not a computed score, since "a human checked this" is
+  // fundamentally a fact about an event that happened, not something
+  // derivable from the data alone.
+  verifiedByUserId String?
+  verifiedAt       DateTime?
   effectiveFrom DateTime
   effectiveTo   DateTime?
   item          CatalogueItem @relation(fields: [itemId], references: [id])
+  verifiedBy    User?         @relation("CataloguePriceVerifiedBy", fields: [verifiedByUserId], references: [id])
 
   @@index([itemId, effectiveFrom])
 }
