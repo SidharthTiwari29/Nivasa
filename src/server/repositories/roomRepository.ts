@@ -19,6 +19,24 @@ export const roomRepository = {
     });
   },
 
+  // README §31 "What Would You Do?" mode needs real room context
+  // (dimensions, confirmed/unconfirmed spatial understanding) to reason
+  // over - this is deliberately the SAME ownership-scoped query shape as
+  // every other repository method here, just including the latest
+  // RoomUnderstanding so the assistant tool has something real to answer
+  // from instead of guessing at a room's characteristics.
+  findWithUnderstandingForOwner(id: string, ownerId: string) {
+    return prisma.room.findFirst({
+      where: { id, property: { ownerId } },
+      include: {
+        roomUnderstandings: {
+          orderBy: { version: "desc" },
+          take: 1,
+        },
+      },
+    });
+  },
+
   create(ownerId: string, input: CreateRoomInput) {
     return prisma.room.create({
       data: {
