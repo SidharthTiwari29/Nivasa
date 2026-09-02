@@ -108,14 +108,15 @@ export function curateWithinBudget(
 
       if (bestUpgradeIndex >= 0 && bestUpgradeOption) {
         const current = selections[bestUpgradeIndex];
+        const chosenUpgrade: CatalogueOption = bestUpgradeOption;
         const upgraded: CurationSelection = {
           ...current,
-          itemId: bestUpgradeOption.itemId,
-          itemName: bestUpgradeOption.name,
-          brand: bestUpgradeOption.brand,
-          unitPriceMinor: bestUpgradeOption.unitPriceMinor,
+          itemId: chosenUpgrade.itemId,
+          itemName: chosenUpgrade.name,
+          brand: chosenUpgrade.brand,
+          unitPriceMinor: chosenUpgrade.unitPriceMinor,
           lineTotalMinor:
-            bestUpgradeOption.unitPriceMinor * BigInt(current.quantity),
+            chosenUpgrade.unitPriceMinor * BigInt(current.quantity),
         };
         selections[bestUpgradeIndex] = upgraded;
         totalMinor =
