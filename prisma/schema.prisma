@@ -37,6 +37,19 @@ enum DecisionStatus {
   LOCKED
 }
 
+// Real, manufacturer-specified connectivity types for smart-home/lighting
+// products - not an invented capability list. NONE is the correct value
+// for any ordinary, non-connected product, distinct from null (which
+// means "not applicable/not yet recorded" for a product outside this
+// domain entirely).
+enum SmartHomeConnectivity {
+  BLUETOOTH
+  WIFI
+  ZIGBEE
+  MATTER
+  NONE
+}
+
 enum Role {
   USER
   DESIGNER
@@ -434,6 +447,15 @@ model CatalogueItem {
   description String?          @db.Text
   category    String
   unit        String
+  // Real, manufacturer-published, objectively verifiable specs -
+  // relevant specifically to Home Automation family products (README
+  // family #11) and lighting, not fabricated claims about smart
+  // capability. smartHomeConnectivity is null for any product that
+  // simply isn't a connected device; energyRatingStars uses India's real
+  // BEE (Bureau of Energy Efficiency) star rating scale actually printed
+  // on real appliance/lighting packaging, not an invented scale.
+  smartHomeConnectivity SmartHomeConnectivity?
+  energyRatingStars      Int?
   active      Boolean          @default(true)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt

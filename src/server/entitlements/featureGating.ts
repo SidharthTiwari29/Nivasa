@@ -15,7 +15,8 @@ export type FeatureKey =
   | "quote_negotiation"
   | "budget_export"
   | "priority_visualization"
-  | "niwasthan_finds";
+  | "niwasthan_finds"
+  | "niwasthan_magic";
 
 const PLAN_FEATURES: Record<string, readonly FeatureKey[]> = {
   FREE: [],
@@ -32,6 +33,13 @@ const PLAN_FEATURES: Record<string, readonly FeatureKey[]> = {
     "quote_negotiation",
     "niwasthan_finds",
     "budget_export",
+    // Real smart-home product recommendations (energy-rated lighting,
+    // Bluetooth/WiFi-connected devices with genuine manufacturer specs) -
+    // a premium delight-tier feature, reserved for the two highest plans
+    // since it surfaces additional, optional purchase categories a
+    // budget-conscious customer on a lower tier likely doesn't want
+    // pushed at them by default.
+    "niwasthan_magic",
   ],
   NIWASTHAN_IMMERSIVE: [
     "ai_design_generation",
@@ -40,6 +48,7 @@ const PLAN_FEATURES: Record<string, readonly FeatureKey[]> = {
     "niwasthan_finds",
     "budget_export",
     "priority_visualization",
+    "niwasthan_magic",
   ],
 };
 

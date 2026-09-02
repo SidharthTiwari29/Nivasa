@@ -63,3 +63,24 @@ describe("anyPlanIncludesFeature", () => {
     expect(anyPlanIncludesFeature([], "ai_design_generation")).toBe(false);
   });
 });
+
+describe("niwasthan_magic gating", () => {
+  it("is reserved for the two highest tiers, not the lower-priced plans", () => {
+    expect(planIncludesFeature("FREE", "niwasthan_magic")).toBe(false);
+    expect(planIncludesFeature("NIWASTHAN_DESIGN", "niwasthan_magic")).toBe(
+      false,
+    );
+    expect(planIncludesFeature("NIWASTHAN_COMPLETE", "niwasthan_magic")).toBe(
+      false,
+    );
+  });
+
+  it("is included on Home Intelligence and Immersive", () => {
+    expect(
+      planIncludesFeature("NIWASTHAN_HOME_INTELLIGENCE", "niwasthan_magic"),
+    ).toBe(true);
+    expect(planIncludesFeature("NIWASTHAN_IMMERSIVE", "niwasthan_magic")).toBe(
+      true,
+    );
+  });
+});
