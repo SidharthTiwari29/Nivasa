@@ -6,6 +6,37 @@ datasource db {
   provider = "postgresql"
 }
 
+// The canonical lifecycle every AI/system-generated recommendation must
+// pass through before it can affect committed money, BOQ, or a locked
+// decision - the single most important structural rule in this system,
+// enforcing the "no fabricated certainty" principle at the schema level
+// rather than leaving it to per-feature discipline.
+//
+// INFERRED    - raw AI/system output, confidence-scored, not yet shown
+//               as an actionable suggestion.
+// RECOMMENDED - shown to the user, reversible, NOT yet costed into any
+//               committed BOQ/budget total.
+// COMMITTED   - the user explicitly accepted this; now real, versioned,
+//               attributable, and counted in real totals.
+// LOCKED      - immutable until the user explicitly unlocks it; the
+//               Revision Impact Engine must never silently rewrite a
+//               LOCKED row.
+//
+// New decision-like tables (an AI/system suggestion the user must review
+// before it becomes real) should use this enum rather than inventing a
+// bespoke status - existing tables with their own established status
+// enums (RoomUnderstandingStatus, QuoteStatus, etc.) are NOT retrofitted
+// to this by default, since a mass rename across already-shipped, tested
+// code carries real regression risk for no user-facing benefit. Adopt
+// this going forward; migrate an existing table only when there's a
+// concrete reason tied to real, needed behavior change.
+enum DecisionStatus {
+  INFERRED
+  RECOMMENDED
+  COMMITTED
+  LOCKED
+}
+
 enum Role {
   USER
   DESIGNER
@@ -139,6 +170,7 @@ model User {
   referralAsReferred         Referral?
   createdSupplierInvites     SupplierInvite[]
   onboardingRenderGrant      OnboardingRenderGrant?
+  curationRecommendations    CurationRecommendation[]
 }
 
 model Account {
@@ -310,6 +342,7 @@ model DesignProject {
   revisions  DesignRevision[]
   jobs       AIJob[]
   boqs       Boq[]
+  curationRecommendations CurationRecommendation[]
 
   @@index([ownerId, createdAt])
   @@index([propertyId])
@@ -992,4 +1025,30 @@ model OnboardingRenderGrant {
   assetId    String?
   createdAt  DateTime  @default(now())
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// The real, persisted form of a catalogueCuration.ts result - closes the
+// exact gap the architecture review found: curateWithinBudget previously
+// produced a throwaway suggestion with nowhere to go. This is the
+// concrete demonstration of the canonical DecisionStatus lifecycle:
+// RECOMMENDED when first generated (shown to the user, not yet costed
+// into any real BOQ), COMMITTED once the user accepts it and a real Boq
+// is created from it. Never silently skips RECOMMENDED - committing
+// requires an explicit prior recommendation to commit, by construction
+// (commitCuration takes a recommendationId, not raw selection data).
+model CurationRecommendation {
+  id              String         @id @default(cuid())
+  ownerId         String
+  projectId       String
+  status          DecisionStatus @default(RECOMMENDED)
+  targetBudgetMinor BigInt
+  selections      Json
+  totalMinor      BigInt
+  resultingBoqId  String?
+  createdAt       DateTime       @default(now())
+  committedAt     DateTime?
+  owner           User           @relation(fields: [ownerId], references: [id])
+  project         DesignProject  @relation(fields: [projectId], references: [id])
+
+  @@index([projectId, status])
 }
