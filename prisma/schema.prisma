@@ -338,6 +338,46 @@ model RoomUnderstanding {
   @@index([confirmedByUserId])
 }
 
+// The real "one active direction, unlimited alternatives explored,
+// nothing deleted" invariant: a customer can explore several style
+// directions (Warm Contemporary, Japandi, Modern Luxury) for the same
+// property, but only ONE can be the ACTIVE direction that actually
+// feeds BOQ/budget/procurement at any given time. Deliberately additive
+// to the existing DesignProject/DesignVersion chain rather than a
+// parallel architecture - a direction is a real grouping layer between
+// a project and its versions, not a competing concept.
+//
+// The one-active-at-a-time invariant is enforced at the application
+// layer via a real transaction (see designDirectionService.activate),
+// not by a database constraint alone - Prisma's schema DSL has no clean
+// way to express "unique only when status = ACTIVE" without raw SQL,
+// and the transaction-based approach is the same "conditional update,
+// not read-then-write" discipline already used throughout this
+// codebase for exactly this class of invariant.
+enum DesignDirectionStatus {
+  ACTIVE
+  ALTERNATIVE
+  REJECTED
+}
+
+model DesignDirection {
+  id          String                @id @default(cuid())
+  projectId   String
+  name        String
+  status      DesignDirectionStatus @default(ALTERNATIVE)
+  // The customer's own stated reason, captured when they reject a
+  // direction - real, structured feedback that can seed the NEXT
+  // exploration, rather than a direction simply vanishing with no
+  // record of why it didn't work for them.
+  rejectionReason String?           @db.Text
+  createdAt   DateTime              @default(now())
+  activatedAt DateTime?
+  project     DesignProject         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  versions    DesignVersion[]
+
+  @@index([projectId, status])
+}
+
 model DesignProject {
   id         String        @id @default(cuid())
   ownerId    String
@@ -355,6 +395,7 @@ model DesignProject {
   jobs       AIJob[]
   boqs       Boq[]
   curationRecommendations CurationRecommendation[]
+  directions DesignDirection[]
 
   @@index([ownerId, createdAt])
   @@index([propertyId])
@@ -363,15 +404,22 @@ model DesignProject {
 model DesignVersion {
   id         String        @id @default(cuid())
   projectId  String
+  // Nullable and additive - existing versions created before this
+  // feature existed have no direction, and remain valid exactly as
+  // they are. New versions are expected to be created within a real
+  // direction going forward.
+  directionId String?
   version    Int
   prompt     String?       @db.Text
   parameters Json?
   createdAt  DateTime      @default(now())
   project    DesignProject @relation(fields: [projectId], references: [id])
+  direction  DesignDirection? @relation(fields: [directionId], references: [id])
   assets     Asset[]
 
   @@unique([projectId, version])
   @@index([projectId])
+  @@index([directionId])
 }
 
 model DesignRevision {
