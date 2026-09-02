@@ -104,8 +104,28 @@ export const roomUnderstandingSchema = z
           "confidenceBps must not be set when source is USER - a user's own stated input is a fact, not a confidence-scored inference",
       });
     }
+    // 3. An AI cannot confirm its own output - CONFIRMED means a human
+    //    has reviewed and accepted this data as accurate, which an AI
+    //    submission cannot self-declare. Confirmation happens only
+    //    through the dedicated confirmRoomUnderstanding action (see
+    //    homeIntelligenceService.confirmRoomUnderstanding), never as a
+    //    field a caller sets directly alongside AI-sourced data in the
+    //    same submission that creates it.
+    if (data.source === "AI" && data.status === "CONFIRMED") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["status"],
+        message:
+          "An AI-sourced submission cannot arrive already CONFIRMED - only a human reviewing it through the dedicated confirm action can set this status",
+      });
+    }
   });
 export type RoomUnderstandingInput = z.infer<typeof roomUnderstandingSchema>;
+
+export const confirmRoomUnderstandingParamSchema = z.object({
+  propertyId: z.string().cuid(),
+  roomId: z.string().cuid(),
+});
 
 export const homeDnaSchema = z.object({
   household: z.record(z.string(), z.unknown()),

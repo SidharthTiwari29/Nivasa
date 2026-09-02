@@ -1,4 +1,4 @@
-import { NotFoundError } from "@/server/errors/AppError";
+import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 import { homeIntelligenceRepository } from "@/server/repositories/homeIntelligenceRepository";
 import type {
   HomeDnaInput,
@@ -87,5 +87,32 @@ export const homeIntelligenceService = {
     if (!property) throw new NotFoundError("Property");
 
     return homeIntelligenceRepository.listHomeDna(propertyId, ownerId);
+  },
+
+  // The real, dedicated human-confirm action: only a person calling this
+  // action (never a payload field an AI/import submission can set
+  // directly) can move a room understanding to CONFIRMED. See the
+  // repository method's own comment for why this confirms the latest
+  // version in place rather than requiring the caller to resubmit the
+  // full spatial payload.
+  async confirmRoomUnderstanding(
+    propertyId: string,
+    roomId: string,
+    ownerId: string,
+  ) {
+    const result =
+      await homeIntelligenceRepository.confirmLatestRoomUnderstanding(
+        propertyId,
+        roomId,
+        ownerId,
+        ownerId,
+      );
+    if (result === null) throw new NotFoundError("RoomUnderstanding");
+    if (result === undefined) {
+      throw new ConflictError(
+        "This room understanding has already been confirmed",
+      );
+    }
+    return result;
   },
 };

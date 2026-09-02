@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { NotFoundError } from "@/server/errors/AppError";
+import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 
 const repository = {
   findForOwner: vi.fn(),
   findRoomForOwner: vi.fn(),
   listRoomUnderstandings: vi.fn(),
   listHomeDna: vi.fn(),
+  confirmLatestRoomUnderstanding: vi.fn(),
 };
 
 vi.mock("@/server/repositories/homeIntelligenceRepository", () => ({
@@ -61,5 +62,59 @@ describe("homeIntelligenceService collection semantics", () => {
       homeIntelligenceService.listHomeDna("property-1", "owner-1"),
     ).rejects.toBeInstanceOf(NotFoundError);
     expect(repository.listHomeDna).not.toHaveBeenCalled();
+  });
+});
+
+describe("homeIntelligenceService.confirmRoomUnderstanding", () => {
+  beforeEach(() => vi.resetAllMocks());
+
+  it("rejects when the room or its understanding does not exist for this owner", async () => {
+    repository.confirmLatestRoomUnderstanding.mockResolvedValue(null);
+
+    await expect(
+      homeIntelligenceService.confirmRoomUnderstanding(
+        "property-1",
+        "room-1",
+        "user-1",
+      ),
+    ).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  it("rejects when the latest version is already confirmed - a distinct outcome from not found", async () => {
+    repository.confirmLatestRoomUnderstanding.mockResolvedValue(undefined);
+
+    await expect(
+      homeIntelligenceService.confirmRoomUnderstanding(
+        "property-1",
+        "room-1",
+        "user-1",
+      ),
+    ).rejects.toBeInstanceOf(ConflictError);
+  });
+
+  it("confirms the latest version and returns it, attributing the confirming user", async () => {
+    repository.confirmLatestRoomUnderstanding.mockResolvedValue({
+      id: "ru-1",
+      status: "CONFIRMED",
+      confirmedByUserId: "user-1",
+    } as never);
+
+    const result = await homeIntelligenceService.confirmRoomUnderstanding(
+      "property-1",
+      "room-1",
+      "user-1",
+    );
+
+    expect(result).toEqual({
+      id: "ru-1",
+      status: "CONFIRMED",
+      confirmedByUserId: "user-1",
+    });
+    expect(repository.confirmLatestRoomUnderstanding).toHaveBeenCalledWith(
+      "property-1",
+      "room-1",
+      "user-1",
+      "user-1",
+    );
   });
 });

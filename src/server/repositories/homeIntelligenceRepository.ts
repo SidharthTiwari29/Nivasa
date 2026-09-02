@@ -159,6 +159,49 @@ export const homeIntelligenceRepository = {
     });
   },
 
+  // README/architecture's lifecycle stage 3 (RECOMMENDED -> COMMITTED,
+  // here mapped onto RoomUnderstanding's own status enum): confirms the
+  // LATEST existing version AS-IS, preserving whatever data an AI
+  // inference (or import) actually produced - this is deliberately
+  // different from the general upsert path, which creates a brand-new
+  // version and requires the caller to resubmit the full spatial
+  // payload. A user accepting an AI's room understanding should not need
+  // to retype dimensions/geometry just to say "yes, this is correct."
+  //
+  // The conditional update (status must not already be CONFIRMED) is the
+  // real race-safety guarantee, the same pattern used throughout this
+  // codebase for quote acceptance, budget locking, and supplier invite
+  // consumption - two concurrent confirm requests for the same room
+  // resolve to exactly one real confirmation event, not two.
+  async confirmLatestRoomUnderstanding(
+    propertyId: string,
+    roomId: string,
+    ownerId: string,
+    confirmedByUserId: string,
+  ) {
+    return serializable(async (tx) => {
+      const latest = await tx.roomUnderstanding.findFirst({
+        where: { roomId, room: { propertyId, property: { ownerId } } },
+        orderBy: { version: "desc" },
+      });
+      if (!latest) return null;
+
+      const updated = await tx.roomUnderstanding.updateMany({
+        where: { id: latest.id, status: { not: "CONFIRMED" } },
+        data: {
+          status: "CONFIRMED",
+          confirmedByUserId,
+          confirmedAt: new Date(),
+        },
+      });
+      if (updated.count === 0) return undefined; // already confirmed - a distinct outcome from "not found"
+
+      return tx.roomUnderstanding.findUniqueOrThrow({
+        where: { id: latest.id },
+      });
+    });
+  },
+
   async createHomeDna(
     propertyId: string,
     ownerId: string,
