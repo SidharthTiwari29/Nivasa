@@ -65,10 +65,10 @@ describe("niwasthanMagicService.suggestSmartUpgrades", () => {
     ).rejects.toBeInstanceOf(ConflictError);
   });
 
-  it("returns an honest empty result for a room type with no defined smart upgrades, rather than an error", async () => {
+  it("returns an honest empty result for a room type with no defined smart upgrades (OTHER), rather than an error", async () => {
     repo.findProjectWithRoomForOwner.mockResolvedValue({
       id: "project-1",
-      room: { type: "BATHROOM" },
+      room: { type: "OTHER" },
     } as never);
 
     const result = await niwasthanMagicService.suggestSmartUpgrades(
