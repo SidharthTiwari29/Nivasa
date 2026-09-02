@@ -40,7 +40,10 @@ export const referralRepository = {
   // later delivery-based bonus has separately been paid out is
   // irrelevant to it.
   findAnyReferralForUser(referredUserId: string) {
-    return prisma.referral.findUnique({ where: { referredUserId } });
+    return prisma.referral.findUnique({
+      where: { referredUserId },
+      include: { referralCode: { select: { ownerUserId: true } } },
+    });
   },
 
   // "Goes with the interior with us" means a genuine paid-plan purchase,
@@ -70,6 +73,13 @@ export const referralRepository = {
       select: { referredUserId: true },
     });
     return referrals.map((r) => r.referredUserId);
+  },
+
+  findSignupSignal(userId: string) {
+    return prisma.user.findUnique({
+      where: { id: userId },
+      select: { signupIpAddress: true, signupUserAgent: true },
+    });
   },
 
   // The reward is applied via a conditional update (status must still be
