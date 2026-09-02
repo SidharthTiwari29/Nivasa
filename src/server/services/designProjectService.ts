@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
+import { NotFoundError } from "@/server/errors/AppError";
 
 export async function createDesignProject(input: {
   ownerId: string;
@@ -10,12 +11,12 @@ export async function createDesignProject(input: {
   const property = await prisma.property.findFirst({
     where: { id: input.propertyId, ownerId: input.ownerId },
   });
-  if (!property) throw new Error("PROPERTY_NOT_FOUND");
+  if (!property) throw new NotFoundError("Property");
   if (input.roomId) {
     const room = await prisma.room.findFirst({
       where: { id: input.roomId, propertyId: input.propertyId },
     });
-    if (!room) throw new Error("ROOM_NOT_FOUND");
+    if (!room) throw new NotFoundError("Room");
   }
   return prisma.designProject.create({
     data: input,
@@ -32,7 +33,7 @@ export async function createDesignVersion(input: {
   const project = await prisma.designProject.findFirst({
     where: { id: input.projectId, ownerId: input.ownerId },
   });
-  if (!project) throw new Error("PROJECT_NOT_FOUND");
+  if (!project) throw new NotFoundError("DesignProject");
   const latest = await prisma.designVersion.findFirst({
     where: { projectId: input.projectId },
     orderBy: { version: "desc" },
@@ -57,11 +58,11 @@ export async function createDesignRevision(input: {
   const project = await prisma.designProject.findFirst({
     where: { id: input.projectId, ownerId: input.ownerId },
   });
-  if (!project) throw new Error("PROJECT_NOT_FOUND");
+  if (!project) throw new NotFoundError("DesignProject");
   const version = await prisma.designVersion.findFirst({
     where: { id: input.baseVersionId, projectId: input.projectId },
   });
-  if (!version) throw new Error("VERSION_NOT_FOUND");
+  if (!version) throw new NotFoundError("DesignVersion");
   const latest = await prisma.designRevision.findFirst({
     where: { projectId: input.projectId },
     orderBy: { revisionNumber: "desc" },

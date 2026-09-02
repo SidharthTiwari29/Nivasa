@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/server/db/prisma";
+import { NotFoundError } from "@/server/errors/AppError";
 import {
+  createDesignProject,
   createDesignRevision,
   createDesignVersion,
 } from "./designProjectService";
@@ -20,6 +22,65 @@ const db = vi.mocked(prisma, { deep: true });
 describe("designProjectService", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  describe("createDesignProject", () => {
+    it("rejects when the property does not exist or is not owned by the caller", async () => {
+      db.property.findFirst.mockResolvedValue(null);
+
+      await expect(
+        createDesignProject({
+          ownerId: "user-1",
+          propertyId: "property-1",
+          name: "Living Room Redesign",
+        }),
+      ).rejects.toBeInstanceOf(NotFoundError);
+      expect(db.designProject.create).not.toHaveBeenCalled();
+    });
+
+    it("rejects when a specified room does not exist under that property", async () => {
+      db.property.findFirst.mockResolvedValue({ id: "property-1" } as never);
+      db.room.findFirst.mockResolvedValue(null);
+
+      await expect(
+        createDesignProject({
+          ownerId: "user-1",
+          propertyId: "property-1",
+          roomId: "room-1",
+          name: "Living Room Redesign",
+        }),
+      ).rejects.toBeInstanceOf(NotFoundError);
+      expect(db.designProject.create).not.toHaveBeenCalled();
+    });
+
+    it("creates a project when the property is owned and no room is specified", async () => {
+      db.property.findFirst.mockResolvedValue({ id: "property-1" } as never);
+      db.designProject.create.mockResolvedValue({ id: "project-1" } as never);
+
+      const result = await createDesignProject({
+        ownerId: "user-1",
+        propertyId: "property-1",
+        name: "Whole Property Redesign",
+      });
+
+      expect(result).toEqual({ id: "project-1" });
+      expect(db.room.findFirst).not.toHaveBeenCalled();
+    });
+
+    it("creates a project with a specified, existing room", async () => {
+      db.property.findFirst.mockResolvedValue({ id: "property-1" } as never);
+      db.room.findFirst.mockResolvedValue({ id: "room-1" } as never);
+      db.designProject.create.mockResolvedValue({ id: "project-1" } as never);
+
+      const result = await createDesignProject({
+        ownerId: "user-1",
+        propertyId: "property-1",
+        roomId: "room-1",
+        name: "Living Room Redesign",
+      });
+
+      expect(result).toEqual({ id: "project-1" });
+    });
+  });
+
   it("rejects a version for an unowned project", async () => {
     db.designProject.findFirst.mockResolvedValue(null);
 
@@ -29,7 +90,7 @@ describe("designProjectService", () => {
         projectId: "project-1",
         prompt: "modern",
       }),
-    ).rejects.toThrow("PROJECT_NOT_FOUND");
+    ).rejects.toBeInstanceOf(NotFoundError);
     expect(db.designVersion.create).not.toHaveBeenCalled();
   });
 
@@ -70,7 +131,7 @@ describe("designProjectService", () => {
         baseVersionId: "version-1",
         instruction: "make it brighter",
       }),
-    ).rejects.toThrow("VERSION_NOT_FOUND");
+    ).rejects.toBeInstanceOf(NotFoundError);
     expect(db.designRevision.create).not.toHaveBeenCalled();
   });
 });
