@@ -457,6 +457,12 @@ model CataloguePrice {
   mrpMinor      BigInt?
   amountMinor   BigInt
   currency      String        @default("INR")
+  // Same rationale as MarketPriceObservation.warrantyMonths - structured,
+  // not buried in unstructured Json, and null means "unknown," never
+  // silently "none". This is the field the customer-facing curation
+  // engine (catalogueCuration.ts) actually reads to enforce real
+  // warranty-quality gating before a customer ever sees an option.
+  warrantyMonths Int?
   effectiveFrom DateTime
   effectiveTo   DateTime?
   item          CatalogueItem @relation(fields: [itemId], references: [id])
@@ -696,6 +702,17 @@ model MarketPriceObservation {
   taxIncluded           Boolean?
   shippingIncluded      Boolean?
   installationIncluded  Boolean?
+  // Structured, not buried in the unstructured `evidence`/attribute Json
+  // blobs elsewhere in this model - the exact "unstructured Json with no
+  // guaranteed shape" problem already flagged and fixed for
+  // RoomUnderstanding.dimensions this session. Warranty terms genuinely
+  // vary by source/listing (the same canonical product sold by two
+  // vendors can carry different warranty terms), so this lives on the
+  // observation, not the canonical MarketProduct - and null means
+  // "warranty status unknown for this observation," never silently
+  // "no warranty" (see evaluateSourceQuality, which treats these two
+  // cases differently rather than collapsing them).
+  warrantyMonths        Int?
   location              Json?
   availability          String?
   evidence              Json

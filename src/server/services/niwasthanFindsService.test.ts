@@ -77,6 +77,7 @@ describe("niwasthanFindsService.scanForBetterOption", () => {
               unitPriceMinor: 20_000n,
               mrpMinor: null,
               priceEffectiveFrom: new Date("2026-08-31T00:00:00Z"),
+              warrantyMonths: null,
             },
           ],
         ],
@@ -111,6 +112,7 @@ describe("niwasthanFindsService.scanForBetterOption", () => {
               unitPriceMinor: 20_000n,
               mrpMinor: null,
               priceEffectiveFrom: new Date("2026-08-31T00:00:00Z"),
+              warrantyMonths: null,
             },
             {
               itemId: "item-2",
@@ -119,6 +121,7 @@ describe("niwasthanFindsService.scanForBetterOption", () => {
               unitPriceMinor: 15_000n,
               mrpMinor: null,
               priceEffectiveFrom: new Date("2026-08-31T00:00:00Z"),
+              warrantyMonths: null,
             },
           ],
         ],
@@ -159,6 +162,7 @@ describe("niwasthanFindsService.scanForBetterOption", () => {
               unitPriceMinor: 20_000n,
               mrpMinor: null,
               priceEffectiveFrom: new Date("2026-08-31T00:00:00Z"),
+              warrantyMonths: null,
             },
             {
               itemId: "item-2",
@@ -167,6 +171,7 @@ describe("niwasthanFindsService.scanForBetterOption", () => {
               unitPriceMinor: 18_000n,
               mrpMinor: null,
               priceEffectiveFrom: new Date("2026-08-31T00:00:00Z"),
+              warrantyMonths: null,
             },
             {
               itemId: "item-3",
@@ -175,6 +180,7 @@ describe("niwasthanFindsService.scanForBetterOption", () => {
               unitPriceMinor: 12_000n,
               mrpMinor: null,
               priceEffectiveFrom: new Date("2026-08-31T00:00:00Z"),
+              warrantyMonths: null,
             },
           ],
         ],

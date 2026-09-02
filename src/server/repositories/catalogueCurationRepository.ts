@@ -22,6 +22,7 @@ export const catalogueCurationRepository = {
         unitPriceMinor: bigint;
         mrpMinor: bigint | null;
         priceEffectiveFrom: Date;
+        warrantyMonths: number | null;
       }>
     >();
 
@@ -36,6 +37,7 @@ export const catalogueCurationRepository = {
         unitPriceMinor: price.amountMinor,
         mrpMinor: price.mrpMinor,
         priceEffectiveFrom: price.effectiveFrom,
+        warrantyMonths: price.warrantyMonths,
       });
       byCategory.set(item.category, list);
     }

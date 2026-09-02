@@ -25,6 +25,7 @@ function referenceOptions() {
           unitPriceMinor: 20_000n,
           mrpMinor: 24_000n, // real MRP, higher than selling price - genuine discount
           priceEffectiveFrom: new Date("2026-08-25T00:00:00Z"), // 7 days old
+          warrantyMonths: null,
         },
         {
           itemId: "sofa-b",
@@ -33,6 +34,7 @@ function referenceOptions() {
           unitPriceMinor: 25_000n,
           mrpMinor: null, // no MRP on record for this item - must not be treated as a discount
           priceEffectiveFrom: new Date("2026-08-31T00:00:00Z"), // 1 day old
+          warrantyMonths: null,
         },
         {
           itemId: "sofa-c",
@@ -41,6 +43,7 @@ function referenceOptions() {
           unitPriceMinor: 35_000n,
           mrpMinor: 35_000n, // MRP equals selling price - no real discount
           priceEffectiveFrom: new Date("2026-08-20T00:00:00Z"),
+          warrantyMonths: null,
         },
       ],
     ],
@@ -54,6 +57,7 @@ function referenceOptions() {
           unitPriceMinor: 5_000n,
           mrpMinor: null,
           priceEffectiveFrom: new Date("2026-08-30T00:00:00Z"),
+          warrantyMonths: null,
         },
         {
           itemId: "curtain-y",
@@ -62,6 +66,7 @@ function referenceOptions() {
           unitPriceMinor: 8_000n,
           mrpMinor: 9_000n,
           priceEffectiveFrom: new Date("2026-08-31T00:00:00Z"),
+          warrantyMonths: null,
         },
       ],
     ],
@@ -264,6 +269,7 @@ describe("curateWithinBudget", () => {
                 unitPriceMinor: 35_000n,
                 mrpMinor: 35_000n,
                 priceEffectiveFrom: FIXED_NOW,
+                warrantyMonths: null,
               },
             ],
           ],
@@ -273,6 +279,103 @@ describe("curateWithinBudget", () => {
       );
 
       expect(result.selections[0].confidence.mrpVerifiedDiscount).toBe(false);
+    });
+  });
+
+  describe("real quality gate - warranty and adequate options", () => {
+    it("reports the real warranty status computed from actual data, not asserted", () => {
+      const result = curateWithinBudget(
+        [{ category: "sofa", quantity: 1 }],
+        referenceOptions(),
+        20_000n,
+        FIXED_NOW,
+      );
+
+      // sofa-a in the reference fixture has no warrantyMonths recorded.
+      expect(result.selections[0].confidence.quality.warrantyStatus).toBe(
+        "UNKNOWN",
+      );
+    });
+
+    it("reports COVERED warranty status when a real, positive warranty is on record", () => {
+      const optionsWithWarranty = new Map([
+        [
+          "sofa",
+          [
+            {
+              itemId: "sofa-a",
+              name: "Sofa A",
+              brand: "Brand A",
+              unitPriceMinor: 20_000n,
+              mrpMinor: null,
+              priceEffectiveFrom: FIXED_NOW,
+              warrantyMonths: 24,
+            },
+          ],
+        ],
+      ]);
+
+      const result = curateWithinBudget(
+        [{ category: "sofa", quantity: 1 }],
+        optionsWithWarranty,
+        20_000n,
+        FIXED_NOW,
+      );
+
+      expect(result.selections[0].confidence.quality.warrantyStatus).toBe(
+        "COVERED",
+      );
+    });
+
+    it("flags a category as having limited options when only one real alternative exists", () => {
+      const singleOption = new Map([
+        [
+          "flooring",
+          [
+            {
+              itemId: "floor-a",
+              name: "Floor A",
+              brand: "Brand A",
+              unitPriceMinor: 10_000n,
+              mrpMinor: null,
+              priceEffectiveFrom: FIXED_NOW,
+              warrantyMonths: null,
+            },
+          ],
+        ],
+      ]);
+
+      const result = curateWithinBudget(
+        [{ category: "flooring", quantity: 1 }],
+        singleOption,
+        50_000n,
+        FIXED_NOW,
+      );
+
+      expect(result.categoriesWithLimitedOptions).toEqual(["flooring"]);
+    });
+
+    it("does not flag a category with adequate options (2 or more) as limited", () => {
+      const result = curateWithinBudget(
+        [{ category: "curtains", quantity: 1 }],
+        referenceOptions(), // curtains has 2 real options in the fixture
+        20_000n,
+        FIXED_NOW,
+      );
+
+      expect(result.categoriesWithLimitedOptions).not.toContain("curtains");
+    });
+
+    it("does not double-report a fully unfulfilled category as also having limited options", () => {
+      const result = curateWithinBudget(
+        [{ category: "flooring", quantity: 1 }], // no "flooring" entry at all in referenceOptions
+        referenceOptions(),
+        100_000n,
+        FIXED_NOW,
+      );
+
+      expect(result.unfulfilledCategories).toEqual(["flooring"]);
+      expect(result.categoriesWithLimitedOptions).not.toContain("flooring");
     });
   });
 });
