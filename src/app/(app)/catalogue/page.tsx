@@ -35,7 +35,7 @@ export default async function CataloguePage() {
         </div>
       ) : (
         <ul className="mt-8 divide-y divide-paper-raised">
-          {items.map((item) => {
+          {items.map((item: CatalogueItemSummary) => {
             const price = item.prices[0];
             return (
               <li key={item.id} className="py-4">
