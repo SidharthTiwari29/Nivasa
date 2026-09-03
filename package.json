@@ -12,7 +12,8 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "prisma:validate": "prisma validate",
-    "prisma:generate": "prisma generate"
+    "prisma:generate": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -33,6 +34,7 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "latest",
     "@types/pg": "^8.23.1",
     "@types/react": "latest",
@@ -41,6 +43,7 @@
     "eslint-config-next": "latest",
     "prettier": "latest",
     "prisma": "7.9.1",
+    "tailwindcss": "^4.3.3",
     "typescript": "latest",
     "vitest": "latest"
   }
