@@ -1,4 +1,5 @@
 import { prisma } from "@/server/db/prisma";
+import { NotFoundError } from "@/server/errors/AppError";
 
 export function listCatalogue(category?: string) {
   return prisma.catalogueItem.findMany({
@@ -48,7 +49,7 @@ export async function addCataloguePrice(input: {
   const item = await prisma.catalogueItem.findUnique({
     where: { sku: input.sku },
   });
-  if (!item) throw new Error("CATALOGUE_ITEM_NOT_FOUND");
+  if (!item) throw new NotFoundError("CatalogueItem");
   return prisma.cataloguePrice.create({
     data: {
       itemId: item.id,
