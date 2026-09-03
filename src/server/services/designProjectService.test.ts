@@ -5,11 +5,13 @@ import {
   createDesignProject,
   createDesignRevision,
   createDesignVersion,
+  getDesignProject,
+  listDesignProjectsForProperty,
 } from "./designProjectService";
 
 vi.mock("@/server/db/prisma", () => ({
   prisma: {
-    designProject: { findFirst: vi.fn(), create: vi.fn() },
+    designProject: { findFirst: vi.fn(), create: vi.fn(), findMany: vi.fn() },
     designVersion: { findFirst: vi.fn(), create: vi.fn() },
     designRevision: { findFirst: vi.fn(), create: vi.fn() },
     designDirection: { findFirst: vi.fn() },
@@ -235,6 +237,43 @@ describe("designProjectService", () => {
         }),
       ).rejects.toBeInstanceOf(NotFoundError);
       expect(db.designRevision.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("listDesignProjectsForProperty", () => {
+    it("rejects when the property does not exist or is not owned by the caller", async () => {
+      db.property.findFirst.mockResolvedValue(null);
+
+      await expect(
+        listDesignProjectsForProperty("property-1", "user-1"),
+      ).rejects.toBeInstanceOf(NotFoundError);
+      expect(db.designProject.findMany).not.toHaveBeenCalled();
+    });
+
+    it("lists real design projects for an owned property", async () => {
+      db.property.findFirst.mockResolvedValue({ id: "property-1" } as never);
+      db.designProject.findMany.mockResolvedValue([
+        { id: "project-1", name: "Living Room Redesign" },
+      ] as never);
+
+      const result = await listDesignProjectsForProperty(
+        "property-1",
+        "user-1",
+      );
+
+      expect(result).toEqual([
+        { id: "project-1", name: "Living Room Redesign" },
+      ]);
+    });
+  });
+
+  describe("getDesignProject", () => {
+    it("returns null for a project the caller does not own", async () => {
+      db.designProject.findFirst.mockResolvedValue(null);
+
+      const result = await getDesignProject("project-1", "user-1");
+
+      expect(result).toBeNull();
     });
   });
 });
