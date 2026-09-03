@@ -15,6 +15,7 @@ vi.mock("@/server/db/prisma", () => ({
       findFirst: vi.fn(),
       findUnique: vi.fn(),
       upsert: vi.fn(),
+      count: vi.fn(),
     },
     cataloguePrice: { create: vi.fn() },
   },
@@ -51,15 +52,25 @@ describe("catalogueService", () => {
       expect(result).toBeNull();
     });
 
-    it("returns the real item with its latest price for a known, active SKU", async () => {
+    it("returns the real item with its latest price and a real category-peer count for a known, active SKU", async () => {
       db.catalogueItem.findFirst.mockResolvedValue({
         id: "item-1",
         sku: "SKU-1",
+        category: "sofa",
       } as never);
+      db.catalogueItem.count.mockResolvedValue(4);
 
       const result = await getCatalogueItem("SKU-1");
 
-      expect(result).toEqual({ id: "item-1", sku: "SKU-1" });
+      expect(db.catalogueItem.count).toHaveBeenCalledWith({
+        where: { category: "sofa", active: true },
+      });
+      expect(result).toEqual({
+        id: "item-1",
+        sku: "SKU-1",
+        category: "sofa",
+        alternativesConsidered: 4,
+      });
     });
   });
 
