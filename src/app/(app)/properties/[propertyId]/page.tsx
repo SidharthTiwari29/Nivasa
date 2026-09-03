@@ -2,13 +2,21 @@ import Link from "next/link";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { propertyService } from "@/server/services/propertyService";
 import { roomService } from "@/server/services/roomService";
+import { listDesignProjectsForProperty } from "@/server/services/designProjectService";
 import { CreateRoomForm } from "./CreateRoomForm";
+import { CreateDesignProjectForm } from "./CreateDesignProjectForm";
 
 type RoomSummary = {
   id: string;
   name: string;
   type: string;
   areaSqFt: { toString(): string } | null;
+};
+
+type DesignProjectSummary = {
+  id: string;
+  name: string;
+  status: string;
 };
 
 const ROOM_TYPE_LABELS: Record<string, string> = {
@@ -31,6 +39,10 @@ export default async function PropertyDetailPage({
   const { userId } = await requireAuth();
   const property = await propertyService.get(propertyId, userId);
   const rooms = await roomService.list(propertyId, userId);
+  const designProjects = await listDesignProjectsForProperty(
+    propertyId,
+    userId,
+  );
 
   return (
     <div>
@@ -83,6 +95,41 @@ export default async function PropertyDetailPage({
             Add a room
           </h3>
           <CreateRoomForm propertyId={propertyId} />
+        </div>
+      </div>
+
+      <div className="mt-12">
+        <h2 className="font-display text-lg font-semibold">Designs</h2>
+        {designProjects.length === 0 ? (
+          <p className="mt-3 font-body text-sm text-ink-soft">
+            Start a design to see real directions, products, and pricing for
+            this home.
+          </p>
+        ) : (
+          <ul className="mt-4 divide-y divide-paper-raised">
+            {designProjects.map((project: DesignProjectSummary) => (
+              <li key={project.id} className="py-3">
+                <Link
+                  href={`/designs/${project.id}`}
+                  className="group flex items-center justify-between"
+                >
+                  <span className="font-body text-sm font-medium text-ink group-hover:text-laterite">
+                    {project.name}
+                  </span>
+                  <span className="font-mono text-xs text-ink-soft">
+                    {project.status}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <div className="mt-6 border-t border-paper-raised pt-6">
+          <h3 className="font-body text-sm font-semibold text-ink">
+            Start a design
+          </h3>
+          <CreateDesignProjectForm propertyId={propertyId} rooms={rooms} />
         </div>
       </div>
     </div>

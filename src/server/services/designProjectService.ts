@@ -105,3 +105,24 @@ export async function createDesignRevision(input: {
     },
   });
 }
+
+export async function listDesignProjectsForProperty(
+  propertyId: string,
+  ownerId: string,
+) {
+  const property = await prisma.property.findFirst({
+    where: { id: propertyId, ownerId },
+  });
+  if (!property) throw new NotFoundError("Property");
+  return prisma.designProject.findMany({
+    where: { propertyId, ownerId },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function getDesignProject(projectId: string, ownerId: string) {
+  return prisma.designProject.findFirst({
+    where: { id: projectId, ownerId },
+    include: { room: true },
+  });
+}
