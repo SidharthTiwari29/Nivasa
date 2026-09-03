@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "Purchase"
+  ADD COLUMN "discountMinor" BIGINT NOT NULL DEFAULT 0,
+  ADD COLUMN "platformFeeMinor" BIGINT NOT NULL DEFAULT 0,
+  ADD COLUMN "gstMinor" BIGINT NOT NULL DEFAULT 0,
+  ADD COLUMN "voluntaryContributionMinor" BIGINT NOT NULL DEFAULT 0;
