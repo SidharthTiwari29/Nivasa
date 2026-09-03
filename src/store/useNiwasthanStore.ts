@@ -8,18 +8,23 @@ import type {
 } from "@/types/interior";
 
 // Illustrative example data for the hero demonstration only - these are
-// NOT real catalogue prices. Every number here is internally consistent
-// and hand-verified (the default total below sums correctly from these
-// exact figures), but this dataset exists purely to make the
-// interaction model tangible before real catalogue data is wired in.
+// NOT real catalogue prices or real verified quotes. Every number here
+// is internally consistent and hand-verified (the default total below
+// sums correctly from these exact figures), but this dataset exists
+// purely to make the interaction model tangible and premium-feeling
+// before real catalogue data is wired in. Brand names used (Hettich,
+// Blum, Kajaria, Jaquar, Havells) are real, well-known companies
+// genuinely operating in the Indian interiors market - used here for
+// realistic presentation, not attributed with a specific real price,
+// warranty, or claim that would need to be true of them.
 export const MATERIAL_CATALOGUE: MaterialCategory[] = [
   {
     id: "kitchen",
-    label: "Kitchen Cabinet Architecture",
+    label: "Modular Kitchen",
     specifications: [
-      "BWP Plywood",
-      "Hettich Soft-Close Hardware",
-      "Scratch-Resistant Laminate",
+      "BWP Plywood core",
+      "Hettich soft-close hardware",
+      "Scratch-resistant laminate",
     ],
     options: [
       {
@@ -27,17 +32,18 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
         categoryId: "kitchen",
         name: "Standard Finish",
         tier: "standard",
-        priceMinor: 7_200_000,
-        specSummary: "BWP core, standard laminate",
-        reasonText: "Meets moisture protection basics at the lowest cost.",
+        priceMinor: 11_800_000,
+        specSummary: "BWP core, standard hinges, laminate finish",
+        reasonText: "Meets real moisture protection basics at the lowest cost.",
       },
       {
         id: "kitchen-recommended",
         categoryId: "kitchen",
         name: "Niwasthan Recommended",
         tier: "recommended",
-        priceMinor: 8_450_000,
-        specSummary: "BWP core, Hettich hardware, scratch-resistant laminate",
+        priceMinor: 14_500_000,
+        specSummary:
+          "BWP core, Hettich soft-close hardware, scratch-resistant laminate",
         reasonText:
           "Optimal trade-off between moisture protection (15-yr durability), structural stability, and cost.",
       },
@@ -46,19 +52,18 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
         categoryId: "kitchen",
         name: "Premium Finish",
         tier: "premium",
-        priceMinor: 9_800_000,
-        specSummary:
-          "Marine ply core, premium hardware, anti-fingerprint finish",
+        priceMinor: 18_200_000,
+        specSummary: "Marine ply core, Hettich premium hardware, PU finish",
         reasonText: "Best available durability and finish quality.",
       },
     ],
   },
   {
     id: "wardrobe",
-    label: "Bedroom Wardrobe System",
+    label: "Bedroom Wardrobe",
     specifications: [
       "Engineered wood core",
-      "Soft-close channels",
+      "Blum soft-close channels",
       "Laminate finish",
     ],
     options: [
@@ -67,8 +72,8 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
         categoryId: "wardrobe",
         name: "Standard Finish",
         tier: "standard",
-        priceMinor: 12_000_000,
-        specSummary: "Engineered wood, basic hinges",
+        priceMinor: 15_200_000,
+        specSummary: "Engineered wood, standard sliding channels",
         reasonText: "Covers real storage needs at the lowest real cost.",
       },
       {
@@ -76,8 +81,9 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
         categoryId: "wardrobe",
         name: "Niwasthan Recommended",
         tier: "recommended",
-        priceMinor: 14_000_000,
-        specSummary: "Engineered wood, soft-close channels, laminate finish",
+        priceMinor: 18_500_000,
+        specSummary:
+          "Engineered wood, Blum soft-close channels, laminate finish",
         reasonText: "Balances daily-use durability with real cost.",
       },
       {
@@ -85,8 +91,8 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
         categoryId: "wardrobe",
         name: "Premium Finish",
         tier: "premium",
-        priceMinor: 16_500_000,
-        specSummary: "Marine ply, premium soft-close, veneer finish",
+        priceMinor: 22_800_000,
+        specSummary: "Marine ply, Blum premium soft-close, veneer finish",
         reasonText: "Highest available finish and hardware quality.",
       },
     ],
@@ -105,7 +111,7 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
         categoryId: "living",
         name: "Standard Finish",
         tier: "standard",
-        priceMinor: 6_500_000,
+        priceMinor: 8_400_000,
         specSummary: "Solid wood frame, standard foam",
         reasonText: "Real comfort at the lowest real cost.",
       },
@@ -114,7 +120,7 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
         categoryId: "living",
         name: "Niwasthan Recommended",
         tier: "recommended",
-        priceMinor: 8_400_000,
+        priceMinor: 11_000_000,
         specSummary: "Solid wood frame, high-density foam, fabric upholstery",
         reasonText: "Balances everyday comfort with real durability.",
       },
@@ -123,7 +129,7 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
         categoryId: "living",
         name: "Premium Finish",
         tier: "premium",
-        priceMinor: 11_000_000,
+        priceMinor: 14_500_000,
         specSummary: "Solid wood frame, premium foam, leather upholstery",
         reasonText: "Highest available comfort and finish quality.",
       },
@@ -133,7 +139,7 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
     id: "lighting",
     label: "Cove & Accent Lighting",
     specifications: [
-      "LED cove strips",
+      "Havells LED cove strips",
       "Dimmable drivers",
       "Warm 2700K accents",
     ],
@@ -143,8 +149,8 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
         categoryId: "lighting",
         name: "Standard Finish",
         tier: "standard",
-        priceMinor: 2_800_000,
-        specSummary: "Basic LED cove strips",
+        priceMinor: 3_600_000,
+        specSummary: "Basic Havells LED cove strips",
         reasonText: "Covers real ambient lighting needs.",
       },
       {
@@ -152,8 +158,8 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
         categoryId: "lighting",
         name: "Niwasthan Recommended",
         tier: "recommended",
-        priceMinor: 4_200_000,
-        specSummary: "Dimmable LED cove, warm 2700K accents",
+        priceMinor: 5_800_000,
+        specSummary: "Dimmable Havells LED cove, warm 2700K accents",
         reasonText: "Balances mood lighting quality with real cost.",
       },
       {
@@ -161,9 +167,85 @@ export const MATERIAL_CATALOGUE: MaterialCategory[] = [
         categoryId: "lighting",
         name: "Premium Finish",
         tier: "premium",
-        priceMinor: 5_800_000,
+        priceMinor: 7_900_000,
         specSummary: "Dimmable LED cove, smart scene control",
         reasonText: "Highest available control and finish quality.",
+      },
+    ],
+  },
+  {
+    id: "flooring",
+    label: "Living & Dining Flooring",
+    specifications: [
+      "Kajaria vitrified tiles",
+      "Anti-skid finish",
+      "Rectified edges",
+    ],
+    options: [
+      {
+        id: "flooring-standard",
+        categoryId: "flooring",
+        name: "Standard Finish",
+        tier: "standard",
+        priceMinor: 7_200_000,
+        specSummary: "Kajaria vitrified tiles, glossy finish",
+        reasonText: "Real durability at the lowest real cost.",
+      },
+      {
+        id: "flooring-recommended",
+        categoryId: "flooring",
+        name: "Niwasthan Recommended",
+        tier: "recommended",
+        priceMinor: 9_500_000,
+        specSummary: "Kajaria vitrified tiles, anti-skid, rectified edges",
+        reasonText: "Balances slip safety and finish quality with real cost.",
+      },
+      {
+        id: "flooring-premium",
+        categoryId: "flooring",
+        name: "Premium Finish",
+        tier: "premium",
+        priceMinor: 12_800_000,
+        specSummary: "Large-format vitrified tiles, matte anti-skid finish",
+        reasonText: "Highest available finish size and slip protection.",
+      },
+    ],
+  },
+  {
+    id: "bathroom",
+    label: "Bathroom Fittings",
+    specifications: [
+      "Jaquar fittings",
+      "Ceramic sanitaryware",
+      "Anti-scale aerators",
+    ],
+    options: [
+      {
+        id: "bathroom-standard",
+        categoryId: "bathroom",
+        name: "Standard Finish",
+        tier: "standard",
+        priceMinor: 5_400_000,
+        specSummary: "Jaquar essentials range, ceramic sanitaryware",
+        reasonText: "Covers real day-to-day fittings at the lowest real cost.",
+      },
+      {
+        id: "bathroom-recommended",
+        categoryId: "bathroom",
+        name: "Niwasthan Recommended",
+        tier: "recommended",
+        priceMinor: 7_200_000,
+        specSummary: "Jaquar mid-range fittings, anti-scale aerators",
+        reasonText: "Balances daily-use durability with real cost.",
+      },
+      {
+        id: "bathroom-premium",
+        categoryId: "bathroom",
+        name: "Premium Finish",
+        tier: "premium",
+        priceMinor: 9_800_000,
+        specSummary: "Jaquar premium range, rain shower system",
+        reasonText: "Highest available fitting quality and finish.",
       },
     ],
   },
@@ -174,10 +256,10 @@ export const SMART_FINDS: SmartFind[] = [
     id: "find-kitchen",
     categoryId: "kitchen",
     currentOptionId: "kitchen-premium",
-    currentPriceMinor: 9_800_000,
+    currentPriceMinor: 18_200_000,
     alternativeOptionId: "kitchen-recommended",
     alternativeLabel: "Equivalent BWP Grade",
-    alternativePriceMinor: 8_450_000,
+    alternativePriceMinor: 14_500_000,
   },
 ];
 
@@ -202,14 +284,16 @@ type NiwasthanState = {
   categoryTotals: () => Record<string, number>;
 };
 
-// Every default selection is the "recommended" tier - the real,
-// hand-verified default total from these four figures is 35,050,000
-// minor units (paise) = Rs 3,50,500.
+// Every default selection is the "recommended" tier across all six
+// categories - the real, hand-verified default total from these six
+// figures is 66,500,000 minor units (paise) = Rs 6,65,000.
 const DEFAULT_SELECTIONS: SelectedOptions = {
   kitchen: "kitchen-recommended",
   wardrobe: "wardrobe-recommended",
   living: "living-recommended",
   lighting: "lighting-recommended",
+  flooring: "flooring-recommended",
+  bathroom: "bathroom-recommended",
 };
 
 function findOption(optionId: string) {
