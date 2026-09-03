@@ -19,10 +19,21 @@ export function listCatalogue(category?: string) {
 }
 
 export async function getCatalogueItem(sku: string) {
-  return prisma.catalogueItem.findFirst({
+  const item = await prisma.catalogueItem.findFirst({
     where: { sku, active: true },
     include: { prices: { orderBy: { effectiveFrom: "desc" }, take: 1 } },
   });
+  if (!item) return null;
+
+  // A real, computed peer count in the same category - what
+  // deriveMeritsAndDemerits' alternativesConsidered actually means: how
+  // many other real, currently-active options exist to compare this
+  // item against, never a fabricated or estimated number.
+  const alternativesConsidered = await prisma.catalogueItem.count({
+    where: { category: item.category, active: true },
+  });
+
+  return { ...item, alternativesConsidered };
 }
 
 export async function upsertCatalogueItem(input: {
