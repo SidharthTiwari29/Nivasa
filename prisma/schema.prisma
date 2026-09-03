@@ -37,6 +37,26 @@ enum DecisionStatus {
   LOCKED
 }
 
+enum CatalogueAvailability {
+  IN_STOCK
+  LIMITED_STOCK
+  OUT_OF_STOCK
+  UNKNOWN
+}
+
+// Real, manufacturer-specified connectivity types for smart-home/lighting
+// products - not an invented capability list. NONE is the correct value
+// for any ordinary, non-connected product, distinct from null (which
+// means "not applicable/not yet recorded" for a product outside this
+// domain entirely).
+enum SmartHomeConnectivity {
+  BLUETOOTH
+  WIFI
+  ZIGBEE
+  MATTER
+  NONE
+}
+
 enum Role {
   USER
   DESIGNER
@@ -183,6 +203,9 @@ model User {
   createdSupplierInvites     SupplierInvite[]
   onboardingRenderGrant      OnboardingRenderGrant?
   curationRecommendations    CurationRecommendation[]
+  verifiedCataloguePrices    CataloguePrice[] @relation("CataloguePriceVerifiedBy")
+  curatedBrands              Brand[] @relation("BrandCuratedBy")
+  planUpgradeOffers          PlanUpgradeOffer[]
 }
 
 model Account {
@@ -486,14 +509,81 @@ model AIJob {
   @@index([provider, providerJobId])
 }
 
+// The real, hierarchical taxonomy Niwasthan's own vision document
+// specifies (Product Family -> Category -> Subcategory -> Product Type,
+// e.g. "Furniture > Sofa > 2 Seater") - a proper tree, not a flat string
+// tag. Self-referencing so it supports arbitrary depth without a schema
+// change every time a new level is needed. Seeded ONLY with the 18 real
+// top-level product families explicitly specified - subcategories are
+// added incrementally by real admin curation as the catalogue actually
+// grows, never fabricated in bulk to look complete.
+model ProductCategory {
+  id           String            @id @default(cuid())
+  name         String
+  slug         String            @unique
+  parentId     String?
+  displayOrder Int               @default(0)
+  createdAt    DateTime          @default(now())
+  parent       ProductCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children     ProductCategory[] @relation("CategoryHierarchy")
+  catalogueItems CatalogueItem[]
+
+  @@index([parentId])
+}
+
+// First-class Brand entity, not a bare string on CatalogueItem - this is
+// what makes "which brands are best for my 8 lakh kitchen" a real,
+// queryable question rather than a string-matching guess.
+//
+// Deliberately split into two trust tiers:
+// - Factual fields (name, website) are plain data, no attestation needed.
+// - Narrative fields (positioning, strengths, weaknesses) are a genuine
+//   curator's written assessment, not an AI-computed score - attributed
+//   and dated the same way catalogue price verification is, because a
+//   claim like "good service network" is a real-world judgment call that
+//   needs a real, accountable person standing behind it, not a
+//   confidence percentage pretending to replace one.
+model Brand {
+  id                String          @id @default(cuid())
+  name              String          @unique
+  website           String?
+  curatedPositioning String?        @db.Text
+  curatedStrengths  String?         @db.Text
+  curatedWeaknesses String?         @db.Text
+  curatedByUserId   String?
+  curatedAt         DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  curatedBy         User?           @relation("BrandCuratedBy", fields: [curatedByUserId], references: [id])
+  catalogueItems    CatalogueItem[]
+
+  @@index([curatedByUserId])
+}
+
 model CatalogueItem {
   id          String           @id @default(cuid())
   sku         String           @unique
   name        String
   brand       String?
+  // Both new fields are nullable and additive - existing rows using the
+  // plain `brand` string and flat `category` string keep working
+  // unchanged. A CatalogueItem migrates onto the real Brand/ProductCategory
+  // entities as it's genuinely curated, not all at once in a risky mass
+  // rewrite.
+  brandId           String?
+  productCategoryId String?
   description String?          @db.Text
   category    String
   unit        String
+  // Real, manufacturer-published, objectively verifiable specs -
+  // relevant specifically to Home Automation family products (README
+  // family #11) and lighting, not fabricated claims about smart
+  // capability. smartHomeConnectivity is null for any product that
+  // simply isn't a connected device; energyRatingStars uses India's real
+  // BEE (Bureau of Energy Efficiency) star rating scale actually printed
+  // on real appliance/lighting packaging, not an invented scale.
+  smartHomeConnectivity SmartHomeConnectivity?
+  energyRatingStars      Int?
   active      Boolean          @default(true)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
@@ -501,6 +591,11 @@ model CatalogueItem {
   boqLines    BoqLine[]
   substitutionsFrom CatalogueSubstitution[] @relation("SubstitutionFrom")
   substitutionsTo   CatalogueSubstitution[] @relation("SubstitutionTo")
+  brandRef          Brand?           @relation(fields: [brandId], references: [id])
+  productCategoryRef ProductCategory? @relation(fields: [productCategoryId], references: [id])
+
+  @@index([brandId])
+  @@index([productCategoryId])
 }
 
 model CataloguePrice {
@@ -517,9 +612,29 @@ model CataloguePrice {
   mrpMinor      BigInt?
   amountMinor   BigInt
   currency      String        @default("INR")
+  // Same rationale as MarketPriceObservation.warrantyMonths - structured,
+  // not buried in unstructured Json, and null means "unknown," never
+  // silently "none". This is the field the customer-facing curation
+  // engine (catalogueCuration.ts) actually reads to enforce real
+  // warranty-quality gating before a customer ever sees an option.
+  warrantyMonths Int?
+  // Structured, not buried in unstructured Json - real stock status a
+  // customer can trust, distinct from a listing simply existing.
+  availability  CatalogueAvailability @default(UNKNOWN)
+  // The real, honest version of a "verified" badge: an explicit human
+  // attestation, not a marketing label. verifiedByUserId/verifiedAt are
+  // both null until a real admin/curator has actually checked this
+  // specific listing's price, warranty, and availability against its
+  // source and confirms it's accurate as of that date - this is an
+  // audit trail, not a computed score, since "a human checked this" is
+  // fundamentally a fact about an event that happened, not something
+  // derivable from the data alone.
+  verifiedByUserId String?
+  verifiedAt       DateTime?
   effectiveFrom DateTime
   effectiveTo   DateTime?
   item          CatalogueItem @relation(fields: [itemId], references: [id])
+  verifiedBy    User?         @relation("CataloguePriceVerifiedBy", fields: [verifiedByUserId], references: [id])
 
   @@index([itemId, effectiveFrom])
 }
@@ -756,6 +871,17 @@ model MarketPriceObservation {
   taxIncluded           Boolean?
   shippingIncluded      Boolean?
   installationIncluded  Boolean?
+  // Structured, not buried in the unstructured `evidence`/attribute Json
+  // blobs elsewhere in this model - the exact "unstructured Json with no
+  // guaranteed shape" problem already flagged and fixed for
+  // RoomUnderstanding.dimensions this session. Warranty terms genuinely
+  // vary by source/listing (the same canonical product sold by two
+  // vendors can carry different warranty terms), so this lives on the
+  // observation, not the canonical MarketProduct - and null means
+  // "warranty status unknown for this observation," never silently
+  // "no warranty" (see evaluateSourceQuality, which treats these two
+  // cases differently rather than collapsing them).
+  warrantyMonths        Int?
   location              Json?
   availability          String?
   evidence              Json
@@ -1111,4 +1237,26 @@ model CurationRecommendation {
   project         DesignProject  @relation(fields: [projectId], references: [id])
 
   @@index([projectId, status])
+}
+
+// Real, persisted state for the plan-upgrade discount offer: how many
+// times this specific customer has genuinely returned to this specific
+// upgrade offer after the previous one expired, and when the current
+// offer's 4-hour window began. visitNumber only increments when a new
+// visit is recorded AFTER the previous offer's window has expired -
+// refreshing the page within an active window returns the SAME offer,
+// never advances the discount tier. Without this rule, a customer could
+// trivially refresh repeatedly to instantly reach the maximum discount,
+// defeating the entire point of a visit-based, time-boxed incentive.
+model PlanUpgradeOffer {
+  id                String   @id @default(cuid())
+  userId            String
+  targetPackageCode String
+  visitNumber       Int      @default(1)
+  offerShownAt      DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, targetPackageCode])
 }

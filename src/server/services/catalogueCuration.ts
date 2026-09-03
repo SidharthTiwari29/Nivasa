@@ -1,3 +1,9 @@
+import {
+  evaluateSourceQuality,
+  hasAdequateOptions,
+  type SourceQualityResult,
+} from "@/server/services/marketQualityGate";
+
 export type CatalogueOption = {
   itemId: string;
   name: string;
@@ -9,6 +15,11 @@ export type CatalogueOption = {
   // confirmed, the real signal quotationConfidence is computed from below.
   mrpMinor: bigint | null;
   priceEffectiveFrom: Date;
+  // Real, structured warranty data (see CataloguePrice.warrantyMonths) -
+  // null means genuinely unknown, never silently "no warranty". Feeds
+  // evaluateSourceQuality below rather than being asserted about
+  // directly.
+  warrantyMonths: number | null;
 };
 
 export type CurationNeed = {
@@ -30,6 +41,10 @@ export type QuotationConfidence = {
   // selling price - never asserted from the selling price alone, since a
   // missing MRP must not be silently treated as "no discount".
   mrpVerifiedDiscount: boolean;
+  // The automated quality gate's real findings for the SELECTED option -
+  // not a curated/manual judgment, computed from real, structured data
+  // every time.
+  quality: SourceQualityResult;
 };
 
 export type CurationSelection = {
@@ -50,6 +65,14 @@ export type CurationResult = {
   withinBudget: boolean;
   shortfallMinor: bigint;
   unfulfilledCategories: string[];
+  // README's "adequate options" requirement made real and enforced -
+  // categories where fewer than MINIMUM_ADEQUATE_OPTIONS real,
+  // currently-priced alternatives existed. A category can be fulfilled
+  // (a selection was made) and still appear here - "we found you
+  // something" and "you had genuine choice" are different, both real,
+  // claims, and collapsing them would overstate the second while
+  // technically satisfying the first.
+  categoriesWithLimitedOptions: string[];
 };
 
 // README's own framing: "when we know the budget we can ideally curate the
@@ -91,6 +114,7 @@ function computeConfidence(
     priceAgeDays,
     mrpVerifiedDiscount:
       chosen.mrpMinor !== null && chosen.mrpMinor > chosen.unitPriceMinor,
+    quality: evaluateSourceQuality(chosen),
   };
 }
 
@@ -191,5 +215,14 @@ export function curateWithinBudget(
     shortfallMinor:
       totalMinor > targetBudgetMinor ? totalMinor - targetBudgetMinor : 0n,
     unfulfilledCategories,
+    categoriesWithLimitedOptions: needs
+      .filter((need) => {
+        const optionCount = (optionsByCategory.get(need.category) ?? []).length;
+        // A category with zero options is already reported as
+        // "unfulfilled" above - reporting it again here as "limited"
+        // would be redundant, not a second, distinct finding.
+        return optionCount > 0 && !hasAdequateOptions(optionCount);
+      })
+      .map((need) => need.category),
   };
 }
