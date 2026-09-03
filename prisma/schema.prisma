@@ -191,6 +191,7 @@ model User {
   onboardingRenderGrant      OnboardingRenderGrant?
   curationRecommendations    CurationRecommendation[]
   verifiedCataloguePrices    CataloguePrice[] @relation("CataloguePriceVerifiedBy")
+  curatedBrands              Brand[] @relation("BrandCuratedBy")
 }
 
 model Account {
@@ -494,11 +495,69 @@ model AIJob {
   @@index([provider, providerJobId])
 }
 
+// The real, hierarchical taxonomy Niwasthan's own vision document
+// specifies (Product Family -> Category -> Subcategory -> Product Type,
+// e.g. "Furniture > Sofa > 2 Seater") - a proper tree, not a flat string
+// tag. Self-referencing so it supports arbitrary depth without a schema
+// change every time a new level is needed. Seeded ONLY with the 18 real
+// top-level product families explicitly specified - subcategories are
+// added incrementally by real admin curation as the catalogue actually
+// grows, never fabricated in bulk to look complete.
+model ProductCategory {
+  id           String            @id @default(cuid())
+  name         String
+  slug         String            @unique
+  parentId     String?
+  displayOrder Int               @default(0)
+  createdAt    DateTime          @default(now())
+  parent       ProductCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children     ProductCategory[] @relation("CategoryHierarchy")
+  catalogueItems CatalogueItem[]
+
+  @@index([parentId])
+}
+
+// First-class Brand entity, not a bare string on CatalogueItem - this is
+// what makes "which brands are best for my 8 lakh kitchen" a real,
+// queryable question rather than a string-matching guess.
+//
+// Deliberately split into two trust tiers:
+// - Factual fields (name, website) are plain data, no attestation needed.
+// - Narrative fields (positioning, strengths, weaknesses) are a genuine
+//   curator's written assessment, not an AI-computed score - attributed
+//   and dated the same way catalogue price verification is, because a
+//   claim like "good service network" is a real-world judgment call that
+//   needs a real, accountable person standing behind it, not a
+//   confidence percentage pretending to replace one.
+model Brand {
+  id                String          @id @default(cuid())
+  name              String          @unique
+  website           String?
+  curatedPositioning String?        @db.Text
+  curatedStrengths  String?         @db.Text
+  curatedWeaknesses String?         @db.Text
+  curatedByUserId   String?
+  curatedAt         DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  curatedBy         User?           @relation("BrandCuratedBy", fields: [curatedByUserId], references: [id])
+  catalogueItems    CatalogueItem[]
+
+  @@index([curatedByUserId])
+}
+
 model CatalogueItem {
   id          String           @id @default(cuid())
   sku         String           @unique
   name        String
   brand       String?
+  // Both new fields are nullable and additive - existing rows using the
+  // plain `brand` string and flat `category` string keep working
+  // unchanged. A CatalogueItem migrates onto the real Brand/ProductCategory
+  // entities as it's genuinely curated, not all at once in a risky mass
+  // rewrite.
+  brandId           String?
+  productCategoryId String?
   description String?          @db.Text
   category    String
   unit        String
@@ -509,6 +568,11 @@ model CatalogueItem {
   boqLines    BoqLine[]
   substitutionsFrom CatalogueSubstitution[] @relation("SubstitutionFrom")
   substitutionsTo   CatalogueSubstitution[] @relation("SubstitutionTo")
+  brandRef          Brand?           @relation(fields: [brandId], references: [id])
+  productCategoryRef ProductCategory? @relation(fields: [productCategoryId], references: [id])
+
+  @@index([brandId])
+  @@index([productCategoryId])
 }
 
 model CataloguePrice {
