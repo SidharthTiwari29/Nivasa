@@ -3,6 +3,7 @@ import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 import { catalogueCurationRepository } from "@/server/repositories/catalogueCurationRepository";
 import { curationRecommendationRepository } from "@/server/repositories/curationRecommendationRepository";
 import { createBoq } from "@/server/services/boqService";
+import { reconcileBoqWithBudget } from "@/server/services/boqBudgetIntegration";
 import { catalogueCurationService } from "./catalogueCurationService";
 
 vi.mock("@/server/repositories/catalogueCurationRepository", () => ({
@@ -22,10 +23,14 @@ vi.mock("@/server/repositories/curationRecommendationRepository", () => ({
 vi.mock("@/server/services/boqService", () => ({
   createBoq: vi.fn(),
 }));
+vi.mock("@/server/services/boqBudgetIntegration", () => ({
+  reconcileBoqWithBudget: vi.fn(),
+}));
 
 const optionsRepo = vi.mocked(catalogueCurationRepository);
 const recRepo = vi.mocked(curationRecommendationRepository);
 const boqCreate = vi.mocked(createBoq);
+const reconcile = vi.mocked(reconcileBoqWithBudget);
 
 describe("catalogueCurationService.curate", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -191,5 +196,48 @@ describe("catalogueCurationService.commit", () => {
       }),
     );
     expect(recRepo.attachResultingBoq).toHaveBeenCalledWith("rec-1", "boq-1");
+  });
+
+  it("automatically reconciles the real BOQ against the customer's budget after a successful commit", async () => {
+    recRepo.findRecommendationForOwner.mockResolvedValue({
+      id: "rec-1",
+      status: "RECOMMENDED",
+      projectId: "project-1",
+      selections: [
+        {
+          itemId: "sofa-a",
+          itemName: "Sofa A",
+          unitPriceMinor: "20000",
+          quantity: 1,
+        },
+      ],
+    } as never);
+    recRepo.claimCommit.mockResolvedValue(true);
+    boqCreate.mockResolvedValue({ id: "boq-1", version: 3 } as never);
+    reconcile.mockResolvedValue({ id: "impact-1" } as never);
+
+    await catalogueCurationService.commit("rec-1", "user-1");
+
+    expect(reconcile).toHaveBeenCalledWith({
+      ownerId: "user-1",
+      projectId: "project-1",
+      boqVersion: 3,
+    });
+  });
+
+  it("never lets a reconciliation failure undo or block an already-created BOQ - a customer without a formal budget yet is a legitimate case, not an error", async () => {
+    recRepo.findRecommendationForOwner.mockResolvedValue({
+      id: "rec-1",
+      status: "RECOMMENDED",
+      projectId: "project-1",
+      selections: [],
+    } as never);
+    recRepo.claimCommit.mockResolvedValue(true);
+    boqCreate.mockResolvedValue({ id: "boq-1", version: 1 } as never);
+    reconcile.mockRejectedValue(new Error("BUDGET_VERSION_NOT_FOUND"));
+
+    await expect(
+      catalogueCurationService.commit("rec-1", "user-1"),
+    ).resolves.toEqual({ id: "boq-1", version: 1 });
   });
 });

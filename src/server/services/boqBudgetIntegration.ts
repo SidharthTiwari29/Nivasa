@@ -1,5 +1,6 @@
 import { prisma } from "@/server/db/prisma";
 import { budgetRepository } from "@/server/repositories/budgetRepository";
+import { NotFoundError } from "@/server/errors/AppError";
 
 export type BoqBudgetDelta = {
   lowDeltaMinor: bigint;
@@ -57,14 +58,14 @@ export const reconcileBoqWithBudget = async (input: {
       project: { select: { propertyId: true } },
     },
   });
-  if (!boq) throw new Error("BOQ_NOT_FOUND");
+  if (!boq) throw new NotFoundError("Boq");
 
   const budget = await budgetRepository.findPlan(
     boq.project.propertyId,
     input.ownerId,
   );
   const baseVersion = budget?.versions[0];
-  if (!baseVersion) throw new Error("BUDGET_VERSION_NOT_FOUND");
+  if (!baseVersion) throw new NotFoundError("BudgetVersion");
 
   const delta = calculateBoqBudgetDelta(
     boq.totalMinor,
