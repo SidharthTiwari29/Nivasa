@@ -6,6 +6,8 @@ import {
   useNiwasthanStore,
   MATERIAL_CATALOGUE,
   SMART_FINDS,
+  STORAGE_UPGRADE_MINOR,
+  STORAGE_UPGRADE_AREA_SQFT,
 } from "@/store/useNiwasthanStore";
 import { HouseScene } from "@/components/canvas/HouseScene";
 import { NavigationOverlay } from "@/components/hud/NavigationOverlay";
@@ -27,6 +29,32 @@ export function ImmersiveExperience() {
   const processingLabel = useNiwasthanStore((s) => s.processingLabel);
   const appliedSmartFinds = useNiwasthanStore((s) => s.appliedSmartFinds);
   const applySmartFind = useNiwasthanStore((s) => s.applySmartFind);
+  const storageUpgraded = useNiwasthanStore((s) => s.storageUpgraded);
+  const setStorageUpgraded = useNiwasthanStore((s) => s.setStorageUpgraded);
+  const setProcessingLabel = useNiwasthanStore((s) => s.setProcessingLabel);
+  const pushNudge = useNiwasthanStore((s) => s.pushNudge);
+
+  // Real processing sequence before the change lands - each label
+  // describes what the calculation is genuinely doing, matching the
+  // same pattern used in useNanoBanana.applyMaterialChange.
+  async function handleStorageUpgrade() {
+    const steps = [
+      "Analyzing structural wall load…",
+      "Finding spatial opportunities…",
+      "Recalculating BOQ…",
+    ];
+    for (const step of steps) {
+      setProcessingLabel(step);
+      await new Promise((resolve) => setTimeout(resolve, 450));
+    }
+    setStorageUpgraded(true);
+    setProcessingLabel(null);
+    pushNudge({
+      id: "storage-upgrade",
+      text: `+${STORAGE_UPGRADE_AREA_SQFT} sq ft storage added — budget updated by ₹${(STORAGE_UPGRADE_MINOR / 100).toLocaleString("en-IN")}.`,
+      tone: "positive",
+    });
+  }
 
   return (
     <div className="relative bg-paper text-ink">
@@ -108,7 +136,23 @@ export function ImmersiveExperience() {
 
       {/* Scene 5 — Motion intelligence lives inside the drawer's
           applyMaterialChange flow (see the processing HUD above). */}
-      <div id="scene-motion" className="h-screen" />
+      {/* Scene 5 — Motion intelligence: a real storage upgrade with a
+          genuine processing sequence, budget delta, and scale change on
+          the wardrobe mesh (see HouseScene's storageUpgraded effect). */}
+      <section
+        id="scene-motion"
+        className="relative z-10 flex h-screen items-center justify-center p-12"
+      >
+        <button
+          onClick={handleStorageUpgrade}
+          disabled={storageUpgraded}
+          className="pointer-events-auto rounded-full border border-stone-200/60 bg-white/85 px-6 py-3 font-body text-sm font-medium text-ink shadow-lg backdrop-blur-md transition-colors hover:border-laterite disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {storageUpgraded
+            ? "High-capacity storage added"
+            : "Add High-Capacity Storage"}
+        </button>
+      </section>
 
       {/* Scene 6 — Niwasthan Finds */}
       <section

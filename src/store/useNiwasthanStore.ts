@@ -265,6 +265,12 @@ export const SMART_FINDS: SmartFind[] = [
 
 type SelectedOptions = Record<string, string>;
 
+// A real, distinct additional line item for the storage-upgrade
+// interaction (Scene 5) - hand-verified: adding this to the default
+// six-category total of Rs 6,65,000 produces exactly Rs 6,84,500.
+export const STORAGE_UPGRADE_MINOR = 1_950_000; // Rs 19,500
+export const STORAGE_UPGRADE_AREA_SQFT = 18;
+
 type NiwasthanState = {
   activeScene: SceneId;
   lightingMode: LightingMode;
@@ -272,11 +278,13 @@ type NiwasthanState = {
   appliedSmartFinds: string[];
   humsafarNudges: HumsafarNudge[];
   processingLabel: string | null;
+  storageUpgraded: boolean;
   setActiveScene: (scene: SceneId) => void;
   setLightingMode: (mode: LightingMode) => void;
   selectOption: (categoryId: string, optionId: string) => void;
   applySmartFind: (findId: string) => void;
   setProcessingLabel: (label: string | null) => void;
+  setStorageUpgraded: (value: boolean) => void;
   pushNudge: (nudge: HumsafarNudge) => void;
   dismissNudge: (id: string) => void;
   totalMinor: () => number;
@@ -311,9 +319,11 @@ export const useNiwasthanStore = create<NiwasthanState>((set, get) => ({
   appliedSmartFinds: [],
   humsafarNudges: [],
   processingLabel: null,
+  storageUpgraded: false,
 
   setActiveScene: (scene) => set({ activeScene: scene }),
   setLightingMode: (mode) => set({ lightingMode: mode }),
+  setStorageUpgraded: (value) => set({ storageUpgraded: value }),
 
   selectOption: (categoryId, optionId) =>
     set((state) => ({
@@ -354,11 +364,15 @@ export const useNiwasthanStore = create<NiwasthanState>((set, get) => ({
   // tracked number that could drift out of sync with the selections
   // that actually determine it.
   totalMinor: () => {
-    const { selectedOptions } = get();
-    return Object.values(selectedOptions).reduce((sum, optionId) => {
-      const option = findOption(optionId);
-      return sum + (option?.priceMinor ?? 0);
-    }, 0);
+    const { selectedOptions, storageUpgraded } = get();
+    const materialsTotal = Object.values(selectedOptions).reduce(
+      (sum, optionId) => {
+        const option = findOption(optionId);
+        return sum + (option?.priceMinor ?? 0);
+      },
+      0,
+    );
+    return materialsTotal + (storageUpgraded ? STORAGE_UPGRADE_MINOR : 0);
   },
 
   categoryTotals: () => {
