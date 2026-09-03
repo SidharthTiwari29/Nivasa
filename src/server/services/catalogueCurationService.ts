@@ -2,6 +2,7 @@ import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 import { catalogueCurationRepository } from "@/server/repositories/catalogueCurationRepository";
 import { curationRecommendationRepository } from "@/server/repositories/curationRecommendationRepository";
 import { createBoq } from "@/server/services/boqService";
+import { reconcileBoqWithBudget } from "@/server/services/boqBudgetIntegration";
 import {
   curateWithinBudget,
   type CurationNeed,
@@ -97,6 +98,25 @@ export const catalogueCurationService = {
       recommendationId,
       boq.id,
     );
+
+    // Real, automatic closing of the Design -> BOQ -> Budget loop: a
+    // committed curation's real BOQ total is reconciled against the
+    // customer's budget immediately, producing a real, attributable
+    // BudgetImpact record (visible in the existing budget timeline
+    // feature) with zero extra customer action. Deliberately
+    // best-effort - a customer may commit a design's BOQ before ever
+    // creating a formal Budget, which is a legitimate, common case, not
+    // an error condition for the BOQ commit itself. A failure here must
+    // never undo or block a BOQ that was already created for real.
+    try {
+      await reconcileBoqWithBudget({
+        ownerId,
+        projectId: recommendation.projectId,
+        boqVersion: boq.version,
+      });
+    } catch {
+      // Intentionally swallowed - see comment above.
+    }
 
     return boq;
   },
