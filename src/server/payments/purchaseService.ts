@@ -1,24 +1,63 @@
 import { prisma } from "@/server/db/prisma";
 import { ensureCommercialPackages } from "./packages";
 import { getPaymentProvider } from "./provider";
+import { computeReferralDiscount } from "@/server/services/referralPlanDiscount";
+import { referralPlanDiscountService } from "@/server/services/referralPlanDiscountService";
+import { computeQuotationCharges } from "@/server/services/quotationCharges";
 
-export async function createPurchase(userId: string, packageCode: string) {
+export async function createPurchase(
+  userId: string,
+  packageCode: string,
+  voluntaryContributionMinor = 0n,
+) {
   await ensureCommercialPackages();
   const pkg = await prisma.package.findFirst({
     where: { code: packageCode, active: true },
   });
   if (!pkg) throw new Error("PACKAGE_NOT_FOUND");
+
+  // Real referral eligibility, checked here for the first time - a user
+  // is eligible for the discount either as the referred party (they
+  // themselves were referred and have now genuinely converted) or as the
+  // referrer (someone they referred has genuinely converted). Checked
+  // independently rather than assuming only one direction applies; a
+  // single 20% discount is applied either way, never stacked twice for
+  // the same purchase - the combined-discount cap in
+  // computeReferralDiscount already protects against that regardless.
+  const [referredEligibility, referrerEligibility] = await Promise.all([
+    referralPlanDiscountService.checkReferredEligibility(userId),
+    referralPlanDiscountService.checkReferrerEligibility(userId),
+  ]);
+  const isReferralEligible =
+    referredEligibility.eligible || referrerEligibility.eligible;
+
+  const { finalPlanPriceMinor, discountMinor } = isReferralEligible
+    ? computeReferralDiscount(pkg.priceMinor)
+    : {
+        finalPlanPriceMinor: pkg.priceMinor,
+        discountMinor: 0n,
+      };
+
+  const charges = computeQuotationCharges({
+    planPriceMinor: finalPlanPriceMinor,
+    voluntaryContributionMinor,
+  });
+
   const purchase = await prisma.purchase.create({
     data: {
       userId,
       packageId: pkg.id,
-      amountMinor: pkg.priceMinor,
+      amountMinor: charges.totalMinor,
+      discountMinor,
+      platformFeeMinor: charges.platformFeeMinor,
+      gstMinor: charges.gstMinor,
+      voluntaryContributionMinor: charges.voluntaryContributionMinor,
       currency: pkg.currency,
       provider: "razorpay",
       payment: {
         create: {
           id: `payment_${crypto.randomUUID()}`,
-          amountMinor: pkg.priceMinor,
+          amountMinor: charges.totalMinor,
           currency: pkg.currency,
         },
       },
@@ -26,7 +65,7 @@ export async function createPurchase(userId: string, packageCode: string) {
   });
   try {
     const order = await getPaymentProvider().createOrder({
-      amountMinor: pkg.priceMinor,
+      amountMinor: charges.totalMinor,
       currency: pkg.currency,
       receipt: purchase.id,
     });

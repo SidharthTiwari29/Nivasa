@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/server/db/prisma";
-import { activatePaidPurchase } from "./purchaseService";
+import { activatePaidPurchase, createPurchase } from "./purchaseService";
+import { ensureCommercialPackages } from "./packages";
+import { getPaymentProvider } from "./provider";
+import { referralPlanDiscountService } from "@/server/services/referralPlanDiscountService";
 
 vi.mock("@/server/db/prisma", () => ({
   prisma: {
@@ -18,7 +21,179 @@ vi.mock("./provider", () => ({
   getPaymentProvider: vi.fn(),
 }));
 
+vi.mock("@/server/services/referralPlanDiscountService", () => ({
+  referralPlanDiscountService: {
+    checkReferredEligibility: vi.fn(),
+    checkReferrerEligibility: vi.fn(),
+  },
+}));
+
 const transaction = vi.mocked(prisma.$transaction);
+const packageFindFirst = vi.mocked(prisma.package.findFirst);
+const purchaseCreate = vi.mocked(prisma.purchase.create);
+const purchaseUpdate = vi.mocked(prisma.purchase.update);
+const ensurePackages = vi.mocked(ensureCommercialPackages);
+const paymentProvider = vi.mocked(getPaymentProvider);
+const referralService = vi.mocked(referralPlanDiscountService);
+
+const NOT_ELIGIBLE = { eligible: false, reason: "not eligible" };
+
+describe("createPurchase", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    ensurePackages.mockResolvedValue(undefined);
+    referralService.checkReferredEligibility.mockResolvedValue(NOT_ELIGIBLE);
+    referralService.checkReferrerEligibility.mockResolvedValue(NOT_ELIGIBLE);
+    paymentProvider.mockReturnValue({
+      createOrder: vi.fn().mockResolvedValue({ id: "order-1" }),
+    } as never);
+  });
+
+  it("rejects an unknown or inactive package code", async () => {
+    packageFindFirst.mockResolvedValue(null);
+
+    await expect(createPurchase("user-1", "UNKNOWN_PACKAGE")).rejects.toThrow(
+      "PACKAGE_NOT_FOUND",
+    );
+  });
+
+  it("charges the exact hand-verified real total (platform fee + GST, no discount) when the customer is not referral-eligible", async () => {
+    packageFindFirst.mockResolvedValue({
+      id: "package-1",
+      priceMinor: 999_900n,
+      currency: "INR",
+    } as never);
+    purchaseCreate.mockResolvedValue({ id: "purchase-1" } as never);
+    purchaseUpdate.mockResolvedValue({
+      id: "purchase-1",
+      package: { code: "NIWASTHAN_IMMERSIVE" },
+      payment: {},
+    } as never);
+
+    await createPurchase("user-1", "NIWASTHAN_IMMERSIVE");
+
+    // Hand-verified: taxable base = 999,900 + 700 = 1,000,600.
+    // GST (18%) = 180,108. Total = 1,180,708.
+    expect(purchaseCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          amountMinor: 1_180_708n,
+          discountMinor: 0n,
+          platformFeeMinor: 700n,
+          gstMinor: 180_108n,
+        }),
+      }),
+    );
+  });
+
+  it("applies the real referral discount before computing charges when the customer is eligible as the referred party", async () => {
+    packageFindFirst.mockResolvedValue({
+      id: "package-1",
+      priceMinor: 999_900n,
+      currency: "INR",
+    } as never);
+    referralService.checkReferredEligibility.mockResolvedValue({
+      eligible: true,
+      reason: "real referral",
+    });
+    purchaseCreate.mockResolvedValue({ id: "purchase-1" } as never);
+    purchaseUpdate.mockResolvedValue({
+      id: "purchase-1",
+      package: { code: "NIWASTHAN_IMMERSIVE" },
+      payment: {},
+    } as never);
+
+    await createPurchase("user-1", "NIWASTHAN_IMMERSIVE");
+
+    // Hand-verified: 20% off 999,900 = discount 199,980, discounted
+    // price 799,920. Taxable base = 799,920 + 700 = 800,620.
+    // GST (18%) = 144,111 (integer division). Total = 944,731.
+    expect(purchaseCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          amountMinor: 944_731n,
+          discountMinor: 199_980n,
+          gstMinor: 144_111n,
+        }),
+      }),
+    );
+  });
+
+  it("also applies the discount when the customer is eligible only as the referrer, not the referred party", async () => {
+    packageFindFirst.mockResolvedValue({
+      id: "package-1",
+      priceMinor: 999_900n,
+      currency: "INR",
+    } as never);
+    referralService.checkReferrerEligibility.mockResolvedValue({
+      eligible: true,
+      reason: "referred person converted",
+    });
+    purchaseCreate.mockResolvedValue({ id: "purchase-1" } as never);
+    purchaseUpdate.mockResolvedValue({
+      id: "purchase-1",
+      package: { code: "NIWASTHAN_IMMERSIVE" },
+      payment: {},
+    } as never);
+
+    await createPurchase("user-1", "NIWASTHAN_IMMERSIVE");
+
+    expect(purchaseCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ discountMinor: 199_980n }),
+      }),
+    );
+  });
+
+  it("includes a genuine voluntary contribution in the real total, on top of the plan price and charges", async () => {
+    packageFindFirst.mockResolvedValue({
+      id: "package-1",
+      priceMinor: 999_900n,
+      currency: "INR",
+    } as never);
+    purchaseCreate.mockResolvedValue({ id: "purchase-1" } as never);
+    purchaseUpdate.mockResolvedValue({
+      id: "purchase-1",
+      package: { code: "NIWASTHAN_IMMERSIVE" },
+      payment: {},
+    } as never);
+
+    await createPurchase("user-1", "NIWASTHAN_IMMERSIVE", 5_000n);
+
+    // Base total (no discount) was 1,180,708 - plus the real 5,000
+    // voluntary contribution, untaxed (never marked up itself).
+    expect(purchaseCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          amountMinor: 1_185_708n,
+          voluntaryContributionMinor: 5_000n,
+        }),
+      }),
+    );
+  });
+
+  it("sends the real, final total - never the bare package price - to the payment provider", async () => {
+    packageFindFirst.mockResolvedValue({
+      id: "package-1",
+      priceMinor: 999_900n,
+      currency: "INR",
+    } as never);
+    purchaseCreate.mockResolvedValue({ id: "purchase-1" } as never);
+    purchaseUpdate.mockResolvedValue({
+      id: "purchase-1",
+      package: { code: "NIWASTHAN_IMMERSIVE" },
+      payment: {},
+    } as never);
+    const createOrder = vi.fn().mockResolvedValue({ id: "order-1" });
+    paymentProvider.mockReturnValue({ createOrder } as never);
+
+    await createPurchase("user-1", "NIWASTHAN_IMMERSIVE");
+
+    expect(createOrder).toHaveBeenCalledWith(
+      expect.objectContaining({ amountMinor: 1_180_708n }),
+    );
+  });
+});
 
 describe("activatePaidPurchase", () => {
   beforeEach(() => vi.clearAllMocks());

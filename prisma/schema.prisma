@@ -697,6 +697,18 @@ model Purchase {
   packageId       String
   status          PurchaseStatus @default(CREATED)
   amountMinor     BigInt
+  // Real, auditable breakdown of how amountMinor was actually computed -
+  // never a black-box final number. discountMinor is the real referral
+  // discount applied (0 if none was eligible); platformFeeMinor/gstMinor
+  // are the real, structured charges from quotationCharges.ts;
+  // voluntaryContributionMinor is whatever the customer chose to add,
+  // genuinely optional. amountMinor = package price - discount +
+  // platform fee + GST + voluntary contribution, always reconstructable
+  // from these real, stored components.
+  discountMinor              BigInt   @default(0)
+  platformFeeMinor           BigInt   @default(0)
+  gstMinor                   BigInt   @default(0)
+  voluntaryContributionMinor BigInt   @default(0)
   currency        String         @default("INR")
   provider        String?
   providerOrderId String?        @unique
