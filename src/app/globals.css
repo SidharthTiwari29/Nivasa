@@ -24,9 +24,22 @@
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
+@keyframes heroPush {
+  0% {
+    transform: scale(1.035);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 @layer base {
   * {
     box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   html,
