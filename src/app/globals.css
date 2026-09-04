@@ -119,3 +119,62 @@
   width: 100% !important;
   height: 100% !important;
 }
+
+/* Process visuals replace the disconnected number column with editorial imagery. */
+#process > div > div:last-child > article {
+  grid-template-columns: minmax(220px, 0.78fr) minmax(260px, 1fr) minmax(220px, 0.9fr);
+  gap: 2rem;
+}
+
+#process > div > div:last-child > article > span {
+  min-height: 210px;
+  width: 100%;
+  border: 1px solid rgb(214 180 119 / 0.16);
+  border-radius: 1.5rem;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: transparent;
+  font-size: 0;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.025);
+}
+
+#process > div > div:last-child > article:nth-child(1) > span {
+  background-image: url("/process/tell-us-home.svg");
+}
+
+#process > div > div:last-child > article:nth-child(2) > span {
+  background-image: url("/process/shape-design.svg");
+}
+
+#process > div > div:last-child > article:nth-child(3) > span {
+  background-image: url("/process/understand-cost.svg");
+}
+
+#process > div > div:last-child > article:nth-child(4) > span {
+  background-image: url("/process/choose-execution.svg");
+}
+
+#process > div > div:last-child > article > h3 {
+  align-self: center;
+  font-weight: 600;
+}
+
+#process > div > div:last-child > article > p {
+  align-self: center;
+}
+
+@media (max-width: 767px) {
+  #process > div > div:last-child > article {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  #process > div > div:last-child > article > span {
+    min-height: 190px;
+    aspect-ratio: 16 / 10;
+  }
+}
