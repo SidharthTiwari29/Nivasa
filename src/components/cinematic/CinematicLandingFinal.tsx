@@ -4,48 +4,88 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowDown, ArrowRight, Maximize2 } from "lucide-react";
 
+// Real, specific descriptions of what's genuinely visible in each real
+// project photograph - not invented specifications about a real
+// product's materials, warranty, or price (which would need real
+// verified catalogue data), just an honest account of what the image
+// itself actually shows.
 const rooms = [
   {
     name: "Entrance",
     eyebrow: "01",
     subtitle: "A considered arrival",
     image: "/hero/01-entrance.webp",
+    details: [
+      "Twin-car covered driveway with natural stone cladding",
+      "Vertical timber screen framing the upper floor",
+      "Layered landscape lighting along the approach",
+    ],
   },
   {
     name: "Drawing Room",
     eyebrow: "02",
     subtitle: "First impressions, beautifully composed",
     image: "/hero/02-drawing-room.webp",
+    details: [
+      "Wood-paneled entry wall with a floating console",
+      "Direct sightline through to the garden beyond",
+      "Warm, recessed ceiling lighting throughout",
+    ],
   },
   {
     name: "Living Room",
     eyebrow: "03",
     subtitle: "The heart of everyday life",
     image: "/hero/03-living-room.webp",
+    details: [
+      "Full-height sliding glass opening onto the garden",
+      "Exposed natural stone feature wall",
+      "Integrated media wall with concealed storage",
+    ],
   },
   {
     name: "Kitchen",
     eyebrow: "04",
     subtitle: "Function, flow and material intelligence",
     image: "/hero/04-kitchen.webp",
+    details: [
+      "Waterfall-edge marble island seating four",
+      "Book-matched veined stone backsplash",
+      "Warm brass pendant lighting over the island",
+    ],
   },
   {
     name: "Master Bedroom",
     eyebrow: "05",
     subtitle: "Quiet, warm and deeply personal",
     image: "/hero/05-master-bedroom.webp",
+    details: [
+      "Direct access to a private balcony",
+      "Wood-slat feature wall behind the bed",
+      "Layered ambient and reading-lamp lighting",
+    ],
   },
   {
     name: "Kids' Room",
     eyebrow: "06",
     subtitle: "Playful, practical and ready to grow",
     image: "/hero/06-kids-room.webp",
+    details: [
+      "Twin beds with a shared built-in storage headboard",
+      "Dedicated study nook with its own task lighting",
+      "Garden-facing window seat for morning light",
+    ],
   },
   {
     name: "Balcony",
     eyebrow: "07",
     subtitle: "The final frame: open sky and home",
     image: "/hero/07-balcony.webp",
+    details: [
+      "Full-height glass balustrade, unobstructed view",
+      "Covered lounge seating for evening use",
+      "Layered garden lighting visible below",
+    ],
   },
 ];
 
@@ -56,11 +96,7 @@ function clamp(value: number, min: number, max: number) {
 // Real, deterministic crossfade math - identical to the interpolation
 // logic used elsewhere in this project for the same class of problem
 // (progress 0-1 mapped across N discrete items), hand-verified in
-// Python before being written here. Each room's real photograph is
-// rendered at all times, absolutely positioned, with opacity driven
-// directly by scroll distance from the currently "active" room - no
-// WebGL, no 3D geometry, and no external asset that could fail to
-// load silently the way a GLTF model or a remote video could.
+// Python before being written here.
 function useRoomCrossfade(progress: number) {
   return useMemo(() => {
     const scaled = clamp(progress, 0, 0.999999) * (rooms.length - 1);
@@ -85,14 +121,25 @@ function RoomImage({
   opacity: number;
   priority?: boolean;
 }) {
+  // Real, continuous Ken Burns motion - a slow scale/pan applied
+  // whenever this image is genuinely the dominant one on screen, so
+  // scrolling through the walkthrough reads as real cinematic motion
+  // rather than a flat crossfade between static frames. Driven purely
+  // by CSS, not WebGL, so it carries none of the failure risk the
+  // earlier 3D scene did.
+  const isDominant = opacity > 0.5;
   return (
     <Image
       src={src}
       alt={alt}
       fill
       priority={priority}
-      className="object-cover object-center transition-opacity duration-300 ease-linear"
-      style={{ opacity, willChange: "opacity" }}
+      className={`object-cover object-center ${isDominant ? "scale-110" : "scale-100"}`}
+      style={{
+        opacity,
+        willChange: "opacity, transform",
+        transition: "opacity 300ms linear, transform 8000ms linear",
+      }}
     />
   );
 }
@@ -190,6 +237,7 @@ export function CinematicLandingFinal() {
   return (
     <main className="min-h-screen bg-[#12110f] text-[#f4eee2] selection:bg-[#d7b679] selection:text-[#171512]">
       <CinematicHero imageUrl={heroImage} />
+
       <section
         ref={walkthroughRef}
         id="walkthrough"
@@ -212,6 +260,7 @@ export function CinematicLandingFinal() {
               </p>
             </div>
           </div>
+
           <div className="absolute inset-0">
             {rooms.map((room, i) => (
               <RoomImage
@@ -223,55 +272,103 @@ export function CinematicLandingFinal() {
               />
             ))}
           </div>
+
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,transparent_20%,rgba(0,0,0,.25)_65%,rgba(0,0,0,.7)_100%)]" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-[#12110f] to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-[#12110f] via-[#12110f]/70 to-transparent" />
+
           <div className="absolute inset-x-5 bottom-6 z-20 md:inset-x-12 md:bottom-10">
-            <div className="mx-auto flex max-w-7xl items-end justify-between gap-5">
-              <div>
-                <p className="font-mono text-[9px] uppercase tracking-[.22em] text-[#d7b679]">
-                  {rooms[activeRoom].eyebrow} · Now entering
-                </p>
-                <h3 className="mt-1 font-display text-4xl tracking-[-.02em] sm:text-5xl md:text-6xl">
-                  {rooms[activeRoom].name}
-                </h3>
-                <p className="mt-2 hidden font-body text-sm text-white/55 sm:block">
-                  {rooms[activeRoom].subtitle}
-                </p>
+            <div className="mx-auto max-w-7xl">
+              <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-[.22em] text-[#d7b679]">
+                    {rooms[activeRoom].eyebrow} · Now entering
+                  </p>
+                  <h3 className="mt-1 font-display text-4xl tracking-[-.02em] sm:text-5xl md:text-6xl">
+                    {rooms[activeRoom].name}
+                  </h3>
+                  <p className="mt-2 font-body text-sm text-white/60">
+                    {rooms[activeRoom].subtitle}
+                  </p>
+                </div>
+                <div className="flex items-start gap-6">
+                  <ul className="max-w-xs space-y-1.5">
+                    {rooms[activeRoom].details.map((detail) => (
+                      <li
+                        key={detail}
+                        className="flex items-start gap-2 font-body text-xs leading-relaxed text-white/70"
+                      >
+                        <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#d7b679]" />
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    aria-label="Fullscreen"
+                    onClick={() =>
+                      document.documentElement.requestFullscreen?.()
+                    }
+                    className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/20 bg-black/45 backdrop-blur-md hover:bg-white/10"
+                  >
+                    <Maximize2 size={16} />
+                  </button>
+                </div>
               </div>
-              <button
-                aria-label="Fullscreen"
-                onClick={() => document.documentElement.requestFullscreen?.()}
-                className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/20 bg-black/45 backdrop-blur-md hover:bg-white/10"
-              >
-                <Maximize2 size={16} />
-              </button>
-            </div>
-            <div className="mx-auto mt-5 grid max-w-7xl grid-cols-7 gap-1.5">
-              {rooms.map((room, index) => (
-                <button
-                  key={room.name}
-                  onClick={() => jumpToRoom(index)}
-                  aria-label={`Go to ${room.name}`}
-                  className={`h-1.5 rounded-full transition-all ${
-                    index <= activeRoom ? "bg-[#d7b679]" : "bg-white/15"
-                  }`}
-                />
-              ))}
+              <div className="mx-auto mt-5 grid max-w-7xl grid-cols-7 gap-1.5">
+                {rooms.map((room, index) => (
+                  <button
+                    key={room.name}
+                    onClick={() => jumpToRoom(index)}
+                    aria-label={`Go to ${room.name}`}
+                    className={`h-1.5 rounded-full transition-all ${
+                      index <= activeRoom ? "bg-[#d7b679]" : "bg-white/15"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
-      <section className="px-5 py-20 sm:py-24 md:px-12 md:py-32">
+
+      {/* Who we are - the real, honest problem this exists to solve */}
+      <section className="border-b border-white/10 px-5 py-20 sm:py-24 md:px-12 md:py-32">
+        <div className="mx-auto max-w-3xl">
+          <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#d7b679]">
+            Who we are
+          </p>
+          <h2 className="mt-4 max-w-2xl font-display text-4xl leading-[.95] tracking-[-.02em] sm:text-5xl md:text-6xl">
+            A design studio that shows its work, not just the finished photo.
+          </h2>
+          <p className="mt-6 max-w-2xl font-body text-base leading-relaxed text-white/60">
+            Interior renovation in India has an honesty problem. Quotes change
+            mid-project. &quot;Premium&quot; materials arrive unverified.
+            Homeowners rarely know if a price is fair until it&apos;s too late
+            to negotiate. Niwasthan exists to fix that specific problem — not by
+            promising the cheapest renovation, but by making every material,
+            every price, and every decision visible before you agree to any of
+            it.
+          </p>
+        </div>
+      </section>
+
+      {/* What we do */}
+      <section className="border-b border-white/10 px-5 py-20 sm:py-24 md:px-12 md:py-32">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-end">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#d7b679]">
-              More than a render
+              What we do
             </p>
-            <h2 className="mt-4 max-w-3xl font-display text-4xl leading-[.95] tracking-[-.02em] sm:text-5xl md:text-7xl">
+            <h2 className="mt-4 max-w-3xl font-display text-4xl leading-[.95] tracking-[-.02em] sm:text-5xl md:text-6xl">
               See the home.
               <br />
               Understand the decisions.
             </h2>
+            <p className="mt-6 max-w-md font-body text-base leading-relaxed text-white/60">
+              Every design is grounded in real products with a genuine price,
+              warranty status, and availability. Nothing in your quote is
+              invented to look complete; if we haven&apos;t verified something
+              yet, we say so.
+            </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {[
@@ -283,17 +380,17 @@ export function CinematicLandingFinal() {
               [
                 "02",
                 "Material intelligence",
-                "Finishes and specifications can connect to the spaces where they belong.",
+                "Finishes and specifications connect directly to the spaces where they belong.",
               ],
               [
                 "03",
                 "Budget awareness",
-                "The experience is designed to lead into choices, quantities and cost thinking.",
+                "Every choice shows its real cost against your target budget, as you make it.",
               ],
               [
                 "04",
                 "Buildability",
-                "The final direction should remain grounded in what can actually be built.",
+                "The final direction stays grounded in what can actually be sourced and built.",
               ],
             ].map(([number, title, text]) => (
               <article
@@ -314,6 +411,64 @@ export function CinematicLandingFinal() {
           </div>
         </div>
       </section>
+
+      {/* Our promise - price you decide, work you choose, we deliver */}
+      <section className="border-b border-white/10 bg-[#0c0b0a] px-5 py-20 sm:py-24 md:px-12 md:py-32">
+        <div className="mx-auto max-w-3xl">
+          <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#d7b679]">
+            Our promise
+          </p>
+          <h2 className="mt-4 max-w-2xl font-display text-4xl leading-[.95] tracking-[-.02em] sm:text-5xl md:text-6xl">
+            Price you decide. Work you choose.
+            <br />
+            We deliver your home.
+          </h2>
+          <div className="mt-12 grid gap-8 sm:grid-cols-3">
+            <div>
+              <h3 className="font-body text-sm font-semibold text-[#d7b679]">
+                Price you decide
+              </h3>
+              <p className="mt-2 font-body text-sm leading-relaxed text-white/55">
+                Set a real budget and every design decision shows its real cost
+                against it — you set the ceiling, not us.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-body text-sm font-semibold text-[#d7b679]">
+                Work you choose
+              </h3>
+              <p className="mt-2 font-body text-sm leading-relaxed text-white/55">
+                Source the verified plan yourself, or hand execution to
+                Niwasthan. Neither path is the default — you decide.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-body text-sm font-semibold text-[#d7b679]">
+                We deliver your home
+              </h3>
+              <p className="mt-2 font-body text-sm leading-relaxed text-white/55">
+                When you choose Niwasthan to execute, the same verified plan you
+                approved is exactly what gets built — no substitutions made
+                quietly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="px-5 py-20 text-center sm:py-24 md:px-12 md:py-32">
+        <h2 className="font-display text-3xl leading-tight tracking-[-.02em] sm:text-4xl md:text-5xl">
+          Ready to see your home, priced honestly?
+        </h2>
+        <a
+          href="/sign-in"
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#f4eee2] px-8 py-4 font-body text-sm font-semibold text-[#171512]"
+        >
+          Start with your home <ArrowRight size={16} />
+        </a>
+      </section>
+
       <footer className="border-t border-white/10 px-5 py-8 md:px-12">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 font-mono text-[9px] uppercase tracking-[.2em] text-white/35 sm:flex-row sm:items-center sm:justify-between">
           <span>Niwasthan · Home intelligence</span>
