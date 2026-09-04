@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { ExperienceErrorBoundary } from "./experience/ExperienceErrorBoundary";
 
 // Same real guard as /experience/page.tsx: the immersive experience
 // renders a WebGL/Three.js canvas referencing browser-only globals that
@@ -20,5 +21,9 @@ const ImmersiveExperience = dynamic(
 );
 
 export default function HomePage() {
-  return <ImmersiveExperience />;
+  return (
+    <ExperienceErrorBoundary>
+      <ImmersiveExperience />
+    </ExperienceErrorBoundary>
+  );
 }
