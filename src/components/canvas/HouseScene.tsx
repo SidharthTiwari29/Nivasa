@@ -2,7 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
-import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
+import { ACESFilmicToneMapping, FogExp2, SRGBColorSpace } from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useNiwasthanStore } from "@/store/useNiwasthanStore";
@@ -41,18 +41,20 @@ export function HouseScene() {
   }, [storageUpgraded]);
 
   return (
-    <Canvas
-      shadows
-      camera={{ position: [0, 1.65, 8], fov: 43, near: 0.1, far: 40 }}
-      gl={{ antialias: true, toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1.05, outputColorSpace: SRGBColorSpace }}
-      dpr={[1, 1.75]}
-      onCreated={({ scene }) => { scene.fog = new (require("three").FogExp2)("#b8aea0", 0.018); }}
-    >
-      <Suspense fallback={null}>
-        <CameraRig />
-        <LightingEngine />
-        <RoomModel ref={roomRef} activeScene={activeScene} />
-      </Suspense>
-    </Canvas>
+    <div className="cinematic-stage">
+      <Canvas
+        shadows
+        camera={{ position: [0, 1.65, 8], fov: 43, near: 0.1, far: 40 }}
+        gl={{ antialias: true, toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1.05, outputColorSpace: SRGBColorSpace }}
+        dpr={[1, 1.75]}
+        onCreated={({ scene }) => { scene.fog = new FogExp2("#b8aea0", 0.018); }}
+      >
+        <Suspense fallback={null}>
+          <CameraRig />
+          <LightingEngine />
+          <RoomModel ref={roomRef} activeScene={activeScene} />
+        </Suspense>
+      </Canvas>
+    </div>
   );
 }
