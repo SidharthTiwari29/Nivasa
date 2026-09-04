@@ -1,0 +1,34 @@
+name: Fix homepage typecheck
+
+on:
+  push:
+    branches:
+      - feat/premium-homepage-refresh
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix shadowed process identifier
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/components/cinematic/CinematicLandingFinal.tsx')
+          text = path.read_text()
+          text = text.replace('const process = [', 'const processSteps = [')
+          text = text.replace('process.map(', 'processSteps.map(')
+          text = text.replace('process.length', 'processSteps.length')
+          path.write_text(text)
+          PY
+      - name: Commit fix and remove helper workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/cinematic/CinematicLandingFinal.tsx
+          git rm .github/workflows/fix-typecheck.yml
+          git commit -m "fix: resolve homepage process env typecheck conflict"
+          git push
