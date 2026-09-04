@@ -29,6 +29,7 @@ const SCENE_ORDER: SceneId[] = [
 // in view, not an assumed or hardcoded sequence.
 export function useScrollController() {
   const setActiveScene = useNiwasthanStore((s) => s.setActiveScene);
+  const setJourneyComplete = useNiwasthanStore((s) => s.setJourneyComplete);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -56,10 +57,28 @@ export function useScrollController() {
       });
     }).filter((t): t is ScrollTrigger => t !== null);
 
+    // Real, scroll-driven transition out of the immersive experience's
+    // fixed HUD once the last scene has genuinely been scrolled past -
+    // the budget card, nudge pill, and scene heading are only meaningful
+    // during the actual home-design journey, not while reading the
+    // informational content that follows it on the same page.
+    const lastSceneEl = document.getElementById(
+      `scene-${SCENE_ORDER[SCENE_ORDER.length - 1]}`,
+    );
+    const journeyTrigger = lastSceneEl
+      ? ScrollTrigger.create({
+          trigger: lastSceneEl,
+          start: "bottom center",
+          onEnter: () => setJourneyComplete(true),
+          onLeaveBack: () => setJourneyComplete(false),
+        })
+      : null;
+
     return () => {
       gsap.ticker.remove(raf);
       triggers.forEach((t) => t.kill());
+      journeyTrigger?.kill();
       lenis.destroy();
     };
-  }, [setActiveScene]);
+  }, [setActiveScene, setJourneyComplete]);
 }

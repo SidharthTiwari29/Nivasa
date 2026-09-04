@@ -279,12 +279,14 @@ type NiwasthanState = {
   humsafarNudges: HumsafarNudge[];
   processingLabel: string | null;
   storageUpgraded: boolean;
+  journeyComplete: boolean;
   setActiveScene: (scene: SceneId) => void;
   setLightingMode: (mode: LightingMode) => void;
   selectOption: (categoryId: string, optionId: string) => void;
   applySmartFind: (findId: string) => void;
   setProcessingLabel: (label: string | null) => void;
   setStorageUpgraded: (value: boolean) => void;
+  setJourneyComplete: (value: boolean) => void;
   pushNudge: (nudge: HumsafarNudge) => void;
   dismissNudge: (id: string) => void;
   totalMinor: () => number;
@@ -320,10 +322,12 @@ export const useNiwasthanStore = create<NiwasthanState>((set, get) => ({
   humsafarNudges: [],
   processingLabel: null,
   storageUpgraded: false,
+  journeyComplete: false,
 
   setActiveScene: (scene) => set({ activeScene: scene }),
   setLightingMode: (mode) => set({ lightingMode: mode }),
   setStorageUpgraded: (value) => set({ storageUpgraded: value }),
+  setJourneyComplete: (value) => set({ journeyComplete: value }),
 
   selectOption: (categoryId, optionId) =>
     set((state) => ({
