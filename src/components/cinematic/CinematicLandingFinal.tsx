@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowDown, ArrowRight, Maximize2 } from "lucide-react";
+import Link from "next/link";
+import { ArrowDown, ArrowRight, Maximize2, Menu, X } from "lucide-react";
 
 // Real, specific descriptions of what's genuinely visible in each real
 // project photograph - not invented specifications about a real
@@ -144,6 +145,79 @@ function RoomImage({
   );
 }
 
+// Real, always-accessible navigation - fixed above everything (the
+// hero, the full-length walkthrough, and the informational sections
+// alike) so Sign In and every real piece of information about the
+// business is reachable the instant someone lands on the page, never
+// something they have to scroll seven screens through a cinematic
+// sequence to find.
+function SiteNav() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-5 py-5 md:px-12 md:py-6">
+        <Link
+          href="/"
+          className="font-display text-xl tracking-tight text-[#f4eee2] md:text-2xl"
+        >
+          Niwasthan
+        </Link>
+        <div className="flex items-center gap-3">
+          <a
+            href="/sign-in"
+            className="hidden rounded-full border border-white/25 bg-black/25 px-5 py-2 font-body text-sm font-medium text-[#f4eee2] backdrop-blur-md transition-colors hover:bg-white/10 sm:inline-flex"
+          >
+            Sign in
+          </a>
+          <button
+            aria-label={open ? "Close menu" : "Open menu"}
+            onClick={() => setOpen((v) => !v)}
+            className="grid h-11 w-11 place-items-center rounded-full border border-white/25 bg-black/25 text-[#f4eee2] backdrop-blur-md transition-colors hover:bg-white/10"
+          >
+            {open ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
+      </header>
+
+      {open ? (
+        <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-8 bg-[#0c0b0a]/98 backdrop-blur-lg">
+          <nav className="flex flex-col items-center gap-6">
+            {[
+              { label: "What we do", href: "#what-we-do" },
+              { label: "Our promise", href: "#promise" },
+              { label: "Walk through the home", href: "#walkthrough" },
+            ].map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className="font-display text-4xl text-[#f4eee2] transition-colors hover:text-[#d7b679] sm:text-5xl"
+              >
+                {item.label}
+              </a>
+            ))}
+            <a
+              href="mailto:support@niwasthan.com"
+              onClick={() => setOpen(false)}
+              className="font-display text-4xl text-[#f4eee2] transition-colors hover:text-[#d7b679] sm:text-5xl"
+            >
+              Contact us
+            </a>
+          </nav>
+          <a
+            href="/sign-in"
+            onClick={() => setOpen(false)}
+            className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f4eee2] px-8 py-3 font-body text-sm font-semibold text-[#171512] transition-transform hover:scale-[1.03] sm:hidden"
+          >
+            Sign in <ArrowRight size={16} />
+          </a>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
 function CinematicHero({ imageUrl }: { imageUrl: string }) {
   const [imageFailed, setImageFailed] = useState(false);
   return (
@@ -162,14 +236,6 @@ function CinematicHero({ imageUrl }: { imageUrl: string }) {
       )}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,transparent_0%,rgba(0,0,0,.1)_38%,rgba(0,0,0,.72)_100%)]" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/10 to-[#12110f]" />
-      <header className="relative z-10 flex items-center justify-between px-5 py-6 md:px-12 md:py-8">
-        <span className="font-display text-xl tracking-tight text-[#f4eee2] md:text-2xl">
-          Niwasthan
-        </span>
-        <span className="rounded-full border border-white/20 bg-black/20 px-4 py-2 font-mono text-[9px] uppercase tracking-[.18em] text-white/70 backdrop-blur-md">
-          4BHK Residence
-        </span>
-      </header>
       <div className="relative z-10 mx-auto flex min-h-[88svh] max-w-7xl items-end px-5 pb-14 md:px-12 md:pb-24">
         <div className="max-w-5xl">
           <p className="font-mono text-[10px] uppercase tracking-[.32em] text-[#d7b679]">
@@ -236,6 +302,7 @@ export function CinematicLandingFinal() {
 
   return (
     <main className="min-h-screen bg-[#12110f] text-[#f4eee2] selection:bg-[#d7b679] selection:text-[#171512]">
+      <SiteNav />
       <CinematicHero imageUrl={heroImage} />
 
       <section
@@ -358,7 +425,10 @@ export function CinematicLandingFinal() {
       </section>
 
       {/* What we do */}
-      <section className="border-b border-black/10 bg-white px-5 py-24 text-[#111111] sm:py-32 md:px-12 md:py-40">
+      <section
+        id="what-we-do"
+        className="border-b border-black/10 bg-white px-5 py-24 text-[#111111] sm:py-32 md:px-12 md:py-40"
+      >
         <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[1.05fr_.95fr] lg:items-end">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#111111]/40">
@@ -416,7 +486,10 @@ export function CinematicLandingFinal() {
       </section>
 
       {/* Our promise - price you decide, work you choose, we deliver */}
-      <section className="border-b border-black/10 bg-white px-5 py-24 text-[#111111] sm:py-32 md:px-12 md:py-40">
+      <section
+        id="promise"
+        className="border-b border-black/10 bg-white px-5 py-24 text-[#111111] sm:py-32 md:px-12 md:py-40"
+      >
         <div className="mx-auto max-w-3xl">
           <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#111111]/40">
             Our promise
