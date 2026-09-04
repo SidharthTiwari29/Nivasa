@@ -116,7 +116,7 @@ const pillars = [
   },
 ];
 
-const process = [
+const processSteps = [
   [
     "01",
     "Tell us about your home",
@@ -621,7 +621,7 @@ function Process() {
           </p>
         </div>
         <div className="mt-20 border-t border-black/10">
-          {process.map(([number, title, text]) => (
+          {processSteps.map(([number, title, text]) => (
             <article
               key={number}
               className="grid gap-5 border-b border-black/10 py-8 md:grid-cols-[100px_1fr_1fr] md:items-center md:py-10"
