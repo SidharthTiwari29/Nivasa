@@ -6,10 +6,30 @@ import type { Group, Mesh } from "three";
 import type { SceneId, SpatialHotspot } from "@/types/interior";
 
 const HOTSPOTS: SpatialHotspot[] = [
-  { id: "living", label: "Living Room · 328 sq ft", areaSqFt: 328, position: [-2.5, 1.9, 0.2] },
-  { id: "kitchen", label: "Kitchen · 82 sq ft", areaSqFt: 82, position: [2.6, 1.9, -1.7] },
-  { id: "bedroom", label: "Master Bedroom · 164 sq ft", areaSqFt: 164, position: [2.6, 1.9, 2.7] },
-  { id: "balcony", label: "Balcony · 48 sq ft", areaSqFt: 48, position: [-2.7, 1.9, -3.7] },
+  {
+    id: "living",
+    label: "Living Room · 328 sq ft",
+    areaSqFt: 328,
+    position: [-2.5, 1.9, 0.2],
+  },
+  {
+    id: "kitchen",
+    label: "Kitchen · 82 sq ft",
+    areaSqFt: 82,
+    position: [2.6, 1.9, -1.7],
+  },
+  {
+    id: "bedroom",
+    label: "Master Bedroom · 164 sq ft",
+    areaSqFt: 164,
+    position: [2.6, 1.9, 2.7],
+  },
+  {
+    id: "balcony",
+    label: "Balcony · 48 sq ft",
+    areaSqFt: 48,
+    position: [-2.7, 1.9, -3.7],
+  },
 ];
 
 function HotspotBadge({ hotspot }: { hotspot: SpatialHotspot }) {
@@ -23,10 +43,27 @@ function HotspotBadge({ hotspot }: { hotspot: SpatialHotspot }) {
   );
 }
 
-export type RoomModelHandle = { doorGroup: Group | null; wardrobeMesh: Mesh | null };
+export type RoomModelHandle = {
+  doorGroup: Group | null;
+  wardrobeMesh: Mesh | null;
+};
 
-function Material({ color, roughness = 0.55, metalness = 0 }: { color: string; roughness?: number; metalness?: number }) {
-  return <meshStandardMaterial color={color} roughness={roughness} metalness={metalness} />;
+function Material({
+  color,
+  roughness = 0.55,
+  metalness = 0,
+}: {
+  color: string;
+  roughness?: number;
+  metalness?: number;
+}) {
+  return (
+    <meshStandardMaterial
+      color={color}
+      roughness={roughness}
+      metalness={metalness}
+    />
+  );
 }
 
 export const RoomModel = forwardRef<RoomModelHandle, { activeScene: SceneId }>(
@@ -36,14 +73,22 @@ export const RoomModel = forwardRef<RoomModelHandle, { activeScene: SceneId }>(
     const showHotspots = activeScene !== "entrance";
 
     useImperativeHandle(ref, () => ({
-      get doorGroup() { return doorGroupRef.current; },
-      get wardrobeMesh() { return wardrobeRef.current; },
+      get doorGroup() {
+        return doorGroupRef.current;
+      },
+      get wardrobeMesh() {
+        return wardrobeRef.current;
+      },
     }));
 
     return (
       <group>
         {/* Warm limestone architectural shell */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, 0, 0]}>
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          receiveShadow
+          position={[0, 0, 0]}
+        >
           <planeGeometry args={[12, 10]} />
           <Material color="#d9d0c1" roughness={0.88} />
         </mesh>
@@ -51,7 +96,11 @@ export const RoomModel = forwardRef<RoomModelHandle, { activeScene: SceneId }>(
           <boxGeometry args={[12, 5, 0.2]} />
           <Material color="#f5f1e9" roughness={0.95} />
         </mesh>
-        <mesh position={[-6, 2.5, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <mesh
+          position={[-6, 2.5, 0]}
+          rotation={[0, Math.PI / 2, 0]}
+          receiveShadow
+        >
           <boxGeometry args={[10, 5, 0.2]} />
           <Material color="#eee9df" roughness={0.95} />
         </mesh>
@@ -63,7 +112,13 @@ export const RoomModel = forwardRef<RoomModelHandle, { activeScene: SceneId }>(
         {/* Full-height balcony glazing */}
         <mesh position={[-2.7, 2.1, -4.88]}>
           <planeGeometry args={[3.6, 3.3]} />
-          <meshStandardMaterial color="#6f8b96" roughness={0.08} metalness={0.1} transparent opacity={0.5} />
+          <meshStandardMaterial
+            color="#6f8b96"
+            roughness={0.08}
+            metalness={0.1}
+            transparent
+            opacity={0.5}
+          />
         </mesh>
         <mesh position={[-2.7, 2.1, -4.96]}>
           <boxGeometry args={[0.06, 3.3, 0.08]} />
@@ -103,7 +158,11 @@ export const RoomModel = forwardRef<RoomModelHandle, { activeScene: SceneId }>(
         </group>
 
         {/* Living room vignette */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-2.35, 0.025, 0.4]} receiveShadow>
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[-2.35, 0.025, 0.4]}
+          receiveShadow
+        >
           <planeGeometry args={[4.2, 3.0]} />
           <Material color="#a99780" roughness={1} />
         </mesh>
@@ -143,7 +202,11 @@ export const RoomModel = forwardRef<RoomModelHandle, { activeScene: SceneId }>(
         ))}
 
         {/* Master bedroom */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2.55, 0.03, 2.65]} receiveShadow>
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[2.55, 0.03, 2.65]}
+          receiveShadow
+        >
           <planeGeometry args={[3.4, 2.8]} />
           <Material color="#c2b29e" roughness={1} />
         </mesh>
@@ -182,7 +245,10 @@ export const RoomModel = forwardRef<RoomModelHandle, { activeScene: SceneId }>(
           <Material color="#59674e" roughness={0.95} />
         </mesh>
 
-        {showHotspots && HOTSPOTS.map((hotspot) => <HotspotBadge key={hotspot.id} hotspot={hotspot} />)}
+        {showHotspots &&
+          HOTSPOTS.map((hotspot) => (
+            <HotspotBadge key={hotspot.id} hotspot={hotspot} />
+          ))}
       </group>
     );
   },

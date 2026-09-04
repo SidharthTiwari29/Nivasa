@@ -22,12 +22,25 @@ export function HouseScene() {
     const spatialEl = document.getElementById("scene-spatial");
     if (!entranceEl || !spatialEl || !roomRef.current?.doorGroup) return;
 
-    const tween = gsap.fromTo(roomRef.current.doorGroup.rotation, { y: 0 }, {
-      y: -2.1,
-      ease: "none",
-      scrollTrigger: { trigger: entranceEl, start: "top top", endTrigger: spatialEl, end: "top center", scrub: true },
-    });
-    return () => { tween.scrollTrigger?.kill(); tween.kill(); };
+    const tween = gsap.fromTo(
+      roomRef.current.doorGroup.rotation,
+      { y: 0 },
+      {
+        y: -2.1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: entranceEl,
+          start: "top top",
+          endTrigger: spatialEl,
+          end: "top center",
+          scrub: true,
+        },
+      },
+    );
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    };
   }, []);
 
   useEffect(() => {
@@ -45,9 +58,16 @@ export function HouseScene() {
       <Canvas
         shadows
         camera={{ position: [0, 1.65, 8], fov: 43, near: 0.1, far: 40 }}
-        gl={{ antialias: true, toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1.05, outputColorSpace: SRGBColorSpace }}
+        gl={{
+          antialias: true,
+          toneMapping: ACESFilmicToneMapping,
+          toneMappingExposure: 1.05,
+          outputColorSpace: SRGBColorSpace,
+        }}
         dpr={[1, 1.75]}
-        onCreated={({ scene }) => { scene.fog = new FogExp2("#b8aea0", 0.018); }}
+        onCreated={({ scene }) => {
+          scene.fog = new FogExp2("#b8aea0", 0.018);
+        }}
       >
         <Suspense fallback={null}>
           <CameraRig />

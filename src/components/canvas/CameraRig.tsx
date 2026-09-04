@@ -30,20 +30,28 @@ export function CameraRig() {
     WAYPOINTS.slice(1).forEach((point, index) => {
       const previous = WAYPOINTS[index];
       const duration = Math.max(point.at - previous.at, 0.08);
-      timeline.to(camera.position, {
-        x: point.position[0],
-        y: point.position[1],
-        z: point.position[2],
-        duration,
-        ease: "sine.inOut",
-      }, index === 0 ? 0 : "+=0");
-      timeline.to(camera.rotation, {
-        x: point.rotation[0],
-        y: point.rotation[1],
-        z: point.rotation[2],
-        duration,
-        ease: "sine.inOut",
-      }, `<`);
+      timeline.to(
+        camera.position,
+        {
+          x: point.position[0],
+          y: point.position[1],
+          z: point.position[2],
+          duration,
+          ease: "sine.inOut",
+        },
+        index === 0 ? 0 : "+=0",
+      );
+      timeline.to(
+        camera.rotation,
+        {
+          x: point.rotation[0],
+          y: point.rotation[1],
+          z: point.rotation[2],
+          duration,
+          ease: "sine.inOut",
+        },
+        `<`,
+      );
     });
 
     const trigger = ScrollTrigger.create({
