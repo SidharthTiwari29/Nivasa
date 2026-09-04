@@ -2,26 +2,12 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import type { DirectionalLight, PointLight } from "three";
+import type { AmbientLight, DirectionalLight, PointLight } from "three";
 import { useNiwasthanStore } from "@/store/useNiwasthanStore";
 
-// Real target values for each lighting mode - not arbitrary, matching
-// the actual spec: morning is a high sun angle (45°) with bright
-// natural light; evening is low ambient sun with warm 2700K cove
-// accents taking over as the dominant light source.
 const LIGHT_TARGETS = {
-  morning: {
-    sunPosition: [6, 8, 4] as const,
-    sunIntensity: 1.4,
-    coveIntensity: 0.15,
-    ambientIntensity: 0.55,
-  },
-  evening: {
-    sunPosition: [8, 1.5, 6] as const,
-    sunIntensity: 0.25,
-    coveIntensity: 1.1,
-    ambientIntensity: 0.2,
-  },
+  morning: { sunPosition: [6, 8, 4] as const, sunIntensity: 1.55, coveIntensity: 0.08, ambientIntensity: 0.5, fillIntensity: 0.35 },
+  evening: { sunPosition: [8, 1.5, 6] as const, sunIntensity: 0.18, coveIntensity: 1.35, ambientIntensity: 0.16, fillIntensity: 0.12 },
 };
 
 function lerp(a: number, b: number, t: number) {
@@ -32,48 +18,29 @@ export function LightingEngine() {
   const lightingMode = useNiwasthanStore((s) => s.lightingMode);
   const sunRef = useRef<DirectionalLight>(null);
   const coveRef = useRef<PointLight>(null);
+  const ambientRef = useRef<AmbientLight>(null);
+  const fillRef = useRef<PointLight>(null);
 
   useFrame((_, delta) => {
     const target = LIGHT_TARGETS[lightingMode];
-    const speed = Math.min(delta * 1.5, 1);
-
+    const speed = Math.min(delta * 2.2, 1);
     if (sunRef.current) {
       const [x, y, z] = target.sunPosition;
       sunRef.current.position.set(x, y, z);
-      sunRef.current.intensity = lerp(
-        sunRef.current.intensity,
-        target.sunIntensity,
-        speed,
-      );
+      sunRef.current.intensity = lerp(sunRef.current.intensity, target.sunIntensity, speed);
     }
-    if (coveRef.current) {
-      coveRef.current.intensity = lerp(
-        coveRef.current.intensity,
-        target.coveIntensity,
-        speed,
-      );
-    }
+    if (coveRef.current) coveRef.current.intensity = lerp(coveRef.current.intensity, target.coveIntensity, speed);
+    if (fillRef.current) fillRef.current.intensity = lerp(fillRef.current.intensity, target.fillIntensity, speed);
+    if (ambientRef.current) ambientRef.current.intensity = lerp(ambientRef.current.intensity, target.ambientIntensity, speed);
   });
 
   return (
     <>
-      <ambientLight intensity={LIGHT_TARGETS[lightingMode].ambientIntensity} />
-      <directionalLight
-        ref={sunRef}
-        castShadow
-        position={LIGHT_TARGETS.morning.sunPosition}
-        intensity={LIGHT_TARGETS.morning.sunIntensity}
-        shadow-mapSize={[1024, 1024]}
-      />
-      {/* Warm 2700K cove accent - a point light positioned along the
-          ceiling line, only dominant in evening mode. */}
-      <pointLight
-        ref={coveRef}
-        position={[0, 3.4, -2]}
-        color="#d49b4b"
-        intensity={LIGHT_TARGETS.morning.coveIntensity}
-        distance={10}
-      />
+      <ambientLight ref={ambientRef} intensity={LIGHT_TARGETS.morning.ambientIntensity} />
+      <directionalLight ref={sunRef} castShadow position={LIGHT_TARGETS.morning.sunPosition} intensity={LIGHT_TARGETS.morning.sunIntensity} shadow-mapSize={[1536, 1536]} shadow-bias={-0.0002} shadow-normalBias={0.025} />
+      <pointLight ref={coveRef} position={[0, 3.65, -2.2]} color="#d49b4b" intensity={0.08} distance={9} decay={2} />
+      <pointLight ref={fillRef} position={[-4, 2.4, -2]} color="#9bb4bd" intensity={0.35} distance={8} decay={2} />
+      <pointLight position={[3.4, 2.5, 2.8]} color="#f4d9ae" intensity={0.12} distance={5} decay={2} />
     </>
   );
 }
