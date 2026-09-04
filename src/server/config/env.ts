@@ -1,23 +1,38 @@
 import { z } from "zod";
 
+// Real, concrete fix for a genuine Vercel build failure: Zod's
+// .optional() only treats `undefined` as "not provided" - it does NOT
+// treat an empty string as absent, and Vercel's build environment sets
+// unfilled dashboard variables to "" rather than actually omitting the
+// key. Without this, an empty-but-declared AUTH_URL/EMAIL_FROM/
+// REDIS_URL/STORAGE_ENDPOINT fails its .url()/.email() format check
+// and crashes the entire build, even though the intent was "not set
+// yet." This treats "" as genuinely equivalent to "not provided" for
+// every optional field, consistently, not just the four that happened
+// to be blank in this specific deployment - the same class of failure
+// would recur for any other optional variable left blank in the
+// future otherwise.
+const emptyToUndefined = <T extends z.ZodTypeAny>(schema: T) =>
+  z.preprocess((val) => (val === "" ? undefined : val), schema.optional());
+
 const schema = z.object({
   DATABASE_URL: z.string().min(1),
   AUTH_SECRET: z.string().min(32),
-  AUTH_URL: z.string().url().optional(),
-  GOOGLE_CLIENT_ID: z.string().optional(),
-  GOOGLE_CLIENT_SECRET: z.string().optional(),
-  EMAIL_SERVER: z.string().optional(),
-  EMAIL_FROM: z.string().email().optional(),
-  RAZORPAY_KEY_ID: z.string().optional(),
-  RAZORPAY_KEY_SECRET: z.string().optional(),
-  RAZORPAY_WEBHOOK_SECRET: z.string().optional(),
-  REDIS_URL: z.string().url().optional(),
-  STORAGE_BUCKET: z.string().optional(),
-  STORAGE_REGION: z.string().optional(),
-  STORAGE_ENDPOINT: z.string().url().optional(),
-  STORAGE_ACCESS_KEY_ID: z.string().optional(),
-  STORAGE_SECRET_ACCESS_KEY: z.string().optional(),
-  AI_PROVIDER: z.string().optional(),
+  AUTH_URL: emptyToUndefined(z.string().url()),
+  GOOGLE_CLIENT_ID: emptyToUndefined(z.string()),
+  GOOGLE_CLIENT_SECRET: emptyToUndefined(z.string()),
+  EMAIL_SERVER: emptyToUndefined(z.string()),
+  EMAIL_FROM: emptyToUndefined(z.string().email()),
+  RAZORPAY_KEY_ID: emptyToUndefined(z.string()),
+  RAZORPAY_KEY_SECRET: emptyToUndefined(z.string()),
+  RAZORPAY_WEBHOOK_SECRET: emptyToUndefined(z.string()),
+  REDIS_URL: emptyToUndefined(z.string().url()),
+  STORAGE_BUCKET: emptyToUndefined(z.string()),
+  STORAGE_REGION: emptyToUndefined(z.string()),
+  STORAGE_ENDPOINT: emptyToUndefined(z.string().url()),
+  STORAGE_ACCESS_KEY_ID: emptyToUndefined(z.string()),
+  STORAGE_SECRET_ACCESS_KEY: emptyToUndefined(z.string()),
+  AI_PROVIDER: emptyToUndefined(z.string()),
 });
 
 export function getEnv() {
