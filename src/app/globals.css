@@ -19,9 +19,21 @@
 }
 
 @layer base {
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; min-height: 100%; }
-  html { scroll-behavior: auto; }
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
   body {
     background-color: var(--color-paper);
     color: var(--color-ink);
@@ -29,10 +41,29 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; }
-  :focus-visible { outline: 2px solid var(--color-laterite); outline-offset: 2px; }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-laterite);
+    outline-offset: 2px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
@@ -55,7 +86,11 @@
 }
 
 .cinematic-stage::before {
-  background: radial-gradient(ellipse at center, transparent 46%, rgba(18, 15, 12, 0.22) 100%);
+  background: radial-gradient(
+    ellipse at center,
+    transparent 46%,
+    rgba(18, 15, 12, 0.22) 100%
+  );
   mix-blend-mode: multiply;
 }
 
@@ -65,4 +100,8 @@
   mix-blend-mode: soft-light;
 }
 
-.cinematic-stage canvas { display: block; width: 100% !important; height: 100% !important; }
+.cinematic-stage canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
