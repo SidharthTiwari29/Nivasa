@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 import {
   useNiwasthanStore,
   MATERIAL_CATALOGUE,
@@ -37,7 +38,9 @@ function useAnimatedNumber(target: number, durationMs = 500) {
 export function LiveBudgetCard() {
   const totalMinor = useNiwasthanStore((s) => s.totalMinor());
   const savingsMinor = useNiwasthanStore((s) => s.totalSavingsMinor());
-  const categoryTotals = useNiwasthanStore((s) => s.categoryTotals());
+  const categoryTotals = useNiwasthanStore(
+    useShallow((s) => s.categoryTotals()),
+  );
 
   const animatedTotal = useAnimatedNumber(totalMinor);
 
