@@ -150,26 +150,46 @@ main section h3 {
   letter-spacing: -0.045em !important;
 }
 
-/* Header is minimal, not a floating pill. */
-header > div {
-  max-width: none !important;
-  border-radius: 0 !important;
-  border-width: 0 0 1px !important;
-  border-color: rgb(214 180 119 / 0.18) !important;
-  background: linear-gradient(180deg, rgb(11 11 10 / 0.78), transparent) !important;
-  box-shadow: none !important;
-  backdrop-filter: blur(14px) !important;
+/* Top navigation is intentionally only the wordmark and hamburger. */
+header {
+  padding: 1.25rem 1.25rem 0 !important;
+  pointer-events: none;
 }
 
-header a:first-child { font-weight: 650; letter-spacing: -0.045em; }
+header > div {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  pointer-events: none;
+}
+
+header a:first-child,
+header button {
+  pointer-events: auto;
+}
+
+header a:first-child {
+  font-weight: 650;
+  letter-spacing: -0.045em;
+  text-shadow: 0 2px 18px rgb(0 0 0 / 0.45);
+}
+
 header button {
   border-radius: 0.65rem !important;
   width: 2.75rem !important;
   height: 2.75rem !important;
-  background: rgb(214 180 119 / 0.06) !important;
+  border-color: rgb(214 180 119 / 0.5) !important;
+  background: rgb(11 11 10 / 0.28) !important;
+  color: #f1d29a !important;
+  box-shadow: 0 8px 30px rgb(0 0 0 / 0.18);
 }
 
-/* Hide only the duplicate brand kicker in the hero. */
+/* Hide the duplicate brand kicker in the hero. */
 section.relative.min-h-\[100svh\] > div.relative.z-10 > div > p:first-child { display: none; }
 section.relative.min-h-\[100svh\] h1 {
   font-weight: 700 !important;
