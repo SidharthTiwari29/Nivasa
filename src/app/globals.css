@@ -14,14 +14,24 @@
   --color-brass: #b8935a;
   --color-alert: #a8341f;
   --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-body:
+    "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 @layer base {
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; min-height: 100%; }
-  html { scroll-behavior: auto; }
+  * {
+    box-sizing: border-box;
+  }
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+  html {
+    scroll-behavior: auto;
+  }
   body {
     background: #0b0b0a;
     color: #f4efe6;
@@ -29,14 +39,21 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: -0.025em;
   }
-  :focus-visible { outline: 2px solid #d6b477; outline-offset: 2px; }
+  :focus-visible {
+    outline: 2px solid #d6b477;
+    outline-offset: 2px;
+  }
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
@@ -64,7 +81,11 @@
 }
 
 .cinematic-stage::before {
-  background: radial-gradient(ellipse at center, transparent 46%, rgba(18, 15, 12, 0.22) 100%);
+  background: radial-gradient(
+    ellipse at center,
+    transparent 46%,
+    rgba(18, 15, 12, 0.22) 100%
+  );
   mix-blend-mode: multiply;
 }
 
@@ -74,11 +95,18 @@
   mix-blend-mode: soft-light;
 }
 
-.cinematic-stage canvas { display: block; width: 100% !important; height: 100% !important; }
+.cinematic-stage canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
 
 /* Process visuals remain concept-specific and separate from the room gallery. */
 #process > div > div:last-child > article {
-  grid-template-columns: minmax(220px, 0.78fr) minmax(260px, 1fr) minmax(220px, 0.9fr);
+  grid-template-columns: minmax(220px, 0.78fr) minmax(260px, 1fr) minmax(
+      220px,
+      0.9fr
+    );
   gap: 2.25rem;
   border-color: rgb(214 180 119 / 0.18);
 }
@@ -94,8 +122,12 @@
   color: transparent;
   font-size: 0;
   overflow: hidden;
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.025), 0 24px 60px rgb(0 0 0 / 0.18);
-  transition: border-color 300ms ease, transform 450ms ease;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.025),
+    0 24px 60px rgb(0 0 0 / 0.18);
+  transition:
+    border-color 300ms ease,
+    transform 450ms ease;
 }
 
 #process > div > div:last-child > article:hover > span {
@@ -103,10 +135,18 @@
   transform: translateY(-3px);
 }
 
-#process > div > div:last-child > article:nth-child(1) > span { background-image: url("/process/tell-us-home.svg"); }
-#process > div > div:last-child > article:nth-child(2) > span { background-image: url("/process/shape-design.svg"); }
-#process > div > div:last-child > article:nth-child(3) > span { background-image: url("/process/understand-cost.svg"); }
-#process > div > div:last-child > article:nth-child(4) > span { background-image: url("/process/choose-execution.svg"); }
+#process > div > div:last-child > article:nth-child(1) > span {
+  background-image: url("/process/tell-us-home.svg");
+}
+#process > div > div:last-child > article:nth-child(2) > span {
+  background-image: url("/process/shape-design.svg");
+}
+#process > div > div:last-child > article:nth-child(3) > span {
+  background-image: url("/process/understand-cost.svg");
+}
+#process > div > div:last-child > article:nth-child(4) > span {
+  background-image: url("/process/choose-execution.svg");
+}
 
 #process > div > div:last-child > article > h3 {
   align-self: center;
@@ -116,7 +156,9 @@
   letter-spacing: -0.045em;
 }
 
-#process > div > div:last-child > article > p { align-self: center; }
+#process > div > div:last-child > article > p {
+  align-self: center;
+}
 
 main,
 main > section,
@@ -141,7 +183,9 @@ main section h2 {
 }
 
 main section h2 + p,
-main section h2 ~ p { color: rgb(244 239 230 / 0.68); }
+main section h2 ~ p {
+  color: rgb(244 239 230 / 0.68);
+}
 
 /* Stronger non-h2 section headings, including process and FAQ item titles. */
 main section h3 {
@@ -190,7 +234,9 @@ header button {
 }
 
 /* Hide the duplicate brand kicker in the hero. */
-section.relative.min-h-\[100svh\] > div.relative.z-10 > div > p:first-child { display: none; }
+section.relative.min-h-\[100svh\] > div.relative.z-10 > div > p:first-child {
+  display: none;
+}
 section.relative.min-h-\[100svh\] h1 {
   font-weight: 700 !important;
   letter-spacing: -0.07em !important;
@@ -210,15 +256,30 @@ section[id="why-niwasthan"] article::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgb(11 11 10 / 0.05), rgb(11 11 10 / 0.84));
+  background: linear-gradient(
+    180deg,
+    rgb(11 11 10 / 0.05),
+    rgb(11 11 10 / 0.84)
+  );
   pointer-events: none;
 }
 
-section[id="why-niwasthan"] article > * { position: relative; z-index: 1; }
-section[id="why-niwasthan"] article:nth-child(1) { background-image: url("/why/see-it-before-you-commit.svg"); }
-section[id="why-niwasthan"] article:nth-child(2) { background-image: url("/why/know-what-you-pay.svg"); }
-section[id="why-niwasthan"] article:nth-child(3) { background-image: url("/why/keep-control-of-plan.svg"); }
-section[id="why-niwasthan"] article:nth-child(4) { background-image: url("/why/build-what-approved.svg"); }
+section[id="why-niwasthan"] article > * {
+  position: relative;
+  z-index: 1;
+}
+section[id="why-niwasthan"] article:nth-child(1) {
+  background-image: url("/why/see-it-before-you-commit.svg");
+}
+section[id="why-niwasthan"] article:nth-child(2) {
+  background-image: url("/why/know-what-you-pay.svg");
+}
+section[id="why-niwasthan"] article:nth-child(3) {
+  background-image: url("/why/keep-control-of-plan.svg");
+}
+section[id="why-niwasthan"] article:nth-child(4) {
+  background-image: url("/why/build-what-approved.svg");
+}
 
 section[id="promise"] > div:last-child,
 section[id="promise"] article {
@@ -226,7 +287,9 @@ section[id="promise"] article {
   border-color: rgb(214 180 119 / 0.28) !important;
 }
 
-section[id="promise"] h2 { color: #f6f0e5 !important; }
+section[id="promise"] h2 {
+  color: #f6f0e5 !important;
+}
 
 main section:last-of-type {
   background: #0b0b0a !important;
@@ -234,7 +297,10 @@ main section:last-of-type {
 }
 
 @media (max-width: 767px) {
-  header { padding-left: 1rem !important; padding-right: 1rem !important; }
+  header {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
   #process > div > div:last-child > article {
     grid-template-columns: 1fr;
     gap: 1.25rem;
@@ -249,5 +315,7 @@ main section:last-of-type {
     font-size: clamp(2.9rem, 13vw, 4.7rem) !important;
     line-height: 0.9 !important;
   }
-  section[id="why-niwasthan"] article { min-height: 300px; }
+  section[id="why-niwasthan"] article {
+    min-height: 300px;
+  }
 }

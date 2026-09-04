@@ -1,0 +1,9 @@
+# GitHub Actions workflow YAML files often embed multi-line scripts
+# (Python, shell) inside YAML string literals - these are automation
+# definitions, not application source code, and prettier's YAML parser
+# is not designed to handle arbitrary embedded script syntax inside
+# them. Excluding the whole directory rather than picking specific
+# files, since any future workflow could hit the same real issue.
+.github/workflows/
+node_modules/
+.next/

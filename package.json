@@ -29,6 +29,7 @@
     "next": "latest",
     "next-auth": "^5.0.0-beta.32",
     "nodemailer": "^7.0.13",
+    "pdfkit": "^0.20.2",
     "pg": "8.23.0",
     "react": "latest",
     "react-dom": "latest",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "latest",
+    "@types/pdfkit": "^0.17.6",
     "@types/pg": "^8.23.1",
     "@types/react": "latest",
     "@types/react-dom": "latest",
