@@ -196,8 +196,19 @@ export default function LandingPage() {
         </Link>
       </section>
 
-      <footer className="border-t border-paper-raised px-6 py-10 font-body text-xs text-ink-soft md:px-12">
-        Niwasthan
+      <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-paper-raised px-6 py-10 font-body text-xs text-ink-soft md:px-12">
+        <span>Niwasthan</span>
+        <nav className="flex gap-6">
+          <Link href="/legal/terms" className="hover:text-ink">
+            Terms of Service
+          </Link>
+          <Link href="/legal/privacy" className="hover:text-ink">
+            Privacy Policy
+          </Link>
+          <Link href="/legal/refund-policy" className="hover:text-ink">
+            Refunds &amp; Cancellations
+          </Link>
+        </nav>
       </footer>
     </main>
   );
