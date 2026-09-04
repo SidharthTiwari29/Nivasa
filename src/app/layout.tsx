@@ -20,8 +20,26 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Niwasthan",
-  description: "Your home, designed and priced transparently.",
+  title: {
+    default: "Niwasthan — A better way to build home",
+    template: "%s | Niwasthan",
+  },
+  description:
+    "Explore your home, understand the design, see the budget relationship and decide how you want it delivered with Niwasthan.",
+  keywords: [
+    "Niwasthan",
+    "home design",
+    "interior design",
+    "home renovation",
+    "residential design",
+    "transparent home renovation",
+  ],
+  openGraph: {
+    title: "Niwasthan — A better way to build home",
+    description:
+      "See the space. Understand the design. Know the cost. Then decide how you want it delivered.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
