@@ -182,7 +182,7 @@ function CinematicHero({ imageUrl }: { imageUrl: string }) {
           </h1>
           <a
             href="#walkthrough"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#f4eee2] px-6 py-3 font-body text-sm font-semibold text-[#171512]"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#f4eee2] px-6 py-3 font-body text-sm font-semibold text-[#171512] transition-transform hover:scale-[1.03]"
           >
             Enter the home <ArrowRight size={16} />
           </a>
@@ -330,16 +330,22 @@ export function CinematicLandingFinal() {
         </div>
       </section>
 
-      {/* Who we are - the real, honest problem this exists to solve */}
-      <section className="border-b border-white/10 px-5 py-20 sm:py-24 md:px-12 md:py-32">
+      {/* Who we are - the real, honest problem this exists to solve.
+          Deliberate hard cut to white here: the cinematic walkthrough
+          above stays dark because it's a full-bleed photograph and
+          needs it for legibility, but the informational site itself
+          uses the light, minimal, black-on-white register the brand
+          was actually specified with - closer to an architecture
+          studio's own printed portfolio than a hotel brochure. */}
+      <section className="border-b border-black/10 bg-white px-5 py-24 text-[#111111] sm:py-32 md:px-12 md:py-40">
         <div className="mx-auto max-w-3xl">
-          <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#d7b679]">
+          <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#111111]/40">
             Who we are
           </p>
-          <h2 className="mt-4 max-w-2xl font-display text-4xl leading-[.95] tracking-[-.02em] sm:text-5xl md:text-6xl">
+          <h2 className="mt-6 max-w-2xl font-display text-5xl leading-[.94] tracking-[-.03em] sm:text-6xl md:text-7xl">
             A design studio that shows its work, not just the finished photo.
           </h2>
-          <p className="mt-6 max-w-2xl font-body text-base leading-relaxed text-white/60">
+          <p className="mt-8 max-w-xl font-body text-base leading-relaxed text-[#6f6f6f]">
             Interior renovation in India has an honesty problem. Quotes change
             mid-project. &quot;Premium&quot; materials arrive unverified.
             Homeowners rarely know if a price is fair until it&apos;s too late
@@ -352,25 +358,25 @@ export function CinematicLandingFinal() {
       </section>
 
       {/* What we do */}
-      <section className="border-b border-white/10 px-5 py-20 sm:py-24 md:px-12 md:py-32">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-end">
+      <section className="border-b border-black/10 bg-white px-5 py-24 text-[#111111] sm:py-32 md:px-12 md:py-40">
+        <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[1.05fr_.95fr] lg:items-end">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#d7b679]">
+            <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#111111]/40">
               What we do
             </p>
-            <h2 className="mt-4 max-w-3xl font-display text-4xl leading-[.95] tracking-[-.02em] sm:text-5xl md:text-6xl">
+            <h2 className="mt-6 max-w-3xl font-display text-5xl leading-[.94] tracking-[-.03em] sm:text-6xl md:text-7xl">
               See the home.
               <br />
               Understand the decisions.
             </h2>
-            <p className="mt-6 max-w-md font-body text-base leading-relaxed text-white/60">
+            <p className="mt-8 max-w-md font-body text-base leading-relaxed text-[#6f6f6f]">
               Every design is grounded in real products with a genuine price,
               warranty status, and availability. Nothing in your quote is
               invented to look complete; if we haven&apos;t verified something
               yet, we say so.
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-px overflow-hidden rounded-none border border-black/10 sm:grid-cols-2">
             {[
               [
                 "01",
@@ -393,17 +399,14 @@ export function CinematicLandingFinal() {
                 "The final direction stays grounded in what can actually be sourced and built.",
               ],
             ].map(([number, title, text]) => (
-              <article
-                key={number}
-                className="rounded-2xl border border-white/10 bg-white/[.025] p-5 sm:p-6"
-              >
-                <span className="font-mono text-[9px] text-[#d7b679]">
+              <article key={number} className="bg-white p-6 sm:p-8">
+                <span className="font-mono text-[10px] text-[#111111]/40">
                   {number}
                 </span>
-                <h3 className="mt-5 font-display text-xl tracking-[-.01em]">
+                <h3 className="mt-6 font-display text-2xl tracking-[-.02em]">
                   {title}
                 </h3>
-                <p className="mt-2 font-body text-sm leading-relaxed text-white/50">
+                <p className="mt-3 font-body text-sm leading-relaxed text-[#6f6f6f]">
                   {text}
                 </p>
               </article>
@@ -413,40 +416,40 @@ export function CinematicLandingFinal() {
       </section>
 
       {/* Our promise - price you decide, work you choose, we deliver */}
-      <section className="border-b border-white/10 bg-[#0c0b0a] px-5 py-20 sm:py-24 md:px-12 md:py-32">
+      <section className="border-b border-black/10 bg-white px-5 py-24 text-[#111111] sm:py-32 md:px-12 md:py-40">
         <div className="mx-auto max-w-3xl">
-          <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#d7b679]">
+          <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#111111]/40">
             Our promise
           </p>
-          <h2 className="mt-4 max-w-2xl font-display text-4xl leading-[.95] tracking-[-.02em] sm:text-5xl md:text-6xl">
+          <h2 className="mt-6 max-w-2xl font-display text-5xl leading-[.94] tracking-[-.03em] sm:text-6xl md:text-7xl">
             Price you decide. Work you choose.
             <br />
             We deliver your home.
           </h2>
-          <div className="mt-12 grid gap-8 sm:grid-cols-3">
+          <div className="mt-16 grid gap-10 sm:grid-cols-3">
             <div>
-              <h3 className="font-body text-sm font-semibold text-[#d7b679]">
+              <h3 className="font-body text-sm font-semibold text-[#111111]">
                 Price you decide
               </h3>
-              <p className="mt-2 font-body text-sm leading-relaxed text-white/55">
+              <p className="mt-3 font-body text-sm leading-relaxed text-[#6f6f6f]">
                 Set a real budget and every design decision shows its real cost
                 against it — you set the ceiling, not us.
               </p>
             </div>
             <div>
-              <h3 className="font-body text-sm font-semibold text-[#d7b679]">
+              <h3 className="font-body text-sm font-semibold text-[#111111]">
                 Work you choose
               </h3>
-              <p className="mt-2 font-body text-sm leading-relaxed text-white/55">
+              <p className="mt-3 font-body text-sm leading-relaxed text-[#6f6f6f]">
                 Source the verified plan yourself, or hand execution to
                 Niwasthan. Neither path is the default — you decide.
               </p>
             </div>
             <div>
-              <h3 className="font-body text-sm font-semibold text-[#d7b679]">
+              <h3 className="font-body text-sm font-semibold text-[#111111]">
                 We deliver your home
               </h3>
-              <p className="mt-2 font-body text-sm leading-relaxed text-white/55">
+              <p className="mt-3 font-body text-sm leading-relaxed text-[#6f6f6f]">
                 When you choose Niwasthan to execute, the same verified plan you
                 approved is exactly what gets built — no substitutions made
                 quietly.
@@ -457,20 +460,20 @@ export function CinematicLandingFinal() {
       </section>
 
       {/* CTA */}
-      <section className="px-5 py-20 text-center sm:py-24 md:px-12 md:py-32">
-        <h2 className="font-display text-3xl leading-tight tracking-[-.02em] sm:text-4xl md:text-5xl">
+      <section className="bg-white px-5 py-24 text-center text-[#111111] sm:py-32 md:px-12 md:py-40">
+        <h2 className="mx-auto max-w-2xl font-display text-4xl leading-[1.02] tracking-[-.02em] sm:text-5xl md:text-6xl">
           Ready to see your home, priced honestly?
         </h2>
         <a
           href="/sign-in"
-          className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#f4eee2] px-8 py-4 font-body text-sm font-semibold text-[#171512]"
+          className="mt-10 inline-flex items-center gap-2 rounded-full bg-[#111111] px-8 py-4 font-body text-sm font-medium text-white transition-transform hover:scale-[1.03]"
         >
           Start with your home <ArrowRight size={16} />
         </a>
       </section>
 
-      <footer className="border-t border-white/10 px-5 py-8 md:px-12">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 font-mono text-[9px] uppercase tracking-[.2em] text-white/35 sm:flex-row sm:items-center sm:justify-between">
+      <footer className="border-t border-black/10 bg-white px-5 py-8 text-[#6f6f6f] md:px-12">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 font-mono text-[9px] uppercase tracking-[.2em] sm:flex-row sm:items-center sm:justify-between">
           <span>Niwasthan · Home intelligence</span>
           <span>Project-led · Not a generic demo</span>
         </div>
