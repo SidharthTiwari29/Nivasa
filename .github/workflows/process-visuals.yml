@@ -1,6 +1,9 @@
 name: Add process visuals
 
 on:
+  push:
+    paths:
+      - '.github/workflows/process-visuals.yml'
   workflow_dispatch:
 
 jobs:
@@ -37,22 +40,10 @@ jobs:
 
           replacement = f'''\nfunction {name}() {{
   const visualSteps = [
-    {{
-      image: "/process/tell-us-home.svg",
-      alt: "Homeowner sharing their home, needs and priorities with a designer",
-    }},
-    {{
-      image: "/process/shape-design.svg",
-      alt: "Homeowner and designer shaping a floor plan and material direction together",
-    }},
-    {{
-      image: "/process/understand-cost.svg",
-      alt: "Design materials, products and budget details being reviewed together",
-    }},
-    {{
-      image: "/process/choose-execution.svg",
-      alt: "Approved home design moving into coordinated real-world execution",
-    }},
+    {{ image: "/process/tell-us-home.svg", alt: "Homeowner sharing their home, needs and priorities with a designer" }},
+    {{ image: "/process/shape-design.svg", alt: "Homeowner and designer shaping a floor plan and material direction together" }},
+    {{ image: "/process/understand-cost.svg", alt: "Design materials, products and budget details being reviewed together" }},
+    {{ image: "/process/choose-execution.svg", alt: "Approved home design moving into coordinated real-world execution" }},
   ];
 
   return (
@@ -72,13 +63,7 @@ jobs:
           {{processSteps.map(([number, title, copy], index) => (
             <article key={{title}} className="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.025]">
               <div className="relative aspect-[16/10] overflow-hidden bg-[#171512]">
-                <Image
-                  src={{visualSteps[index].image}}
-                  alt={{visualSteps[index].alt}}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
-                />
+                <Image src={{visualSteps[index].image}} alt={{visualSteps[index].alt}} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
                   <span className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-[#d6b477]">Step {{number}}</span>
@@ -100,8 +85,8 @@ jobs:
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/components/cinematic/CinematicLandingFinal.tsx public/process .github/workflows/process-visuals.yml
-          git commit -m "Replace process numbers with visual storytelling"
+          git add src/components/cinematic/CinematicLandingFinal.tsx public/process
+          git commit -m "Replace process numbers with visual storytelling" || true
           git push
           git rm .github/workflows/process-visuals.yml
           git commit -m "Remove temporary process visual workflow"
