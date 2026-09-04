@@ -3,6 +3,7 @@ import { NotFoundError } from "@/server/errors/AppError";
 import { prisma } from "@/server/db/prisma";
 import {
   addCataloguePrice,
+  bulkImportCatalogue,
   getCatalogueItem,
   listCatalogue,
   upsertCatalogueItem,
@@ -147,6 +148,103 @@ describe("catalogueService", () => {
           data: expect.objectContaining({ currency: "USD" }),
         }),
       );
+    });
+
+    it("passes through the real MRP, warranty, and availability fields when given", async () => {
+      db.catalogueItem.findUnique.mockResolvedValue({ id: "item-1" } as never);
+      db.cataloguePrice.create.mockResolvedValue({ id: "price-1" } as never);
+
+      await addCataloguePrice({
+        sku: "SKU-1",
+        amountMinor: 20_000n,
+        mrpMinor: 24_000n,
+        warrantyMonths: 12,
+        availability: "IN_STOCK",
+      });
+
+      expect(db.cataloguePrice.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            mrpMinor: 24_000n,
+            warrantyMonths: 12,
+            availability: "IN_STOCK",
+          }),
+        }),
+      );
+    });
+
+    it("defaults availability to UNKNOWN, never silently to IN_STOCK, when not given", async () => {
+      db.catalogueItem.findUnique.mockResolvedValue({ id: "item-1" } as never);
+      db.cataloguePrice.create.mockResolvedValue({ id: "price-1" } as never);
+
+      await addCataloguePrice({ sku: "SKU-1", amountMinor: 20_000n });
+
+      expect(db.cataloguePrice.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ availability: "UNKNOWN" }),
+        }),
+      );
+    });
+  });
+
+  describe("bulkImportCatalogue", () => {
+    it("imports every real, valid row and reports each as IMPORTED", async () => {
+      db.catalogueItem.upsert.mockResolvedValue({ id: "item-1" } as never);
+      db.catalogueItem.findUnique.mockResolvedValue({ id: "item-1" } as never);
+      db.cataloguePrice.create.mockResolvedValue({ id: "price-1" } as never);
+
+      const results = await bulkImportCatalogue([
+        {
+          sku: "SKU-1",
+          name: "Modular Sofa",
+          category: "sofa",
+          unit: "piece",
+          amountMinor: 20_000n,
+        },
+        {
+          sku: "SKU-2",
+          name: "Dining Table",
+          category: "dining",
+          unit: "piece",
+          amountMinor: 35_000n,
+        },
+      ]);
+
+      expect(results).toEqual([
+        { sku: "SKU-1", status: "IMPORTED" },
+        { sku: "SKU-2", status: "IMPORTED" },
+      ]);
+    });
+
+    it("isolates a real per-row failure - one bad row never discards the others", async () => {
+      db.catalogueItem.upsert.mockResolvedValue({ id: "item-1" } as never);
+      // First row's price-add fails (item lookup returns null); second
+      // row succeeds normally.
+      db.catalogueItem.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ id: "item-2" } as never);
+      db.cataloguePrice.create.mockResolvedValue({ id: "price-2" } as never);
+
+      const results = await bulkImportCatalogue([
+        {
+          sku: "SKU-BAD",
+          name: "Broken Row",
+          category: "sofa",
+          unit: "piece",
+          amountMinor: 20_000n,
+        },
+        {
+          sku: "SKU-GOOD",
+          name: "Good Row",
+          category: "sofa",
+          unit: "piece",
+          amountMinor: 25_000n,
+        },
+      ]);
+
+      expect(results[0].status).toBe("FAILED");
+      expect(results[0].reason).toContain("CatalogueItem");
+      expect(results[1].status).toBe("IMPORTED");
     });
   });
 });
