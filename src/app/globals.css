@@ -18,11 +18,6 @@
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
-@keyframes heroPush {
-  0% { transform: scale(1.035); }
-  100% { transform: scale(1); }
-}
-
 @layer base {
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; min-height: 100%; }
@@ -36,7 +31,7 @@
   }
   h1, h2, h3 {
     font-family: var(--font-display);
-    font-weight: 650;
+    font-weight: 700;
     letter-spacing: -0.025em;
   }
   :focus-visible { outline: 2px solid #d6b477; outline-offset: 2px; }
@@ -81,7 +76,7 @@
 
 .cinematic-stage canvas { display: block; width: 100% !important; height: 100% !important; }
 
-/* Premium process imagery */
+/* Process visuals remain concept-specific and separate from the room gallery. */
 #process > div > div:last-child > article {
   grid-template-columns: minmax(220px, 0.78fr) minmax(260px, 1fr) minmax(220px, 0.9fr);
   gap: 2.25rem;
@@ -115,7 +110,7 @@
 
 #process > div > div:last-child > article > h3 {
   align-self: center;
-  font-weight: 650;
+  font-weight: 700;
   font-size: clamp(2rem, 3.5vw, 3.6rem);
   line-height: 0.96;
   letter-spacing: -0.045em;
@@ -123,7 +118,6 @@
 
 #process > div > div:last-child > article > p { align-self: center; }
 
-/* Keep the entire narrative on one deep, gallery-like canvas. */
 main,
 main > section,
 main > div,
@@ -135,38 +129,39 @@ main section[id="faq"] {
   background-color: #0b0b0a !important;
 }
 
-/* Secondary headings should read as editorial statements, not labels. */
+/* All section titles are deliberately bold, oversized editorial headings. */
 main section h2 {
   font-family: var(--font-display) !important;
-  font-weight: 650 !important;
-  font-size: clamp(3rem, 7vw, 6.8rem) !important;
-  line-height: 0.9 !important;
-  letter-spacing: -0.055em !important;
-  color: #f4efe6 !important;
+  font-weight: 700 !important;
+  font-size: clamp(3.25rem, 7.5vw, 7.2rem) !important;
+  line-height: 0.88 !important;
+  letter-spacing: -0.06em !important;
+  color: #f6f0e5 !important;
   text-wrap: balance;
 }
 
 main section h2 + p,
-main section h2 ~ p {
-  color: rgb(244 239 230 / 0.62);
+main section h2 ~ p { color: rgb(244 239 230 / 0.68); }
+
+/* Stronger non-h2 section headings, including process and FAQ item titles. */
+main section h3 {
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.045em !important;
 }
 
-/* Header becomes a quiet architectural control rather than a pill. */
+/* Header is minimal, not a floating pill. */
 header > div {
   max-width: none !important;
   border-radius: 0 !important;
   border-width: 0 0 1px !important;
   border-color: rgb(214 180 119 / 0.18) !important;
-  background: linear-gradient(180deg, rgb(11 11 10 / 0.68), transparent) !important;
+  background: linear-gradient(180deg, rgb(11 11 10 / 0.78), transparent) !important;
   box-shadow: none !important;
   backdrop-filter: blur(14px) !important;
 }
 
-header a:first-child {
-  font-weight: 600;
-  letter-spacing: -0.045em;
-}
-
+header a:first-child { font-weight: 650; letter-spacing: -0.045em; }
 header button {
   border-radius: 0.65rem !important;
   width: 2.75rem !important;
@@ -174,40 +169,37 @@ header button {
   background: rgb(214 180 119 / 0.06) !important;
 }
 
-/* Hero: let the photograph lead, with no duplicate brand label. */
+/* Hide only the duplicate brand kicker in the hero. */
 section.relative.min-h-\[100svh\] > div.relative.z-10 > div > p:first-child { display: none; }
 section.relative.min-h-\[100svh\] h1 {
-  font-weight: 650 !important;
-  letter-spacing: -0.065em !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.07em !important;
   line-height: 0.79 !important;
 }
 
-/* Why Niwasthan becomes an editorial image grid instead of four empty cards. */
+/* Why Niwasthan uses its own concept artwork, never the room gallery. */
 section[id="why-niwasthan"] article {
   position: relative;
   overflow: hidden;
   min-height: 360px;
   border-color: rgb(214 180 119 / 0.22) !important;
   background-color: #12110f !important;
-  background-size: cover;
-  background-position: center;
 }
 
 section[id="why-niwasthan"] article::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgb(11 11 10 / 0.06), rgb(11 11 10 / 0.86));
+  background: linear-gradient(180deg, rgb(11 11 10 / 0.05), rgb(11 11 10 / 0.84));
   pointer-events: none;
 }
 
 section[id="why-niwasthan"] article > * { position: relative; z-index: 1; }
-section[id="why-niwasthan"] article:nth-child(1) { background-image: url("/hero/01-entrance.webp"); }
-section[id="why-niwasthan"] article:nth-child(2) { background-image: url("/hero/02-drawing-room.webp"); }
-section[id="why-niwasthan"] article:nth-child(3) { background-image: url("/hero/03-living-room.webp"); }
-section[id="why-niwasthan"] article:nth-child(4) { background-image: url("/hero/04-kitchen.webp"); }
+section[id="why-niwasthan"] article:nth-child(1) { background-image: url("/why/see-it-before-you-commit.svg"); }
+section[id="why-niwasthan"] article:nth-child(2) { background-image: url("/why/know-what-you-pay.svg"); }
+section[id="why-niwasthan"] article:nth-child(3) { background-image: url("/why/keep-control-of-plan.svg"); }
+section[id="why-niwasthan"] article:nth-child(4) { background-image: url("/why/build-what-approved.svg"); }
 
-/* Promise gets enough contrast to hold its place in the film. */
 section[id="promise"] > div:last-child,
 section[id="promise"] article {
   background: linear-gradient(135deg, #151411 0%, #0f0e0c 100%) !important;
@@ -216,7 +208,6 @@ section[id="promise"] article {
 
 section[id="promise"] h2 { color: #f6f0e5 !important; }
 
-/* Final CTA should feel like a closing gallery frame, not a colour break. */
 main section:last-of-type {
   background: #0b0b0a !important;
   color: #f4efe6 !important;
@@ -235,8 +226,8 @@ main section:last-of-type {
     aspect-ratio: 16 / 10;
   }
   main section h2 {
-    font-size: clamp(2.8rem, 13vw, 4.5rem) !important;
-    line-height: 0.92 !important;
+    font-size: clamp(2.9rem, 13vw, 4.7rem) !important;
+    line-height: 0.9 !important;
   }
   section[id="why-niwasthan"] article { min-height: 300px; }
 }
