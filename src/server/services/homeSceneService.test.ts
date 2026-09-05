@@ -1,0 +1,153 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ConflictError, NotFoundError } from "@/server/errors/AppError";
+import { prisma } from "@/server/db/prisma";
+import { generateHomeScene } from "./homeSceneService";
+
+vi.mock("@/server/db/prisma", () => ({
+  prisma: {
+    property: { findFirst: vi.fn() },
+    designProject: { findMany: vi.fn(), findFirst: vi.fn() },
+    roomUnderstanding: { findFirst: vi.fn() },
+  },
+}));
+
+const db = vi.mocked(prisma, { deep: true });
+
+function confirmedUnderstanding(dimensions: {
+  lengthFt: number;
+  widthFt: number;
+  heightFt?: number;
+}) {
+  return { dimensions } as never;
+}
+
+describe("generateHomeScene", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("rejects when the property does not exist or is not owned by the caller", async () => {
+    db.property.findFirst.mockResolvedValue(null);
+
+    await expect(
+      generateHomeScene("property-1", "user-1"),
+    ).rejects.toBeInstanceOf(NotFoundError);
+    expect(db.designProject.findMany).not.toHaveBeenCalled();
+  });
+
+  it("rejects when no room has both confirmed dimensions and a committed BOQ", async () => {
+    db.property.findFirst.mockResolvedValue({ id: "property-1" } as never);
+    db.designProject.findMany.mockResolvedValue([]);
+
+    await expect(
+      generateHomeScene("property-1", "user-1"),
+    ).rejects.toBeInstanceOf(ConflictError);
+  });
+
+  it("builds a real, sequential, non-overlapping layout and camera path across two real rooms", async () => {
+    db.property.findFirst.mockResolvedValue({ id: "property-1" } as never);
+    db.designProject.findMany.mockResolvedValue([
+      { id: "project-living", roomId: "room-living", createdAt: new Date() },
+      { id: "project-kitchen", roomId: "room-kitchen", createdAt: new Date() },
+    ] as never);
+
+    // Each generateSceneDescription call internally does its own
+    // designProject.findFirst + roomUnderstanding.findFirst - mocked in
+    // the same real sequence the actual code calls them in.
+    db.designProject.findFirst
+      .mockResolvedValueOnce({
+        id: "project-living",
+        room: { id: "room-living", name: "Living Room", type: "LIVING_ROOM" },
+        boqs: [],
+      } as never)
+      .mockResolvedValueOnce({
+        id: "project-kitchen",
+        room: { id: "room-kitchen", name: "Kitchen", type: "KITCHEN" },
+        boqs: [],
+      } as never);
+
+    db.roomUnderstanding.findFirst
+      .mockResolvedValueOnce(
+        confirmedUnderstanding({ lengthFt: 16.404, widthFt: 13.123 }), // 5m x 4m
+      )
+      .mockResolvedValueOnce(
+        confirmedUnderstanding({ lengthFt: 11.483, widthFt: 9.843 }), // 3.5m x 3m
+      );
+
+    const { scene, skipped } = await generateHomeScene("property-1", "user-1");
+
+    expect(skipped).toEqual([]);
+    expect(scene.layoutIsAutoSequenced).toBe(true);
+    expect(scene.rooms).toHaveLength(2);
+
+    // Hand-verified: room 1 origin (0,0), width 4m -> room 2 origin
+    // starts at x=4, both share y=0 - genuinely non-overlapping.
+    expect(scene.rooms[0].originM).toEqual({ x: 0, y: 0 });
+    expect(scene.rooms[1].originM.x).toBeCloseTo(4.0, 1);
+    expect(scene.rooms[1].originM.y).toBe(0);
+
+    // Hand-verified camera centers: room 1 center (2, 2.5), room 2
+    // center (4 + 1.5, 1.75) = (5.5, 1.75).
+    expect(scene.cameraPath[0].positionM.x).toBeCloseTo(2.0, 1);
+    expect(scene.cameraPath[0].positionM.y).toBeCloseTo(2.5, 1);
+    expect(scene.cameraPath[1].positionM.x).toBeCloseTo(5.5, 1);
+    expect(scene.cameraPath[1].positionM.y).toBeCloseTo(1.75, 1);
+  });
+
+  it("skips a room that fails its own real validation, with the real reason, without discarding a room that succeeds", async () => {
+    db.property.findFirst.mockResolvedValue({ id: "property-1" } as never);
+    db.designProject.findMany.mockResolvedValue([
+      { id: "project-bad", roomId: "room-bad", createdAt: new Date() },
+      { id: "project-good", roomId: "room-good", createdAt: new Date() },
+    ] as never);
+
+    db.designProject.findFirst
+      .mockResolvedValueOnce({
+        id: "project-bad",
+        room: { id: "room-bad", name: "Unmeasured Room", type: "OTHER" },
+        boqs: [],
+      } as never)
+      .mockResolvedValueOnce({
+        id: "project-good",
+        room: { id: "room-good", name: "Good Room", type: "BEDROOM" },
+        boqs: [],
+      } as never);
+
+    db.roomUnderstanding.findFirst
+      .mockResolvedValueOnce(null) // real failure: never confirmed
+      .mockResolvedValueOnce(
+        confirmedUnderstanding({ lengthFt: 10, widthFt: 10 }),
+      );
+
+    const { scene, skipped } = await generateHomeScene("property-1", "user-1");
+
+    expect(skipped).toEqual([
+      {
+        roomId: "room-bad",
+        reason: expect.stringContaining("dimensions"),
+      },
+    ]);
+    expect(scene.rooms).toHaveLength(1);
+    expect(scene.rooms[0].name).toBe("Good Room");
+  });
+
+  it("does not process the same room twice across multiple projects tied to it", async () => {
+    db.property.findFirst.mockResolvedValue({ id: "property-1" } as never);
+    db.designProject.findMany.mockResolvedValue([
+      { id: "project-newer", roomId: "room-1", createdAt: new Date() },
+      { id: "project-older", roomId: "room-1", createdAt: new Date() },
+    ] as never);
+
+    db.designProject.findFirst.mockResolvedValueOnce({
+      id: "project-newer",
+      room: { id: "room-1", name: "Living Room", type: "LIVING_ROOM" },
+      boqs: [],
+    } as never);
+    db.roomUnderstanding.findFirst.mockResolvedValueOnce(
+      confirmedUnderstanding({ lengthFt: 10, widthFt: 10 }),
+    );
+
+    const { scene } = await generateHomeScene("property-1", "user-1");
+
+    expect(scene.rooms).toHaveLength(1);
+    expect(db.designProject.findFirst).toHaveBeenCalledTimes(1);
+  });
+});
