@@ -56,6 +56,17 @@ export const whatIfService = {
       ),
     );
 
+    let decision: "UNKNOWN" | "SAVE" | "NEUTRAL" | "UPGRADE_COST";
+    if (priceDeltaMinor === null) {
+      decision = "UNKNOWN";
+    } else if (savingMinor !== null && savingMinor > 0n) {
+      decision = "SAVE";
+    } else if (savingMinor === 0n) {
+      decision = "NEUTRAL";
+    } else {
+      decision = "UPGRADE_COST";
+    }
+
     return {
       scopeChange: input.scopeChange,
       roomId: input.roomId ?? null,
@@ -63,14 +74,7 @@ export const whatIfService = {
       priceDeltaMinor,
       savingMinor,
       confidenceBps,
-      decision:
-        priceDeltaMinor === null
-          ? "UNKNOWN"
-          : savingMinor !== null && savingMinor > 0n
-            ? "SAVE"
-            : savingMinor === 0n
-              ? "NEUTRAL"
-              : "UPGRADE_COST",
+      decision,
       rankedCandidates: ranked,
     };
   },
