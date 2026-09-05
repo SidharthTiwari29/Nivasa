@@ -15,17 +15,19 @@ describe("HTTP rendering provider", () => {
     else process.env.RENDERING_PROVIDER = original.provider;
     if (original.url === undefined) delete process.env.RENDERING_PROVIDER_URL;
     else process.env.RENDERING_PROVIDER_URL = original.url;
-    if (original.key === undefined) delete process.env.RENDERING_PROVIDER_API_KEY;
+    if (original.key === undefined)
+      delete process.env.RENDERING_PROVIDER_API_KEY;
     else process.env.RENDERING_PROVIDER_API_KEY = original.key;
-    if (original.timeout === undefined) delete process.env.RENDERING_PROVIDER_TIMEOUT_MS;
+    if (original.timeout === undefined)
+      delete process.env.RENDERING_PROVIDER_TIMEOUT_MS;
     else process.env.RENDERING_PROVIDER_TIMEOUT_MS = original.timeout;
   });
 
   it("returns an unconfigured provider when no provider is selected", async () => {
     delete process.env.RENDERING_PROVIDER;
-    await expect(getRenderingProvider().submit({ jobId: "j", type: "VIDEO", input: {} })).rejects.toThrow(
-      "RENDERING_PROVIDER_NOT_CONFIGURED",
-    );
+    await expect(
+      getRenderingProvider().submit({ jobId: "j", type: "VIDEO", input: {} }),
+    ).rejects.toThrow("RENDERING_PROVIDER_NOT_CONFIGURED");
   });
 
   it("submits and polls through the configured HTTP provider", async () => {
@@ -33,16 +35,21 @@ describe("HTTP rendering provider", () => {
     process.env.RENDERING_PROVIDER_URL = "https://renderer.example.com/";
     process.env.RENDERING_PROVIDER_API_KEY = "secret";
 
-    const fetchMock = vi.spyOn(globalThis, "fetch")
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ providerJobId: "render-123" }), { status: 202 }),
+        new Response(JSON.stringify({ providerJobId: "render-123" }), {
+          status: 202,
+        }),
       )
       .mockResolvedValueOnce(
         new Response(JSON.stringify({ status: "SUCCEEDED" }), { status: 200 }),
       );
 
     const provider = getRenderingProvider();
-    await expect(provider.submit({ jobId: "j", type: "VIDEO", input: { quality: "4K" } })).resolves.toEqual({
+    await expect(
+      provider.submit({ jobId: "j", type: "VIDEO", input: { quality: "4K" } }),
+    ).resolves.toEqual({
       provider: "http",
       providerJobId: "render-123",
     });
@@ -66,6 +73,8 @@ describe("HTTP rendering provider", () => {
   it("rejects invalid provider configuration", () => {
     process.env.RENDERING_PROVIDER = "http";
     delete process.env.RENDERING_PROVIDER_URL;
-    expect(() => getRenderingProvider()).toThrow("RENDERING_PROVIDER_URL_REQUIRED");
+    expect(() => getRenderingProvider()).toThrow(
+      "RENDERING_PROVIDER_URL_REQUIRED",
+    );
   });
 });

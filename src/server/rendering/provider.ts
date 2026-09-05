@@ -76,12 +76,19 @@ class HttpRenderingProvider implements RenderingProvider {
     };
   }
 
-  private async request(url: string, init: RequestInit): Promise<ProviderResponse> {
+  private async request(
+    url: string,
+    init: RequestInit,
+  ): Promise<ProviderResponse> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
       return await readJson(
-        await fetch(url, { ...init, headers: this.headers(), signal: controller.signal }),
+        await fetch(url, {
+          ...init,
+          headers: this.headers(),
+          signal: controller.signal,
+        }),
       );
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
@@ -126,7 +133,9 @@ export function getRenderingProvider(): RenderingProvider {
   if (provider === "http") {
     const baseUrl = process.env.RENDERING_PROVIDER_URL?.trim();
     if (!baseUrl) throw new Error("RENDERING_PROVIDER_URL_REQUIRED");
-    const timeoutMs = Number(process.env.RENDERING_PROVIDER_TIMEOUT_MS ?? 30000);
+    const timeoutMs = Number(
+      process.env.RENDERING_PROVIDER_TIMEOUT_MS ?? 30000,
+    );
     if (!Number.isFinite(timeoutMs) || timeoutMs < 1000 || timeoutMs > 120000) {
       throw new Error("RENDERING_PROVIDER_TIMEOUT_MS_INVALID");
     }
