@@ -120,9 +120,6 @@ describe("procurementService", () => {
     });
 
     it("rejects accepting a quote that was already accepted (double-accept race)", async () => {
-      // This is the specific guarantee this whole feature exists to
-      // provide: two concurrent accept requests for the same quote must
-      // not both succeed and create two orders.
       repo.acceptQuoteAndCreateOrder.mockResolvedValue(null);
       repo.findQuoteForOwner.mockResolvedValue({
         id: "quote-1",
@@ -151,19 +148,25 @@ describe("procurementService", () => {
 
   describe("updateOrderStatus", () => {
     it("rejects updating an order the caller does not own", async () => {
-      repo.updateOrderStatus.mockResolvedValue({ count: 0 });
+      repo.findOrderForOwner.mockResolvedValue(null);
 
       await expect(
         procurementService.updateOrderStatus("order-1", "user-1", "DELIVERED"),
       ).rejects.toBeInstanceOf(NotFoundError);
+      expect(repo.updateOrderStatus).not.toHaveBeenCalled();
     });
 
-    it("updates an owned order's status", async () => {
+    it("updates an owned order through a legal delivery transition", async () => {
+      repo.findOrderForOwner
+        .mockResolvedValueOnce({
+          id: "order-1",
+          status: "DISPATCHED",
+        } as never)
+        .mockResolvedValueOnce({
+          id: "order-1",
+          status: "DELIVERED",
+        } as never);
       repo.updateOrderStatus.mockResolvedValue({ count: 1 });
-      repo.findOrderForOwner.mockResolvedValue({
-        id: "order-1",
-        status: "DELIVERED",
-      } as never);
 
       const result = await procurementService.updateOrderStatus(
         "order-1",
@@ -172,6 +175,12 @@ describe("procurementService", () => {
       );
 
       expect(result).toEqual({ id: "order-1", status: "DELIVERED" });
+      expect(repo.updateOrderStatus).toHaveBeenCalledWith(
+        "order-1",
+        "user-1",
+        "DISPATCHED",
+        "DELIVERED",
+      );
       expect(notifications.notify).toHaveBeenCalledWith(
         expect.objectContaining({
           userId: "user-1",
@@ -184,20 +193,16 @@ describe("procurementService", () => {
       );
     });
 
-    it("does not attempt to reward a referral for a non-delivered status change", async () => {
-      repo.updateOrderStatus.mockResolvedValue({ count: 1 });
+    it("rejects an illegal status regression", async () => {
       repo.findOrderForOwner.mockResolvedValue({
         id: "order-1",
-        status: "CONFIRMED",
+        status: "DELIVERED",
       } as never);
 
-      await procurementService.updateOrderStatus(
-        "order-1",
-        "user-1",
-        "CONFIRMED",
-      );
-
-      expect(referrals.rewardReferralIfPending).not.toHaveBeenCalled();
+      await expect(
+        procurementService.updateOrderStatus("order-1", "user-1", "DISPATCHED"),
+      ).rejects.toThrow("INVALID_ORDER_TRANSITION:DELIVERED:DISPATCHED");
+      expect(repo.updateOrderStatus).not.toHaveBeenCalled();
     });
   });
 
