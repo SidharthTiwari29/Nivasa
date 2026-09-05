@@ -49,7 +49,11 @@ export const smartHomeService = {
   },
 
   async create(propertyId: string, ownerId: string, input: SmartHomePlanInput) {
-    await assertRoomIdsBelongToProperty(propertyId, ownerId, input.capabilities);
+    await assertRoomIdsBelongToProperty(
+      propertyId,
+      ownerId,
+      input.capabilities,
+    );
 
     const versions = await homeIntelligenceService.listHomeDna(
       propertyId,
