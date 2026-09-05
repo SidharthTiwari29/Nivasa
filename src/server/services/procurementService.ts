@@ -3,10 +3,12 @@ import { procurementRepository } from "@/server/repositories/procurementReposito
 import { notificationService } from "@/server/services/notificationService";
 import { evaluateNegotiation } from "@/server/services/negotiationEngine";
 import { referralService } from "@/server/services/referralService";
+import { transitionOrder } from "@/server/execution/orderWorkflow";
 import type {
   CreateProcurementRequestInput,
   SubmitQuoteInput,
 } from "@/server/validators/procurement";
+import type { OrderState } from "@/server/execution/orderWorkflow";
 
 export const procurementService = {
   async create(
@@ -67,13 +69,6 @@ export const procurementService = {
     return quote;
   },
 
-  // README §26 "QUOTE COMPARISON → ORDER": accepting a quote is the one
-  // action in this whole workflow that must be exactly-once - accepting
-  // two different quotes for the same request would mean placing two
-  // orders for the same procurement need. The repository's conditional
-  // update (status must still be SUBMITTED) is what actually enforces
-  // this; a null return here means either the quote doesn't exist/isn't
-  // owned, or it was already accepted/rejected by a concurrent request.
   async acceptQuote(
     procurementRequestId: string,
     quoteId: string,
@@ -98,14 +93,33 @@ export const procurementService = {
     return order;
   },
 
-  async updateOrderStatus(orderId: string, ownerId: string, status: string) {
+  async updateOrderStatus(
+    orderId: string,
+    ownerId: string,
+    nextStatus: OrderState,
+  ) {
+    const order = await procurementRepository.findOrderForOwner(
+      orderId,
+      ownerId,
+    );
+    if (!order) throw new NotFoundError("Order");
+
+    const currentStatus = order.status as OrderState;
+    transitionOrder(currentStatus, nextStatus);
+
     const result = await procurementRepository.updateOrderStatus(
       orderId,
       ownerId,
-      status,
+      currentStatus,
+      nextStatus,
     );
-    if (result.count === 0) throw new NotFoundError("Order");
-    const order = await procurementRepository.findOrderForOwner(
+    if (result.count === 0) {
+      throw new ConflictError(
+        "Order changed before this status update could be applied",
+      );
+    }
+
+    const updated = await procurementRepository.findOrderForOwner(
       orderId,
       ownerId,
     );
@@ -113,19 +127,14 @@ export const procurementService = {
       userId: ownerId,
       type: "ORDER_STATUS_CHANGED",
       title: "Order status updated",
-      message: `Your order is now ${status.toLowerCase()}`,
+      message: `Your order is now ${nextStatus.toLowerCase()}`,
       relatedEntityType: "Order",
       relatedEntityId: orderId,
     });
-    // A referral only pays out on a real, completed transaction - checked
-    // here, at the exact moment an order becomes DELIVERED, never at
-    // sign-up. Failure to reward (e.g. no pending referral, no active
-    // entitlement to credit) is not an error for this request - it's an
-    // optional side effect, same reasoning as notification delivery.
-    if (status === "DELIVERED") {
+    if (nextStatus === "DELIVERED") {
       await referralService.rewardReferralIfPending(ownerId, orderId);
     }
-    return order;
+    return updated;
   },
 
   async scheduleExecution(
@@ -158,12 +167,9 @@ export const procurementService = {
       executionId,
       ownerId,
     );
-    // SNAGGED gets its own, more attention-grabbing message than a routine
-    // status update - a snag genuinely needs the user's attention (a
-    // problem was found on site), whereas most transitions are informational.
     await notificationService.notify({
       userId: ownerId,
-      type: "EXECUTION_STATUS_CHANGED",
+      type: status === "SNAGGED" ? "SNAGGED" : "EXECUTION_STATUS_CHANGED",
       title:
         status === "SNAGGED"
           ? "Issue found during execution"
@@ -179,13 +185,6 @@ export const procurementService = {
     return execution;
   },
 
-  // The "bargain" feature: a user proposes a lower price on a submitted
-  // quote; evaluateNegotiation decides ACCEPTED/COUNTERED/REJECTED against
-  // the quote's own fixed commission/margin floor (set once, at quote
-  // submission, never renegotiated). An ACCEPTED result immediately
-  // updates the quote's real total, so the negotiated price is what
-  // actually gets ordered later - this isn't a cosmetic discount display,
-  // it changes the number the business is bound to.
   async proposeNegotiation(
     procurementRequestId: string,
     quoteId: string,
