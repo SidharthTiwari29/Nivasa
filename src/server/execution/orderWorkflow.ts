@@ -8,7 +8,10 @@ export const ORDER_STATES = [
 
 export type OrderState = (typeof ORDER_STATES)[number];
 
-const transitions: Record<OrderState, Partial<Record<OrderState, OrderState>>> = {
+const transitions: Record<
+  OrderState,
+  Partial<Record<OrderState, OrderState>>
+> = {
   PLACED: { CONFIRMED: "CONFIRMED", CANCELLED: "CANCELLED" },
   CONFIRMED: { DISPATCHED: "DISPATCHED", CANCELLED: "CANCELLED" },
   DISPATCHED: { DELIVERED: "DELIVERED" },
