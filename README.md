@@ -1299,8 +1299,6 @@ EXPERIENCE MATERIALS + LIGHTING + ATMOSPHERE
 MAKE DESIGN DECISIONS
 ```
 
-The environment must preserve the spatial relationship between rooms rather than generating disconnected AI scenes.
-
 Target capabilities progressively include:
 
 - first-person navigation
@@ -1317,10 +1315,6 @@ Target capabilities progressively include:
 - future VR/AR pathways
 
 A rotating panorama can be an intermediate or supporting asset, but **it does not satisfy the full Niwasthan Immersive acceptance target by itself**.
-
-### Touch and feel
-
-The vision is to create a strong sense of presence — seeing, entering, moving through and understanding the future home spatially. Literal physical touch transmission is not assumed; richer VR/AR/haptic experiences may be explored as technology permits.
 
 ### Spatial consistency is mandatory
 
@@ -1404,85 +1398,277 @@ DNA should make future recommendations more relevant without removing user contr
 
 Niwasthan's commercial packaging is a real entitlement system, not merely a pricing page.
 
-| Plan                    |      Price | Core purpose                                         |
-| ----------------------- | ---------: | ---------------------------------------------------- |
-| **Free**                |         ₹0 | Discover Niwasthan and begin the home journey        |
-| **Niwasthan Design**    |    **₹99** | Affordable entry into meaningful design intelligence |
-| **Niwasthan Home Book** | **₹2,599** | Deeper project/design/documentation experience       |
-| **Niwasthan Immersive** | **₹9,999** | Premium future-home immersive experience             |
+The finalized customer journey is:
 
-### Feature philosophy by plan
+```text
+₹199        → DISCOVER
+₹999        → DESIGN
+₹2,599      → PLAN
+₹9,999      → EXPERIENCE
+```
 
-#### FREE — Discover
+The commercial ladder is intentionally structured around **customer outcomes**, not feature-count inflation.
 
-Designed to let a customer understand the value of Niwasthan without giving away the complete commercial engine.
+| Plan | Price | Customer promise | Core purpose |
+| --- | ---: | --- | --- |
+| **Niwasthan Starter** | **₹199** | **Discover your home.** | Understand the home and experience the first Niwasthan value moment |
+| **Niwasthan Design** ⭐ | **₹999** | **Design your home.** | Turn the understood home into meaningful, controlled design intelligence |
+| **Niwasthan Home Book** | **₹2,599** | **Plan your home with confidence.** | Connect design decisions to products, cost, savings, buildability and project records |
+| **Niwasthan Immersive** 👑 | **₹9,999** | **Enter your future home.** | Experience the approved home as a spatially consistent first-person environment |
 
-Target capabilities may include:
+## 39.1 NIWASTHAN STARTER — ₹199
 
-- account/project entry
-- basic home/project setup
-- limited spatial intake
-- limited discovery
-- limited assistant interactions
-- limited previews
-- selected free insights
-- upgrade pathways
+**Discover your home.**
 
-#### NIWASTHAN DESIGN — ₹99
+This is an affordable impulse-buy entry product, not a renamed free tier. It must create a genuine first **“Niwasthan understands my home”** moment while preserving a clear reason to progress into Design.
 
-The affordable entry into meaningful design intelligence.
+Target capabilities:
 
-Target capabilities may include:
+- create a Home Project
+- upload floor plan, photos and requirements
+- AI-powered Home Understanding
+- basic room and space analysis
+- discover Home Design Personality
+- 3 personalised design directions
+- initial room recommendations
+- guided AI design conversation
+- initial material and style suggestions
+- personalised **Home Snapshot**
+- preview of deeper design possibilities
+- clear upgrade pathway into Niwasthan Design
 
-- structured layout/project intake
-- design analysis
-- strong design directions
-- room-level decisions
-- design comparisons
-- selected What-If exploration
-- design recommendations
-- selected product/material grounding
-- initial savings/value insights
-- controlled design revision flow
+**Customer question answered:**
 
-#### NIWASTHAN HOME BOOK — ₹2,599
+> *“Does Niwasthan really understand my home?”*
 
-The deeper project record and decision package.
+---
 
-Target capabilities may include:
+## 39.2 NIWASTHAN DESIGN — ₹999 ⭐ MOST POPULAR
 
-- expanded design/project workspace
-- richer product/material intelligence
-- decision history
-- approved design records
-- BOQ/budget views
-- alternatives and substitutions
-- savings analysis
-- project documentation
+**Design your home.**
+
+This is the commercial centre of the ladder and should be the default recommendation for most homeowners who are ready to design.
+
+Everything in Starter, plus:
+
+### Design Intelligence
+
+- complete design analysis
+- room-by-room design intelligence
+- multiple strong design directions
+- Luxury
+- Premium
+- Smart Luxury
+- Modern
+- Contemporary
+- Minimal
+- Warm
+- Value
+- Budget
+- personalised combinations
+
+### Design Studio
+
+- compare design directions
+- accept/reject important decisions
+- revise individual elements
+- replace materials
+- upgrade/downgrade selections
+- lock important decisions
+- preserve approved decisions
+- design version history
+
+### Better Choices
+
+- product and material recommendations
+- better-value alternatives
+- premium alternatives
+- budget alternatives
+- material comparisons
+- initial price/value intelligence
+
+### Intelligence
+
+- selected What-If scenarios
+- initial savings opportunities
+- **Design Battle**
+- **Niwasthan Finds**
+- stronger project-aware Assistant
+
+**Customer question answered:**
+
+> *“What could my home become, and which design should I actually choose?”*
+
+**Value positioning:**
+
+> **₹999 • The sweet spot for most homeowners**
+
+---
+
+## 39.3 NIWASTHAN HOME BOOK — ₹2,599
+
+**Plan your home with confidence.**
+
+This is where Niwasthan moves from **design inspiration → serious project intelligence**.
+
+Everything in Design, plus:
+
+### Your Home Book
+
+- complete digital Home Book
+- approved designs
+- design decisions
+- product selections
+- material selections
 - specifications
-- project export/home record
-- stronger procurement preparation
-- persistent project intelligence
+- project history
+- persistent home record
 
-#### NIWASTHAN IMMERSIVE — ₹9,999
+### Know What It Costs
 
-The premium experience centered on **Enter Your Future Home™**.
+- detailed BOQ
+- room-wise costing
+- material quantities
+- component quantities
+- product quantities
+- labour considerations
+- service considerations
+- budget allocation
+- cost-driver analysis
+- project-level cost view
 
-Target capabilities may include:
+### Save Intelligently
 
-- approved design → immersive scene pipeline
-- spatially consistent apartment
-- first-person exploration
-- room-to-room walkthrough
-- human-scale experience
-- material/product context
-- immersive presentation
+- What-If cost impact
+- upgrade vs downgrade analysis
+- alternative products
+- material substitutions
+- better-value options
+- savings opportunities
+- project-level optimisation
+- Better Deals intelligence
+
+### Reality Check
+
+> **Looks beautiful. Now let's check whether it actually works.**
+
+- dimension checks
+- circulation checks
+- clearance considerations
+- door/window conflicts
+- electrical considerations
+- plumbing considerations
+- mounting considerations
+- material compatibility
+- maintenance considerations
+- buildability considerations
+
+### Before You Buy
+
+- product dimensions
+- compatibility
+- installation considerations
+- warranty considerations
+- maintenance considerations
+- delivery considerations
+
+**Customer question answered:**
+
+> *“What should I choose, what will it cost, where can I save and can it actually be built?”*
+
+---
+
+## 39.4 NIWASTHAN IMMERSIVE — ₹9,999 👑
+
+**Enter your future home.**
+
+This is a premium experience, not simply the most expensive feature bundle.
+
+Everything in Home Book, plus:
+
+### Your Home → 3D
+
+- approved design converted into a spatial 3D home
+- based on the customer's actual apartment
+- verified spatial dimensions where available
+- consistent walls, doors and windows
+- human-scale proportions
+
+### Enter Your Future Home
+
+- first-person navigation
+- room-to-room movement
+- living → kitchen → bedrooms → balcony
+- explore every corner
+- natural look-around movement
+- understand scale and proportions
+- persistent spatial layout
+
+### Experience the Design
+
+- furniture placement
+- materials and finishes
+- lighting representation
+- design atmosphere
+- product/design context
+- spatial relationships
+
+### Take It With You
+
+- cinematic walkthrough
+- 360° walkthrough assets
 - walkthrough recording/export where supported
-- future VR/AR pathways
+- future VR/AR pathway
 
-Exact entitlement boundaries are product configuration, but the architecture must support server-side enforcement, usage limits and commercial integrity.
+**Customer question answered:**
 
-Pricing may evolve through deliberate product decisions; unrelated domain logic must not hard-code commercial assumptions.
+> *“I don't want to imagine my future home. I want to step inside it.”*
+
+---
+
+## 39.5 COMMERCIAL POSITIONING RULES
+
+The four tiers must not be presented as arbitrary feature buckets.
+
+They represent four increasingly valuable homeowner outcomes:
+
+```text
+₹199
+DISCOVER
+“Does Niwasthan understand my home?”
+        ↓
+₹999
+DESIGN
+“What could my home become?”
+        ↓
+₹2,599
+PLAN
+“What should I choose, what will it cost and how can I build it better?”
+        ↓
+₹9,999
+EXPERIENCE
+“What will it actually feel like to live there?”
+```
+
+Commercial UX should:
+
+- make **₹999 Design** the visual hero / most-popular choice
+- make ₹199 feel like a real product, not a disguised free trial
+- make ₹2,599 feel like a serious project-planning upgrade
+- make ₹9,999 feel like a premium immersive experience
+- communicate outcomes before exhaustive feature lists
+- expose detailed entitlements through an expandable comparison rather than overwhelming pricing cards
+- make upgrade paths clear without manipulative dark patterns
+
+The short customer journey is:
+
+> **Understand → Design → Decide → Experience**
+
+And the underlying promise remains:
+
+> **More Options. Better Options. Better Deals. Better Decisions. Better Homes.**
+
+Exact usage limits and entitlement boundaries remain product configuration, but paid capabilities must be enforceable server-side. Pricing may evolve through deliberate product decisions; unrelated domain logic must not hard-code commercial assumptions.
 
 ---
 
@@ -1715,6 +1901,17 @@ The commercial layer should support:
 
 The UI must never be the sole authority for paid access.
 
+The canonical plan catalogue is:
+
+| Plan code / tier | Customer-facing plan | Price |
+| --- | --- | ---: |
+| Starter | **Niwasthan Starter** | **₹199** |
+| Design | **Niwasthan Design** | **₹999** |
+| Home Book | **Niwasthan Home Book** | **₹2,599** |
+| Immersive | **Niwasthan Immersive** | **₹9,999** |
+
+Exact internal identifiers may differ by implementation, but commercial configuration must map to this canonical customer-facing ladder unless deliberately changed through a reviewed product decision.
+
 ---
 
 # 49. PRODUCTION ACCEPTANCE STANDARD
@@ -1828,7 +2025,7 @@ The homeowner should not have to become an interior designer, quantity surveyor,
 3. **Exceptional design.** Uploaded layouts should lead to genuinely strong, explainable design intelligence.
 4. **More options, better options, better deals.** Choice must create value.
 5. **Transparency over persuasion.** Show reasoning, evidence and trade-offs.
-6. **Affordable entry, meaningful upgrade paths.** Every commercial tier must deliver genuine value.
+6. **Affordable entry, meaningful upgrade paths.** Every commercial tier must deliver genuine value; ₹199, ₹999, ₹2,599 and ₹9,999 represent progressively deeper outcomes rather than arbitrary feature bundles.
 7. **Beautiful must also be buildable.** Reality Check is part of the product philosophy.
 8. **Personality without noise.** Niwasthan can be witty, but never at the expense of clarity.
 9. **Immersive means entering the home.** A panorama alone is not the destination.
@@ -1890,6 +2087,15 @@ This README is the **canonical Niwasthan product vision and engineering north st
 It is **not** a claim that every capability described above is already implemented.
 
 Current implementation status must be established separately through repository audits, tests, CI and acceptance evidence.
+
+The commercial ladder is currently finalized as:
+
+```text
+NIWASTHAN STARTER       ₹199
+NIWASTHAN DESIGN        ₹999
+NIWASTHAN HOME BOOK   ₹2,599
+NIWASTHAN IMMERSIVE   ₹9,999
+```
 
 If a new requirement is discovered, the vision should be amended deliberately, reviewed for dependency impact and then locked again. We should not maintain competing versions of the Niwasthan vision.
 
