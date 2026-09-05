@@ -33,6 +33,7 @@ const schema = z.object({
   STORAGE_ACCESS_KEY_ID: emptyToUndefined(z.string()),
   STORAGE_SECRET_ACCESS_KEY: emptyToUndefined(z.string()),
   AI_PROVIDER: emptyToUndefined(z.string()),
+  GEMINI_API_KEY: emptyToUndefined(z.string()),
 });
 
 export function getEnv() {

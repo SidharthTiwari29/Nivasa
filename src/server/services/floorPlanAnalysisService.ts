@@ -1,6 +1,7 @@
 import { prisma } from "@/server/db/prisma";
 import { NotFoundError } from "@/server/errors/AppError";
 import { getAIProvider } from "@/server/ai/provider";
+import { getStorageProvider } from "@/server/storage/provider";
 import {
   validateFloorPlanObservations,
   type ValidationIssue,
@@ -66,10 +67,19 @@ export async function analyzeFloorPlan(
   });
 
   try {
+    // A real, signed download URL - the same mechanism already used
+    // everywhere else this app needs to hand a stored asset to
+    // something outside the app itself, rather than the provider
+    // needing its own separate knowledge of how storage/objectKeys work.
+    const downloadUrl = await getStorageProvider().createDownloadUrl(
+      floorPlan.asset.objectKey,
+      300,
+    );
+
     const result = await getAIProvider().analyzeFloorPlan({
       jobId: `floor-plan-analysis:${analysis.id}`,
       type: "ROOM_UNDERSTANDING",
-      input: { assetObjectKey: floorPlan.asset.objectKey },
+      input: { imageUrl: downloadUrl },
     });
 
     // Real provider integration point: the exact shape of `output`

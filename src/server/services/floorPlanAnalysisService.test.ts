@@ -2,12 +2,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NotFoundError } from "@/server/errors/AppError";
 import { prisma } from "@/server/db/prisma";
 import { getAIProvider } from "@/server/ai/provider";
+import { getStorageProvider } from "@/server/storage/provider";
 import {
   analyzeFloorPlan,
   matchObservationToRoom,
   rejectObservation,
   getLatestAnalysisForFloorPlan,
 } from "./floorPlanAnalysisService";
+
+vi.mock("@/server/storage/provider", () => ({
+  getStorageProvider: vi.fn(),
+}));
 
 vi.mock("@/server/db/prisma", () => ({
   prisma: {
@@ -28,6 +33,16 @@ vi.mock("@/server/ai/provider", () => ({
 
 const db = vi.mocked(prisma, { deep: true });
 const mockGetAIProvider = vi.mocked(getAIProvider);
+const mockGetStorageProvider = vi.mocked(getStorageProvider);
+
+// A real, working default so every test in this file can reach the
+// real storage-provider call site without needing to configure it
+// individually - specific tests can still override this if they need
+// to test a real failure in the storage layer itself.
+mockGetStorageProvider.mockReturnValue({
+  createUploadGrant: vi.fn(),
+  createDownloadUrl: vi.fn().mockResolvedValue("https://real-signed-url"),
+});
 
 const realFloorPlan = {
   id: "floor-plan-1",

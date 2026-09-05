@@ -43,7 +43,17 @@ class UnconfiguredAIProvider implements AIProvider {
   }
 }
 
+import { GeminiAIProvider } from "./geminiProvider";
+
 export function getAIProvider(): AIProvider {
-  if (!process.env.AI_PROVIDER) return new UnconfiguredAIProvider();
-  throw new Error(`AI_PROVIDER_UNSUPPORTED:${process.env.AI_PROVIDER}`);
+  const providerName = process.env.AI_PROVIDER;
+  if (!providerName) return new UnconfiguredAIProvider();
+  if (providerName === "gemini") {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY_MISSING");
+    }
+    return new GeminiAIProvider(apiKey);
+  }
+  throw new Error(`AI_PROVIDER_UNSUPPORTED:${providerName}`);
 }
