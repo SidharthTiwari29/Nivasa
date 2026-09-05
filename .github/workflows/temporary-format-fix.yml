@@ -29,4 +29,5 @@ jobs:
           git add README.md src/server/entitlements/featureGating.test.ts
           git diff --cached --quiet && exit 0
           git commit -m "chore: format documentation and entitlement tests"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main
