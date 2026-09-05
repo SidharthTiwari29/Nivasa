@@ -1,5 +1,6 @@
 import { NotFoundError } from "@/server/errors/AppError";
 import { homeIntelligenceService } from "@/server/services/homeIntelligenceService";
+import { roomRepository } from "@/server/repositories/roomRepository";
 import {
   compileSmartHomePlan,
   mergeSmartHomePlan,
@@ -13,6 +14,22 @@ const asRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {};
+
+const assertRoomIdsBelongToProperty = async (
+  propertyId: string,
+  ownerId: string,
+  capabilities: SmartHomePlanInput["capabilities"],
+) => {
+  const requestedRoomIds = [
+    ...new Set(capabilities.flatMap((capability) => capability.roomIds)),
+  ];
+  if (requestedRoomIds.length === 0) return;
+
+  const rooms = await roomRepository.listForOwner(ownerId, propertyId);
+  const ownedRoomIds = new Set(rooms.map((room) => room.id));
+  const foreignRoomId = requestedRoomIds.find((roomId) => !ownedRoomIds.has(roomId));
+  if (foreignRoomId) throw new NotFoundError("Room");
+};
 
 export const smartHomeService = {
   async get(propertyId: string, ownerId: string) {
@@ -30,6 +47,8 @@ export const smartHomeService = {
   },
 
   async create(propertyId: string, ownerId: string, input: SmartHomePlanInput) {
+    await assertRoomIdsBelongToProperty(propertyId, ownerId, input.capabilities);
+
     const versions = await homeIntelligenceService.listHomeDna(
       propertyId,
       ownerId,
@@ -57,6 +76,10 @@ export const smartHomeService = {
   },
 
   async patch(propertyId: string, ownerId: string, input: SmartHomePatchInput) {
+    if (input.capabilities) {
+      await assertRoomIdsBelongToProperty(propertyId, ownerId, input.capabilities);
+    }
+
     const versions = await homeIntelligenceService.listHomeDna(
       propertyId,
       ownerId,
