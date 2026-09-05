@@ -27,7 +27,9 @@ const assertRoomIdsBelongToProperty = async (
 
   const rooms = await roomRepository.listForOwner(ownerId, propertyId);
   const ownedRoomIds = new Set(rooms.map((room) => room.id));
-  const foreignRoomId = requestedRoomIds.find((roomId) => !ownedRoomIds.has(roomId));
+  const foreignRoomId = requestedRoomIds.find(
+    (roomId) => !ownedRoomIds.has(roomId),
+  );
   if (foreignRoomId) throw new NotFoundError("Room");
 };
 
@@ -77,7 +79,11 @@ export const smartHomeService = {
 
   async patch(propertyId: string, ownerId: string, input: SmartHomePatchInput) {
     if (input.capabilities) {
-      await assertRoomIdsBelongToProperty(propertyId, ownerId, input.capabilities);
+      await assertRoomIdsBelongToProperty(
+        propertyId,
+        ownerId,
+        input.capabilities,
+      );
     }
 
     const versions = await homeIntelligenceService.listHomeDna(
