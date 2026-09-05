@@ -8,7 +8,6 @@ describe("whatIfService.commit", () => {
 
     await expect(
       whatIfService.commit("property-1", "owner-1", {
-        action: "commit",
         baseVersion: 2,
         currentPriceMinor: 200000,
         proposedPriceMinor: 175000,
@@ -35,7 +34,6 @@ describe("whatIfService.commit", () => {
 
     await expect(
       whatIfService.commit("property-1", "owner-1", {
-        action: "commit",
         baseVersion: 2,
         currentPriceMinor: null,
         proposedPriceMinor: null,
@@ -63,7 +61,6 @@ describe("whatIfService.commit", () => {
       .mockResolvedValue({ id: "impact-1" } as never);
 
     await whatIfService.commit("property-1", "owner-1", {
-      action: "commit",
       baseVersion: 2,
       currentPriceMinor: 200000,
       proposedPriceMinor: 175000,
