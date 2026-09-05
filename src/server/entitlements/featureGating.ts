@@ -16,7 +16,8 @@ export type FeatureKey =
   | "budget_export"
   | "priority_visualization"
   | "niwasthan_finds"
-  | "niwasthan_magic";
+  | "niwasthan_magic"
+  | "immersive_walkthrough";
 
 const PLAN_FEATURES: Record<string, readonly FeatureKey[]> = {
   FREE: [],
@@ -49,6 +50,14 @@ const PLAN_FEATURES: Record<string, readonly FeatureKey[]> = {
     "budget_export",
     "priority_visualization",
     "niwasthan_magic",
+    // README Section 36's signature capability - the real, structured
+    // multi-room home scene (real geometry, real furniture from the
+    // real committed BOQ) that a render pipeline would turn into a
+    // walkthrough. Exclusive to this tier, matching the README's
+    // explicit plan boundary: this is the ₹9,999 tier's defining
+    // feature, not a generic visualization perk shared with lower
+    // plans.
+    "immersive_walkthrough",
   ],
 };
 

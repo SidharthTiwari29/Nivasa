@@ -24,6 +24,22 @@ describe("planIncludesFeature", () => {
     ).toBe(false);
   });
 
+  it("only NIWASTHAN_IMMERSIVE unlocks the real immersive walkthrough feature - it is that tier's exclusive, signature capability per the README", () => {
+    expect(
+      planIncludesFeature("NIWASTHAN_IMMERSIVE", "immersive_walkthrough"),
+    ).toBe(true);
+    expect(
+      planIncludesFeature(
+        "NIWASTHAN_HOME_INTELLIGENCE",
+        "immersive_walkthrough",
+      ),
+    ).toBe(false);
+    expect(
+      planIncludesFeature("NIWASTHAN_COMPLETE", "immersive_walkthrough"),
+    ).toBe(false);
+    expect(planIncludesFeature("FREE", "immersive_walkthrough")).toBe(false);
+  });
+
   it("NIWASTHAN_IMMERSIVE unlocks every defined feature", () => {
     expect(
       planIncludesFeature("NIWASTHAN_IMMERSIVE", "ai_design_generation"),
