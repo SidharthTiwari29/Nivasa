@@ -1,24 +1,29 @@
 import { prisma } from "@/server/db/prisma";
 
+/**
+ * Canonical customer-facing commercial ladder.
+ *
+ * Keep historical package codes readable in entitlement checks so existing
+ * purchases remain valid, but do not create new purchases against them.
+ */
 export const COMMERCIAL_PACKAGES = [
-  { code: "FREE", name: "Free", priceMinor: 0n, credits: 1 },
+  {
+    code: "NIWASTHAN_STARTER",
+    name: "Niwasthan Starter",
+    priceMinor: 19900n,
+    credits: 1,
+  },
   {
     code: "NIWASTHAN_DESIGN",
     name: "Niwasthan Design",
-    priceMinor: 9900n,
+    priceMinor: 99900n,
     credits: 10,
   },
   {
-    code: "NIWASTHAN_COMPLETE",
-    name: "Niwasthan Complete",
-    priceMinor: 99900n,
-    credits: 100,
-  },
-  {
-    code: "NIWASTHAN_HOME_INTELLIGENCE",
-    name: "Niwasthan Home Intelligence",
+    code: "NIWASTHAN_HOME_BOOK",
+    name: "Niwasthan Home Book",
     priceMinor: 259900n,
-    credits: 300,
+    credits: 100,
   },
   {
     code: "NIWASTHAN_IMMERSIVE",
@@ -26,6 +31,12 @@ export const COMMERCIAL_PACKAGES = [
     priceMinor: 999900n,
     credits: 1000,
   },
+] as const;
+
+const LEGACY_PACKAGE_CODES = [
+  "FREE",
+  "NIWASTHAN_COMPLETE",
+  "NIWASTHAN_HOME_INTELLIGENCE",
 ] as const;
 
 export async function ensureCommercialPackages() {
@@ -41,4 +52,11 @@ export async function ensureCommercialPackages() {
       },
     });
   }
+
+  // Retire legacy sellable packages without deleting them. Existing
+  // purchases/entitlements may still reference these historical codes.
+  await prisma.package.updateMany({
+    where: { code: { in: [...LEGACY_PACKAGE_CODES] } },
+    data: { active: false },
+  });
 }
