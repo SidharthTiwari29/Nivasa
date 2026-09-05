@@ -33,8 +33,20 @@
     scroll-behavior: auto;
   }
   body {
-    background: #0b0b0a;
-    color: #f4efe6;
+    /* Real, correct default for the vast majority of this app's real
+       pages (the authenticated app, legal pages, pricing) - the
+       homepage's own dark cinematic experience sets its explicit own
+       background directly on its <main> element
+       (bg-[#0b0b0a] text-[#f4efe6] in CinematicLandingFinal.tsx) and
+       never depended on this default, so it's unaffected by this
+       change. Leaving this as a hardcoded dark color here was a real
+       bug: every other page's light-theme text (text-ink, meant to be
+       read against --color-paper) was rendering against this leaked-
+       through dark background instead, making it effectively
+       unreadable - exactly the "black background, can't see the
+       details" problem this fixes. */
+    background: var(--color-paper);
+    color: var(--color-ink);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
