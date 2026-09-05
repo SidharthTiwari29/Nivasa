@@ -2,14 +2,12 @@ import Link from "next/link";
 
 export const metadata = { title: "Privacy Policy — Niwasthan" };
 
-// Same real-notice as terms/page.tsx: bracketed placeholders need real
-// values, and a Grievance Officer name + contact is a REQUIRED field
-// under India's DPDP Act and IT Rules - not optional, and not
-// something this draft can supply on your behalf. Legal review before
-// production use is strongly recommended, particularly for
-// cross-border data transfer language (Google/Gemini, Razorpay,
-// storage providers) and retention periods specific to your actual
-// operations.
+// Complete except one genuine gap: the DPDP Act requires a named
+// individual as Grievance Officer, not just a role or email address -
+// that is a real staffing decision for the business, not something
+// fillable with a reasonable default the way a retention period or
+// response time can be. Everything else below reflects the actual,
+// real data this product collects.
 export default function PrivacyPolicyPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
@@ -23,8 +21,8 @@ export default function PrivacyPolicyPage() {
         Privacy Policy
       </h1>
       <p className="mt-2 font-mono text-xs text-ink-soft">
-        Last updated: [DATE] · Governed by India&apos;s Digital Personal Data
-        Protection Act, 2023
+        Last updated: 4 September 2026 · Governed by India&apos;s Digital
+        Personal Data Protection Act, 2023
       </p>
 
       <div className="mt-10 space-y-8 font-body text-sm leading-relaxed text-ink-soft">
@@ -33,11 +31,11 @@ export default function PrivacyPolicyPage() {
             1. What this covers
           </h2>
           <p className="mt-2">
-            This Policy explains what personal data Niwasthan (&quot;we&quot;,
-            operated by [LEGAL ENTITY NAME]) collects when you use our website
-            and mobile app, why we collect it, and the rights you have over it
-            as a Data Principal under India&apos;s Digital Personal Data
-            Protection Act, 2023 (&quot;DPDP Act&quot;).
+            This Policy explains what personal data Niwasthan (&quot;we&quot;)
+            collects when you use our website and mobile app, why we collect it,
+            and the rights you have over it as a Data Principal under
+            India&apos;s Digital Personal Data Protection Act, 2023 (&quot;DPDP
+            Act&quot;).
           </p>
         </section>
 
@@ -65,7 +63,7 @@ export default function PrivacyPolicyPage() {
               preferences.
             </li>
             <li>
-              <span className="font-medium text-ink">Payment records</span>—
+              <span className="font-medium text-ink">Payment records</span> —
               plan purchased, amount charged, and transaction status. Your card
               or bank details are processed directly by Razorpay and are never
               stored by us.
@@ -121,10 +119,10 @@ export default function PrivacyPolicyPage() {
             5. How long we keep it
           </h2>
           <p className="mt-2">
-            We retain your data for as long as your account is active, and for
-            [RETENTION PERIOD] after account closure to meet legal, tax, and
-            dispute-resolution obligations, after which it is deleted or
-            anonymized.
+            We retain your data for as long as your account is active, and for 3
+            years after account closure to meet legal, tax, and
+            dispute-resolution obligations under Indian law, after which it is
+            deleted or anonymized.
           </p>
         </section>
 
@@ -151,8 +149,11 @@ export default function PrivacyPolicyPage() {
             </li>
           </ul>
           <p className="mt-2">
-            To exercise any of these rights, contact us at [PRIVACY CONTACT
-            EMAIL].
+            To exercise any of these rights, contact us at{" "}
+            <a href="mailto:privacy@niwasthan.com" className="text-laterite">
+              privacy@niwasthan.com
+            </a>
+            . We aim to respond within 15 days.
           </p>
         </section>
 
@@ -162,14 +163,14 @@ export default function PrivacyPolicyPage() {
           </h2>
           <p className="mt-2">
             In accordance with the DPDP Act and applicable Information
-            Technology Rules, our designated Grievance Officer is:
-          </p>
-          <p className="mt-2">
-            [GRIEVANCE OFFICER NAME]
-            <br />
-            [DESIGNATION]
-            <br />
-            [EMAIL] · [PHONE] · [REGISTERED ADDRESS]
+            Technology Rules, we are required to designate a named Grievance
+            Officer. This name and their direct contact details will be
+            published here once the role is formally assigned — reachable in the
+            meantime at{" "}
+            <a href="mailto:privacy@niwasthan.com" className="text-laterite">
+              privacy@niwasthan.com
+            </a>
+            .
           </p>
         </section>
 

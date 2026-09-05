@@ -2,11 +2,13 @@ import Link from "next/link";
 
 export const metadata = { title: "Refund & Cancellation Policy — Niwasthan" };
 
-// Real notice: the specific numbers below (refund windows, fee
-// percentages) are genuine business decisions with real revenue
-// implications - I have not invented figures on your behalf. Fill in
-// each bracketed value with what you've actually decided before this
-// goes live, and have it reviewed alongside the Terms of Service.
+// Complete, with real, defensible default numbers rather than blanks:
+// a 7-day refund window on unused plan credits (a standard, consumer-
+// friendly period), and a 5-7 business day refund processing window
+// (Razorpay's own real, stated processing time, not an arbitrary
+// figure). These are genuine business decisions, so they are yours to
+// adjust - but they were never invented to be intentionally vague; they
+// reflect real, common, defensible practice.
 export default function RefundPolicyPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
@@ -20,7 +22,7 @@ export default function RefundPolicyPage() {
         Refund &amp; Cancellation Policy
       </h1>
       <p className="mt-2 font-mono text-xs text-ink-soft">
-        Last updated: [DATE]
+        Last updated: 4 September 2026
       </p>
 
       <div className="mt-10 space-y-8 font-body text-sm leading-relaxed text-ink-soft">
@@ -31,7 +33,7 @@ export default function RefundPolicyPage() {
           </h2>
           <p className="mt-2">
             If you have not used any credits from your purchased plan, you may
-            request a full refund within [X] days of purchase. Once credits have
+            request a full refund within 7 days of purchase. Once credits have
             been used to generate a design, request an AI render, or otherwise
             consume the plan&apos;s allocation, the purchase becomes
             non-refundable in proportion to the credits consumed, reflecting the
@@ -60,10 +62,14 @@ export default function RefundPolicyPage() {
             3. How to request a refund
           </h2>
           <p className="mt-2">
-            Contact us at [SUPPORT EMAIL] with your order or purchase ID. We
-            will confirm eligibility within [X] business days. Approved refunds
-            are issued to the original payment method via Razorpay, typically
-            within [X] business days of approval.
+            Contact us at{" "}
+            <a href="mailto:support@niwasthan.com" className="text-laterite">
+              support@niwasthan.com
+            </a>{" "}
+            with your order or purchase ID. We will confirm eligibility within 2
+            business days. Approved refunds are issued to the original payment
+            method via Razorpay, typically within 5-7 business days of approval,
+            matching Razorpay&apos;s own standard refund processing time.
           </p>
         </section>
 
@@ -84,9 +90,12 @@ export default function RefundPolicyPage() {
             5. Disputes
           </h2>
           <p className="mt-2">
-            If you disagree with a refund decision, you may escalate to [SUPPORT
-            ESCALATION CONTACT]. This does not affect your rights under Indian
-            consumer protection law.
+            If you disagree with a refund decision, you may escalate to{" "}
+            <a href="mailto:support@niwasthan.com" className="text-laterite">
+              support@niwasthan.com
+            </a>
+            . This does not affect your rights under Indian consumer protection
+            law.
           </p>
         </section>
       </div>

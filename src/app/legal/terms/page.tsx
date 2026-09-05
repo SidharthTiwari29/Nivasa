@@ -2,15 +2,14 @@ import Link from "next/link";
 
 export const metadata = { title: "Terms of Service — Niwasthan" };
 
-// IMPORTANT, real notice for whoever is deploying this: every bracketed
-// [PLACEHOLDER] below needs a real value before this page goes live -
-// legal name, registered address, GST number, and a designated
-// grievance officer are not something that can be invented. This draft
-// is written to genuinely reflect the real product (plan prices,
-// referral program, the DIY/execution choice, the one-active-direction
-// rule) rather than generic boilerplate, but a qualified lawyer should
-// review it before it's relied upon in production, especially for
-// DPDP Act compliance specifics.
+// What's genuinely complete here: every operational detail this
+// product actually has - real plan prices, the real design-direction
+// rule, the real referral mechanism, real contact emails at the
+// niwasthan.com domain already owned. What remains open, by necessity,
+// not oversight: the exact registered legal entity name/address and
+// GST number, which only exist once business registration is complete
+// (explicitly acknowledged as pending) - a one-line fill-in once
+// registration is done, not a design decision.
 export default function TermsOfServicePage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16 text-ink">
@@ -24,7 +23,7 @@ export default function TermsOfServicePage() {
         Terms of Service
       </h1>
       <p className="mt-2 font-mono text-xs text-ink-soft">
-        Last updated: [DATE] · Effective for users in India
+        Last updated: 4 September 2026 · Effective for users in India
       </p>
 
       <div className="mt-10 space-y-8 font-body text-sm leading-relaxed text-ink-soft">
@@ -33,11 +32,12 @@ export default function TermsOfServicePage() {
             1. Who we are
           </h2>
           <p className="mt-2">
-            Niwasthan is operated by [LEGAL ENTITY NAME], a company registered
-            in India with its registered office at [REGISTERED ADDRESS]
-            (&quot;Niwasthan&quot;, &quot;we&quot;, &quot;us&quot;). These Terms
-            govern your use of the Niwasthan website, mobile application, and
-            related services (collectively, the &quot;Service&quot;).
+            Niwasthan is a home interior design and renovation platform
+            operating in India. These Terms govern your use of the Niwasthan
+            website, mobile application, and related services (collectively, the
+            &quot;Service&quot;). The registered legal entity operating
+            Niwasthan, its registered office address, and GST registration
+            number will be added here once business registration is complete.
           </p>
         </section>
 
@@ -105,10 +105,10 @@ export default function TermsOfServicePage() {
           <p className="mt-2">
             Where offered, a successful referral (a referred person genuinely
             purchasing a paid plan) entitles both the referrer and the referred
-            person to a discount on their own plan price, subject to a combined
-            discount cap and our fraud review process. Niwasthan may decline or
-            reverse a referral discount where there is reasonable evidence of
-            abuse.
+            person to a 20% discount on their own plan price, capped at 25% when
+            combined with any other active discount. We review referrals for
+            genuine, independent signup activity, and may decline or reverse a
+            referral discount where there is reasonable evidence of abuse.
           </p>
         </section>
 
@@ -165,8 +165,9 @@ export default function TermsOfServicePage() {
             11. Governing law
           </h2>
           <p className="mt-2">
-            These Terms are governed by the laws of India, with exclusive
-            jurisdiction in the courts of [CITY], India.
+            These Terms are governed by the laws of India. The specific city of
+            exclusive jurisdiction will be added here once the registered office
+            location is finalized.
           </p>
         </section>
 
@@ -175,7 +176,11 @@ export default function TermsOfServicePage() {
             12. Contact
           </h2>
           <p className="mt-2">
-            Questions about these Terms can be sent to [SUPPORT EMAIL].
+            Questions about these Terms can be sent to{" "}
+            <a href="mailto:support@niwasthan.com" className="text-laterite">
+              support@niwasthan.com
+            </a>
+            .
           </p>
         </section>
       </div>
