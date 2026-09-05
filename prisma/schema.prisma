@@ -245,11 +245,34 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+enum PropertyType {
+  ONE_BHK
+  TWO_BHK
+  THREE_BHK
+  FOUR_BHK
+  VILLA
+  OTHER
+}
+
 model Property {
   id               String             @id @default(cuid())
   ownerId          String
   name             String
   address          String?
+  // Real, additive fields for the actual onboarding flow - captured
+  // upfront so the customer states them once, rather than being asked
+  // again later. None of these substitute for the real, AI-analyzed or
+  // manually-confirmed room dimensions that remain the actual source of
+  // spatial truth (RoomUnderstanding) - city and property type describe
+  // the home in general terms; they do not claim to be measured.
+  city             String?
+  propertyType     PropertyType?
+  // The customer's own stated target budget for this home, captured at
+  // onboarding so it can be reused as the real default when generating
+  // a BOQ later, rather than asked for twice. Still just a stated
+  // intent, not a commitment - the real, itemized BOQ total is computed
+  // separately and can differ from this figure.
+  targetBudgetMinor BigInt?
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   owner            User               @relation(fields: [ownerId], references: [id])

@@ -2,10 +2,12 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
+import { getCurrentPlan } from "@/server/services/currentPlanService";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/sign-in");
+  const plan = await getCurrentPlan(session.user.id);
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -25,6 +27,15 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             className="font-body text-sm text-ink-soft transition-colors hover:text-ink"
           >
             Catalogue
+          </Link>
+          <Link
+            href="/pricing"
+            className="rounded-full border border-paper-raised px-3 py-1 font-mono text-xs text-ink-soft transition-colors hover:border-laterite hover:text-ink"
+          >
+            {plan.packageName}
+            {plan.packageCode !== "FREE"
+              ? ` · ${plan.creditsRemaining}/${plan.creditsTotal} credits`
+              : ""}
           </Link>
           <form
             action={async () => {

@@ -19,6 +19,15 @@ type DesignProjectSummary = {
   status: string;
 };
 
+const PROPERTY_TYPE_LABELS: Record<string, string> = {
+  ONE_BHK: "1 BHK",
+  TWO_BHK: "2 BHK",
+  THREE_BHK: "3 BHK",
+  FOUR_BHK: "4 BHK",
+  VILLA: "Villa",
+  OTHER: "Other",
+};
+
 const ROOM_TYPE_LABELS: Record<string, string> = {
   LIVING_ROOM: "Living room",
   BEDROOM: "Bedroom",
@@ -55,11 +64,29 @@ export default async function PropertyDetailPage({
       <h1 className="mt-4 font-display text-3xl font-semibold">
         {property.name}
       </h1>
+      <p className="mt-1 font-mono text-xs text-ink-soft">
+        Property ID: {property.id}
+      </p>
       {property.address ? (
         <p className="mt-1 font-body text-sm text-ink-soft">
           {property.address}
         </p>
       ) : null}
+      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-body text-sm text-ink-soft">
+        {property.city ? <span>{property.city}</span> : null}
+        {property.propertyType ? (
+          <span>
+            {PROPERTY_TYPE_LABELS[property.propertyType] ??
+              property.propertyType}
+          </span>
+        ) : null}
+        {property.targetBudgetMinor ? (
+          <span>
+            Target budget: ₹
+            {(Number(property.targetBudgetMinor) / 100).toLocaleString("en-IN")}
+          </span>
+        ) : null}
+      </div>
       <Link
         href={`/properties/${propertyId}/floor-plan`}
         className="mt-3 inline-block font-body text-sm font-medium text-laterite hover:underline"

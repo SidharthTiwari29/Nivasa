@@ -20,14 +20,35 @@ export const propertyRepository = {
 
   create(ownerId: string, input: CreatePropertyInput) {
     return prisma.property.create({
-      data: { ownerId, name: input.name, address: input.address },
+      data: {
+        ownerId,
+        name: input.name,
+        address: input.address,
+        city: input.city,
+        propertyType: input.propertyType,
+        targetBudgetMinor:
+          input.targetBudget !== undefined
+            ? BigInt(input.targetBudget) * 100n
+            : undefined,
+      },
     });
   },
 
   updateForOwner(id: string, ownerId: string, input: UpdatePropertyInput) {
     return prisma.property.updateMany({
       where: { id, ownerId },
-      data: input,
+      data: {
+        name: input.name,
+        address: input.address,
+        city: input.city,
+        propertyType: input.propertyType,
+        targetBudgetMinor:
+          input.targetBudget !== undefined && input.targetBudget !== null
+            ? BigInt(input.targetBudget) * 100n
+            : input.targetBudget === null
+              ? null
+              : undefined,
+      },
     });
   },
 
