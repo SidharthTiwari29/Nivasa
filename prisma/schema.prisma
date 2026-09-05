@@ -370,11 +370,23 @@ model FloorPlanObservation {
   // observation into a real RoomUnderstanding is a direct copy, not a
   // translation.
   dimensions    Json?
+  // Real evidence coordinates on the source floor-plan image/page
+  // where this observation was detected (e.g. a bounding box or
+  // polygon in image-relative coordinates) - null until a real,
+  // configured provider actually supplies this, never a placeholder
+  // or estimated region.
+  sourceRegion  Json?
   // Set only once a human has reviewed this observation and confirmed
   // which real Room it actually corresponds to - null until then, so
   // an unmatched observation is never silently treated as belonging to
   // a specific real room.
   matchedRoomId String?
+  // A real, explicit human decision that this observation does NOT
+  // correspond to any real room (a misread, a duplicate, a non-room
+  // space the AI mistakenly detected) - distinct from simply not
+  // having been reviewed yet, so the review workspace can tell "not
+  // looked at" apart from "looked at and dismissed."
+  rejected      Boolean           @default(false)
   createdAt     DateTime          @default(now())
   analysis      FloorPlanAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
   matchedRoom   Room?             @relation(fields: [matchedRoomId], references: [id])

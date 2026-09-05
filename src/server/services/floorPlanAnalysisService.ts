@@ -188,3 +188,56 @@ export async function matchObservationToRoom(
     data: { matchedRoomId: roomId },
   });
 }
+
+// The real, explicit counterpart to matchObservationToRoom - a human
+// looked at this observation and confirmed it does NOT correspond to
+// any real room. Distinct from simply leaving it unmatched, so the
+// review workspace can tell "not reviewed yet" apart from "reviewed
+// and dismissed."
+export async function rejectObservation(
+  observationId: string,
+  ownerId: string,
+): Promise<void> {
+  const observation = await prisma.floorPlanObservation.findFirst({
+    where: { id: observationId },
+    include: {
+      analysis: { include: { floorPlan: { include: { property: true } } } },
+    },
+  });
+  if (
+    !observation ||
+    observation.analysis.floorPlan.property.ownerId !== ownerId
+  ) {
+    throw new NotFoundError("FloorPlanObservation");
+  }
+
+  await prisma.floorPlanObservation.update({
+    where: { id: observationId },
+    data: { rejected: true },
+  });
+}
+
+// Real, read-only fetch of every observation from the most recent
+// analysis for a floor plan - the actual data the review workspace
+// renders. Returns observations exactly as stored; never filters out
+// or reinterprets what a human has and hasn't decided yet.
+export async function getLatestAnalysisForFloorPlan(
+  floorPlanId: string,
+  ownerId: string,
+) {
+  const floorPlan = await prisma.floorPlan.findFirst({
+    where: { id: floorPlanId },
+    include: { property: true, asset: true },
+  });
+  if (!floorPlan || floorPlan.property.ownerId !== ownerId) {
+    throw new NotFoundError("FloorPlan");
+  }
+
+  const analysis = await prisma.floorPlanAnalysis.findFirst({
+    where: { floorPlanId },
+    orderBy: { requestedAt: "desc" },
+    include: { observations: { include: { matchedRoom: true } } },
+  });
+
+  return { floorPlan, analysis };
+}

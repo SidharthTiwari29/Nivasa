@@ -66,6 +66,12 @@ export default async function PropertyDetailPage({
       >
         Upload floor plan →
       </Link>
+      <Link
+        href={`/properties/${propertyId}/floor-plan/review`}
+        className="mt-1 block font-body text-sm font-medium text-laterite hover:underline"
+      >
+        Review detected rooms →
+      </Link>
 
       <div className="mt-10">
         <h2 className="font-display text-lg font-semibold">Rooms</h2>

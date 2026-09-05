@@ -5,12 +5,14 @@ import { getAIProvider } from "@/server/ai/provider";
 import {
   analyzeFloorPlan,
   matchObservationToRoom,
+  rejectObservation,
+  getLatestAnalysisForFloorPlan,
 } from "./floorPlanAnalysisService";
 
 vi.mock("@/server/db/prisma", () => ({
   prisma: {
     floorPlan: { findFirst: vi.fn() },
-    floorPlanAnalysis: { create: vi.fn(), update: vi.fn() },
+    floorPlanAnalysis: { create: vi.fn(), update: vi.fn(), findFirst: vi.fn() },
     floorPlanObservation: {
       create: vi.fn(),
       findFirst: vi.fn(),
@@ -192,5 +194,72 @@ describe("matchObservationToRoom", () => {
       where: { id: "observation-1" },
       data: { matchedRoomId: "room-1" },
     });
+  });
+});
+
+describe("rejectObservation", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("rejects when the observation does not exist or belongs to a property the caller does not own", async () => {
+    db.floorPlanObservation.findFirst.mockResolvedValue(null);
+
+    await expect(
+      rejectObservation("observation-1", "user-1"),
+    ).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  it("denies rejecting an observation belonging to a property owned by someone else", async () => {
+    db.floorPlanObservation.findFirst.mockResolvedValue({
+      id: "observation-1",
+      analysis: {
+        floorPlan: { property: { ownerId: "someone-else" } },
+      },
+    } as never);
+
+    await expect(
+      rejectObservation("observation-1", "user-1"),
+    ).rejects.toBeInstanceOf(NotFoundError);
+    expect(db.floorPlanObservation.update).not.toHaveBeenCalled();
+  });
+
+  it("records a real, explicit rejection distinct from simply leaving an observation unmatched", async () => {
+    db.floorPlanObservation.findFirst.mockResolvedValue({
+      id: "observation-1",
+      analysis: {
+        floorPlan: { property: { ownerId: "user-1" } },
+      },
+    } as never);
+
+    await rejectObservation("observation-1", "user-1");
+
+    expect(db.floorPlanObservation.update).toHaveBeenCalledWith({
+      where: { id: "observation-1" },
+      data: { rejected: true },
+    });
+  });
+});
+
+describe("getLatestAnalysisForFloorPlan", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("rejects when the floor plan does not exist or is not owned by the caller", async () => {
+    db.floorPlan.findFirst.mockResolvedValue(null);
+
+    await expect(
+      getLatestAnalysisForFloorPlan("floor-plan-1", "user-1"),
+    ).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  it("returns the real floor plan with its most recent analysis and observations, or null if none exists yet", async () => {
+    db.floorPlan.findFirst.mockResolvedValue(realFloorPlan as never);
+    db.floorPlanAnalysis.findFirst.mockResolvedValue(null);
+
+    const result = await getLatestAnalysisForFloorPlan(
+      "floor-plan-1",
+      "user-1",
+    );
+
+    expect(result.floorPlan).toBe(realFloorPlan);
+    expect(result.analysis).toBeNull();
   });
 });
