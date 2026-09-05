@@ -1,14 +1,6 @@
-// Default plan-to-feature mapping - a real decision was needed here and
-// none was given explicitly, so this is a documented, adjustable default,
-// not a guess buried in code. Change this table to change what each plan
-// unlocks; nothing else needs to change to adjust the gating.
-//
-// Package codes below MUST match src/server/payments/packages.ts exactly -
-// this table went stale once already after the Nivasa->Niwasthan rename
-// (keyed on the old NIVASA_* codes while packages.ts had already moved to
-// NIWASTHAN_*, meaning every paying customer silently got zero gated
-// features until this fix), so this correspondence is the single most
-// important thing to keep in sync whenever either file changes.
+// Canonical plan-to-feature mapping. Keep this table synchronized with
+// src/server/payments/packages.ts. Historical package codes remain readable
+// so existing customers do not lose paid access.
 export type FeatureKey =
   | "ai_design_generation"
   | "procurement"
@@ -20,28 +12,27 @@ export type FeatureKey =
   | "immersive_walkthrough";
 
 const PLAN_FEATURES: Record<string, readonly FeatureKey[]> = {
-  FREE: [],
-  NIWASTHAN_DESIGN: ["ai_design_generation"],
-  NIWASTHAN_COMPLETE: [
+  // ₹199 — Discover your home.
+  NIWASTHAN_STARTER: ["ai_design_generation"],
+
+  // ₹999 — Design your home.
+  NIWASTHAN_DESIGN: [
     "ai_design_generation",
-    "procurement",
-    "quote_negotiation",
     "niwasthan_finds",
-  ],
-  NIWASTHAN_HOME_INTELLIGENCE: [
-    "ai_design_generation",
-    "procurement",
-    "quote_negotiation",
-    "niwasthan_finds",
-    "budget_export",
-    // Real smart-home product recommendations (energy-rated lighting,
-    // Bluetooth/WiFi-connected devices with genuine manufacturer specs) -
-    // a premium delight-tier feature, reserved for the two highest plans
-    // since it surfaces additional, optional purchase categories a
-    // budget-conscious customer on a lower tier likely doesn't want
-    // pushed at them by default.
     "niwasthan_magic",
   ],
+
+  // ₹2,599 — Plan your home with confidence.
+  NIWASTHAN_HOME_BOOK: [
+    "ai_design_generation",
+    "niwasthan_finds",
+    "niwasthan_magic",
+    "budget_export",
+    "procurement",
+    "quote_negotiation",
+  ],
+
+  // ₹9,999 — Enter your future home.
   NIWASTHAN_IMMERSIVE: [
     "ai_design_generation",
     "procurement",
@@ -50,14 +41,27 @@ const PLAN_FEATURES: Record<string, readonly FeatureKey[]> = {
     "budget_export",
     "priority_visualization",
     "niwasthan_magic",
-    // README Section 36's signature capability - the real, structured
-    // multi-room home scene (real geometry, real furniture from the
-    // real committed BOQ) that a render pipeline would turn into a
-    // walkthrough. Exclusive to this tier, matching the README's
-    // explicit plan boundary: this is the ₹9,999 tier's defining
-    // feature, not a generic visualization perk shared with lower
-    // plans.
     "immersive_walkthrough",
+  ],
+
+  // Historical plans: never sell these again, but preserve existing
+  // entitlements for customers who already purchased them.
+  FREE: [],
+  NIWASTHAN_COMPLETE: [
+    "ai_design_generation",
+    "procurement",
+    "quote_negotiation",
+    "niwasthan_finds",
+    "niwasthan_magic",
+    "budget_export",
+  ],
+  NIWASTHAN_HOME_INTELLIGENCE: [
+    "ai_design_generation",
+    "procurement",
+    "quote_negotiation",
+    "niwasthan_finds",
+    "budget_export",
+    "niwasthan_magic",
   ],
 };
 
@@ -68,11 +72,6 @@ export function planIncludesFeature(
   return (PLAN_FEATURES[packageCode] ?? []).includes(feature);
 }
 
-// A user may hold entitlements from multiple past purchases (e.g. bought
-// Design, later upgraded to Pro) - access to a feature is granted if ANY
-// active entitlement's plan includes it, not just the most recent
-// purchase. This avoids incorrectly locking out a feature a user already
-// paid for just because they later bought a different, unrelated package.
 export function anyPlanIncludesFeature(
   packageCodes: readonly string[],
   feature: FeatureKey,
