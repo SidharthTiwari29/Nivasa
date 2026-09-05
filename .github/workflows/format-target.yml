@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
 permissions:
-  contents: write
+  contents: read
 jobs:
   format:
     if: github.actor != 'github-actions[bot]'
@@ -15,15 +15,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx prettier --write src/server/repositories/procurementRepository.ts
-      - name: Commit formatted file
+      - name: Capture Prettier diff
         run: |
-          if git diff --quiet -- src/server/repositories/procurementRepository.ts; then
-            echo "Already formatted"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/server/repositories/procurementRepository.ts
-          git commit -m "style: format procurement repository"
-          git push origin HEAD:main
+          npx prettier --write src/server/repositories/procurementRepository.ts
+          git diff -- src/server/repositories/procurementRepository.ts
