@@ -1,9 +1,9 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Email from "next-auth/providers/email";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import { getEnv } from "@/server/config/env";
 import { prisma } from "@/server/db/prisma";
+import { CustomPrismaAdapter } from "@/server/auth/prismaAdapter";
 import { handleUserCreated } from "@/server/auth/onUserCreated";
 import type { Role } from "@prisma/client";
 
@@ -20,7 +20,7 @@ if (env.EMAIL_SERVER && env.EMAIL_FROM)
   providers.push(Email({ server: env.EMAIL_SERVER, from: env.EMAIL_FROM }));
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: CustomPrismaAdapter(),
   providers,
   // Real, necessary for deployment on Vercel: without this, Auth.js
   // rejects every real request with UntrustedHost, since it cannot
