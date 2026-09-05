@@ -94,10 +94,7 @@ export const whatIfService = {
     // known, the persisted target delta must exactly match the same
     // calculation returned by preview; otherwise a client could record a
     // fabricated saving that does not correspond to the proposed price.
-    if (
-      input.currentPriceMinor !== null &&
-      input.proposedPriceMinor !== null
-    ) {
+    if (input.currentPriceMinor !== null && input.proposedPriceMinor !== null) {
       const expectedTargetDelta =
         BigInt(input.proposedPriceMinor) - BigInt(input.currentPriceMinor);
       if (target !== expectedTargetDelta) {
