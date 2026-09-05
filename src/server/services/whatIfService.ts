@@ -76,6 +76,16 @@ export const whatIfService = {
   },
 
   async commit(propertyId: string, ownerId: string, input: WhatIfCommitInput) {
+    const low = BigInt(input.proposedLowDeltaMinor);
+    const target = BigInt(input.proposedTargetDeltaMinor);
+    const high = BigInt(input.proposedHighDeltaMinor);
+
+    if (low > target || target > high) {
+      throw new ConflictError(
+        "Proposed savings range must be ordered low, target, high",
+      );
+    }
+
     // A committed What-If is a durable financial record. If both prices are
     // known, the persisted target delta must exactly match the same
     // calculation returned by preview; otherwise a client could record a
@@ -86,7 +96,7 @@ export const whatIfService = {
     ) {
       const expectedTargetDelta =
         BigInt(input.proposedPriceMinor) - BigInt(input.currentPriceMinor);
-      if (BigInt(input.proposedTargetDeltaMinor) !== expectedTargetDelta) {
+      if (target !== expectedTargetDelta) {
         throw new ConflictError(
           "Proposed target delta does not match the current and proposed prices",
         );
