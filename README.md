@@ -1409,12 +1409,12 @@ The finalized customer journey is:
 
 The commercial ladder is intentionally structured around **customer outcomes**, not feature-count inflation.
 
-| Plan | Price | Customer promise | Core purpose |
-| --- | ---: | --- | --- |
-| **Niwasthan Starter** | **₹199** | **Discover your home.** | Understand the home and experience the first Niwasthan value moment |
-| **Niwasthan Design** ⭐ | **₹999** | **Design your home.** | Turn the understood home into meaningful, controlled design intelligence |
-| **Niwasthan Home Book** | **₹2,599** | **Plan your home with confidence.** | Connect design decisions to products, cost, savings, buildability and project records |
-| **Niwasthan Immersive** 👑 | **₹9,999** | **Enter your future home.** | Experience the approved home as a spatially consistent first-person environment |
+| Plan                       |      Price | Customer promise                    | Core purpose                                                                          |
+| -------------------------- | ---------: | ----------------------------------- | ------------------------------------------------------------------------------------- |
+| **Niwasthan Starter**      |   **₹199** | **Discover your home.**             | Understand the home and experience the first Niwasthan value moment                   |
+| **Niwasthan Design** ⭐    |   **₹999** | **Design your home.**               | Turn the understood home into meaningful, controlled design intelligence              |
+| **Niwasthan Home Book**    | **₹2,599** | **Plan your home with confidence.** | Connect design decisions to products, cost, savings, buildability and project records |
+| **Niwasthan Immersive** 👑 | **₹9,999** | **Enter your future home.**         | Experience the approved home as a spatially consistent first-person environment       |
 
 ## 39.1 NIWASTHAN STARTER — ₹199
 
@@ -1439,7 +1439,7 @@ Target capabilities:
 
 **Customer question answered:**
 
-> *“Does Niwasthan really understand my home?”*
+> _“Does Niwasthan really understand my home?”_
 
 ---
 
@@ -1497,7 +1497,7 @@ Everything in Starter, plus:
 
 **Customer question answered:**
 
-> *“What could my home become, and which design should I actually choose?”*
+> _“What could my home become, and which design should I actually choose?”_
 
 **Value positioning:**
 
@@ -1574,7 +1574,7 @@ Everything in Design, plus:
 
 **Customer question answered:**
 
-> *“What should I choose, what will it cost, where can I save and can it actually be built?”*
+> _“What should I choose, what will it cost, where can I save and can it actually be built?”_
 
 ---
 
@@ -1622,7 +1622,7 @@ Everything in Home Book, plus:
 
 **Customer question answered:**
 
-> *“I don't want to imagine my future home. I want to step inside it.”*
+> _“I don't want to imagine my future home. I want to step inside it.”_
 
 ---
 
@@ -1903,12 +1903,12 @@ The UI must never be the sole authority for paid access.
 
 The canonical plan catalogue is:
 
-| Plan code / tier | Customer-facing plan | Price |
-| --- | --- | ---: |
-| Starter | **Niwasthan Starter** | **₹199** |
-| Design | **Niwasthan Design** | **₹999** |
-| Home Book | **Niwasthan Home Book** | **₹2,599** |
-| Immersive | **Niwasthan Immersive** | **₹9,999** |
+| Plan code / tier | Customer-facing plan    |      Price |
+| ---------------- | ----------------------- | ---------: |
+| Starter          | **Niwasthan Starter**   |   **₹199** |
+| Design           | **Niwasthan Design**    |   **₹999** |
+| Home Book        | **Niwasthan Home Book** | **₹2,599** |
+| Immersive        | **Niwasthan Immersive** | **₹9,999** |
 
 Exact internal identifiers may differ by implementation, but commercial configuration must map to this canonical customer-facing ladder unless deliberately changed through a reviewed product decision.
 

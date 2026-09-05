@@ -6,9 +6,7 @@ describe("planIncludesFeature", () => {
     expect(
       planIncludesFeature("NIWASTHAN_STARTER", "ai_design_generation"),
     ).toBe(true);
-    expect(planIncludesFeature("NIWASTHAN_STARTER", "procurement")).toBe(
-      false,
-    );
+    expect(planIncludesFeature("NIWASTHAN_STARTER", "procurement")).toBe(false);
   });
 
   it("Design unlocks design plus Finds/Magic but not procurement", () => {
@@ -21,15 +19,13 @@ describe("planIncludesFeature", () => {
     expect(planIncludesFeature("NIWASTHAN_DESIGN", "niwasthan_magic")).toBe(
       true,
     );
-    expect(planIncludesFeature("NIWASTHAN_DESIGN", "procurement")).toBe(
-      false,
-    );
+    expect(planIncludesFeature("NIWASTHAN_DESIGN", "procurement")).toBe(false);
   });
 
   it("Home Book unlocks budget export and procurement but not immersive", () => {
-    expect(
-      planIncludesFeature("NIWASTHAN_HOME_BOOK", "budget_export"),
-    ).toBe(true);
+    expect(planIncludesFeature("NIWASTHAN_HOME_BOOK", "budget_export")).toBe(
+      true,
+    );
     expect(planIncludesFeature("NIWASTHAN_HOME_BOOK", "procurement")).toBe(
       true,
     );
