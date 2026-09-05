@@ -35,6 +35,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Diagnose Prettier output
+        run: npx prettier src/server/services/whatIfService.ts
       - run: npm run format:check
       - run: npm run lint
       - run: npx prisma generate
