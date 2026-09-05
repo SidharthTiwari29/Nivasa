@@ -10,6 +10,19 @@ type WindowRow = { widthFt: string; wall: Wall };
 
 type OtherRoom = { id: string; name: string };
 
+type Observation = {
+  id: string;
+  roomLabel: string;
+  confidenceBps: number | null;
+  dimensions: {
+    lengthFt?: number;
+    widthFt?: number;
+    heightFt?: number;
+    doors?: unknown[];
+    windows?: unknown[];
+  } | null;
+};
+
 function parseExistingDoors(
   dimensions: Record<string, unknown> | null,
 ): DoorRow[] {
@@ -41,6 +54,7 @@ export function RoomUnderstandingForm({
   roomName,
   otherRooms,
   latest,
+  floorPlanId,
 }: {
   propertyId: string;
   roomId: string;
@@ -51,6 +65,7 @@ export function RoomUnderstandingForm({
     status: string;
     dimensions: Record<string, unknown> | null;
   } | null;
+  floorPlanId: string | null;
 }) {
   const router = useRouter();
   const dims = latest?.dimensions ?? null;
@@ -71,10 +86,83 @@ export function RoomUnderstandingForm({
 
   const [saving, setSaving] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysisMessage, setAnalysisMessage] = useState<string | null>(null);
+  const [observations, setObservations] = useState<Observation[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [savedStatus, setSavedStatus] = useState<string | null>(
     latest?.status ?? null,
   );
+
+  async function handleAnalyze() {
+    if (!floorPlanId) return;
+    setError(null);
+    setAnalysisMessage(null);
+    setObservations([]);
+    setAnalyzing(true);
+    try {
+      const response = await fetch(`/api/floor-plans/${floorPlanId}/analyze`, {
+        method: "POST",
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        throw new Error(
+          body?.error?.message ?? "Couldn't analyze this floor plan.",
+        );
+      }
+      const { result } = await response.json();
+      if (result.status === "NOT_AVAILABLE") {
+        setAnalysisMessage(result.reason);
+        return;
+      }
+      // Real, evidence-backed observations - shown for the person to
+      // review and pick which one (if any) corresponds to this real
+      // room. Nothing is applied to the form or confirmed automatically.
+      setObservations(result.observations);
+      setAnalysisMessage(
+        `Detected ${result.observations.length} room${result.observations.length === 1 ? "" : "s"} - pick the one that's actually this room, if any.`,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
+  async function handleUseObservation(observation: Observation) {
+    setError(null);
+    try {
+      const response = await fetch(
+        `/api/floor-plan-observations/${observation.id}/match`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roomId }),
+        },
+      );
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error?.message ?? "Couldn't record that match.");
+      }
+      // The match is now real and persisted - pre-fills the form with
+      // the AI's real suggested values, but this remains explicitly
+      // UNCONFIRMED until the person reviews and saves it themselves.
+      const d = observation.dimensions ?? {};
+      if (d.lengthFt) setLengthFt(String(d.lengthFt));
+      if (d.widthFt) setWidthFt(String(d.widthFt));
+      if (d.heightFt) setHeightFt(String(d.heightFt));
+      if (Array.isArray(d.doors))
+        setDoors(parseExistingDoors({ doors: d.doors }));
+      if (Array.isArray(d.windows))
+        setWindows(parseExistingWindows({ windows: d.windows }));
+      setAnalysisMessage(
+        "Applied - please review these values below and save them yourself.",
+      );
+      setObservations([]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    }
+  }
 
   function addDoor() {
     setDoors((prev) => [
@@ -164,6 +252,51 @@ export function RoomUnderstandingForm({
         <p className="font-mono text-xs uppercase tracking-wide text-ink-soft">
           Status: {savedStatus}
         </p>
+      ) : null}
+
+      {floorPlanId ? (
+        <div>
+          <button
+            onClick={handleAnalyze}
+            disabled={analyzing}
+            className="rounded-sm border border-laterite px-4 py-2 font-body text-xs font-medium text-laterite transition-colors hover:bg-laterite/5 disabled:opacity-50"
+          >
+            {analyzing ? "Analyzing…" : "Try AI analysis from floor plan"}
+          </button>
+          {analysisMessage ? (
+            <p className="mt-2 font-body text-xs text-ink-soft">
+              {analysisMessage}
+            </p>
+          ) : null}
+          {observations.length > 0 ? (
+            <ul className="mt-3 space-y-2">
+              {observations.map((obs) => (
+                <li
+                  key={obs.id}
+                  className="flex items-center justify-between rounded-sm border border-paper-raised px-3 py-2"
+                >
+                  <div>
+                    <p className="font-body text-sm text-ink">
+                      {obs.roomLabel}
+                    </p>
+                    <p className="font-mono text-xs text-ink-soft">
+                      {obs.dimensions?.lengthFt}ft × {obs.dimensions?.widthFt}ft
+                      {obs.confidenceBps
+                        ? ` · ${Math.round(obs.confidenceBps / 100)}% confidence`
+                        : ""}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleUseObservation(obs)}
+                    className="font-body text-xs font-medium text-laterite hover:underline"
+                  >
+                    This is this room
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
       ) : null}
 
       <section>

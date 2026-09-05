@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { roomService } from "@/server/services/roomService";
 import { homeIntelligenceService } from "@/server/services/homeIntelligenceService";
+import { floorPlanService } from "@/server/services/floorPlanService";
 import { RoomUnderstandingForm } from "./RoomUnderstandingForm";
 
 export default async function RoomUnderstandingPage({
@@ -23,6 +24,9 @@ export default async function RoomUnderstandingPage({
     userId,
   );
   const latest = versions[0] ?? null;
+
+  const floorPlans = await floorPlanService.list(propertyId, userId);
+  const latestFloorPlan = floorPlans[0] ?? null;
 
   const otherRooms = rooms
     .filter((r: { id: string }) => r.id !== roomId)
@@ -49,6 +53,7 @@ export default async function RoomUnderstandingPage({
         roomType={room.type}
         roomName={room.name}
         otherRooms={otherRooms}
+        floorPlanId={latestFloorPlan?.id ?? null}
         latest={
           latest
             ? {

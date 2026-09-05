@@ -38,6 +38,18 @@ export const assetRepository = {
     });
   },
 
+  // A floor plan (and other genuinely property-level uploads) has no
+  // design version or AI job yet - it's typically the very first thing
+  // uploaded, before any design work exists. Real, direct ownership
+  // verification against the property itself, matching the same shape
+  // the other two context lookups return.
+  findPropertyContext(id: string) {
+    return prisma.property.findUnique({
+      where: { id },
+      select: { ownerId: true, id: true },
+    });
+  },
+
   createForDesignVersion(input: {
     designVersionId: string;
     type: Prisma.AssetCreateInput["type"];
@@ -78,6 +90,28 @@ export const assetRepository = {
         checksum: input.checksum,
         metadata: input.metadata,
         job: { connect: { id: input.jobId } },
+      },
+    });
+  },
+
+  createForProperty(input: {
+    propertyId: string;
+    type: Prisma.AssetCreateInput["type"];
+    contentType: string;
+    sizeBytes?: bigint;
+    checksum?: string;
+    metadata?: Prisma.InputJsonValue;
+    objectKey: string;
+  }) {
+    return prisma.asset.create({
+      data: {
+        type: input.type,
+        objectKey: input.objectKey,
+        contentType: input.contentType,
+        sizeBytes: input.sizeBytes,
+        checksum: input.checksum,
+        metadata: input.metadata,
+        property: { connect: { id: input.propertyId } },
       },
     });
   },

@@ -18,9 +18,16 @@ export const createAssetSchema = z
     metadata: z.record(z.string(), z.unknown()).optional(),
     designVersionId: z.string().cuid().optional(),
     jobId: z.string().cuid().optional(),
+    // A floor plan upload has no design version or AI job yet - it is
+    // typically the very first real asset attached to a property,
+    // before any design work exists. A direct property-level parent is
+    // the real, honest ownership context for exactly that case.
+    propertyId: z.string().cuid().optional(),
   })
   .refine(
-    (input) => Boolean(input.designVersionId) !== Boolean(input.jobId),
+    (input) =>
+      [input.designVersionId, input.jobId, input.propertyId].filter(Boolean)
+        .length === 1,
     "Exactly one asset parent is required",
   );
 

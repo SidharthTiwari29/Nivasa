@@ -259,6 +259,7 @@ model Property {
   homeIntelligence HomeIntelligence?
   homeDnaVersions  HomeDnaVersion[]
   procurementRequests ProcurementRequest[]
+  assets           Asset[]
 
   @@index([ownerId, createdAt])
 }
@@ -316,9 +317,70 @@ model FloorPlan {
   createdAt  DateTime @default(now())
   property   Property @relation(fields: [propertyId], references: [id])
   asset      Asset    @relation(fields: [assetId], references: [id])
+  analyses   FloorPlanAnalysis[]
 
   @@unique([propertyId, version])
   @@index([propertyId])
+}
+
+enum FloorPlanAnalysisStatus {
+  PENDING
+  ANALYZED
+  NOT_AVAILABLE
+  FAILED
+}
+
+// Real, additive evidence layer - deliberately separate from
+// RoomUnderstanding. This records what an AI provider actually
+// detected in a floor plan, before any of it becomes spatial truth.
+// The distinction matters: a FloorPlanObservation is raw, unconfirmed
+// evidence tied to a detected label (the AI's own name for a room it
+// found), not yet linked to any real Room record. Only once a human
+// reviews an observation and matches it to a real Room does it inform
+// that Room's own RoomUnderstanding - AI proposes, a human confirms,
+// exactly the same principle already enforced everywhere else in this
+// schema (RoomUnderstanding.status, CataloguePrice.verifiedAt).
+model FloorPlanAnalysis {
+  id            String                  @id @default(cuid())
+  floorPlanId   String
+  status        FloorPlanAnalysisStatus @default(PENDING)
+  parserVersion String?
+  requestedAt   DateTime                @default(now())
+  completedAt   DateTime?
+  // The real, honest reason when status is NOT_AVAILABLE or FAILED -
+  // e.g. "no AI provider is configured yet" - never left blank when
+  // analysis didn't genuinely succeed.
+  reason        String?
+  floorPlan     FloorPlan               @relation(fields: [floorPlanId], references: [id], onDelete: Cascade)
+  observations  FloorPlanObservation[]
+
+  @@index([floorPlanId])
+}
+
+model FloorPlanObservation {
+  id            String            @id @default(cuid())
+  analysisId    String
+  // The AI's own detected label for this room ("Master Bedroom"), not
+  // a real Room's name - those are two different things until a human
+  // confirms they refer to the same real space.
+  roomLabel     String
+  confidenceBps Int?
+  // Same real, validated shape as RoomUnderstanding.dimensions -
+  // deliberately kept structurally identical so mapping a confirmed
+  // observation into a real RoomUnderstanding is a direct copy, not a
+  // translation.
+  dimensions    Json?
+  // Set only once a human has reviewed this observation and confirmed
+  // which real Room it actually corresponds to - null until then, so
+  // an unmatched observation is never silently treated as belonging to
+  // a specific real room.
+  matchedRoomId String?
+  createdAt     DateTime          @default(now())
+  analysis      FloorPlanAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  matchedRoom   Room?             @relation(fields: [matchedRoomId], references: [id])
+
+  @@index([analysisId])
+  @@index([matchedRoomId])
 }
 
 model Room {
@@ -333,6 +395,7 @@ model Room {
   property          Property             @relation(fields: [propertyId], references: [id])
   projects          DesignProject[]
   roomUnderstandings RoomUnderstanding[]
+  matchedFloorPlanObservations FloorPlanObservation[]
 
   @@index([propertyId])
 }
@@ -473,9 +536,15 @@ model Asset {
   designVersion   DesignVersion? @relation(fields: [designVersionId], references: [id])
   jobId           String?
   job             AIJob?         @relation(fields: [jobId], references: [id])
+  // A floor plan (and other genuinely property-level uploads) has no
+  // design version or AI job yet - it is typically the very first real
+  // asset attached to a property, before any design work exists.
+  propertyId      String?
+  property        Property?      @relation(fields: [propertyId], references: [id])
 
   @@index([type, createdAt])
   @@index([jobId])
+  @@index([propertyId])
 }
 
 model AIJob {

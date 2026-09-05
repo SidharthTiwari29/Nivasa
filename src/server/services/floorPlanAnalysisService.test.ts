@@ -1,0 +1,196 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { NotFoundError } from "@/server/errors/AppError";
+import { prisma } from "@/server/db/prisma";
+import { getAIProvider } from "@/server/ai/provider";
+import {
+  analyzeFloorPlan,
+  matchObservationToRoom,
+} from "./floorPlanAnalysisService";
+
+vi.mock("@/server/db/prisma", () => ({
+  prisma: {
+    floorPlan: { findFirst: vi.fn() },
+    floorPlanAnalysis: { create: vi.fn(), update: vi.fn() },
+    floorPlanObservation: {
+      create: vi.fn(),
+      findFirst: vi.fn(),
+      update: vi.fn(),
+    },
+    room: { findFirst: vi.fn() },
+  },
+}));
+
+vi.mock("@/server/ai/provider", () => ({
+  getAIProvider: vi.fn(),
+}));
+
+const db = vi.mocked(prisma, { deep: true });
+const mockGetAIProvider = vi.mocked(getAIProvider);
+
+const realFloorPlan = {
+  id: "floor-plan-1",
+  propertyId: "property-1",
+  property: { ownerId: "user-1" },
+  asset: { objectKey: "users/user-1/properties/property-1/assets/asset-1" },
+};
+
+function fakeProvider(impl: () => Promise<unknown>) {
+  return {
+    analyzeFloorPlan: vi.fn(impl),
+    generateDesign: vi.fn(),
+    reviseDesign: vi.fn(),
+    assistBoq: vi.fn(),
+    createWalkthroughPrompt: vi.fn(),
+  };
+}
+
+describe("analyzeFloorPlan", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("rejects when the floor plan does not exist or is not owned by the caller", async () => {
+    db.floorPlan.findFirst.mockResolvedValue(null);
+
+    await expect(
+      analyzeFloorPlan("floor-plan-1", "user-1"),
+    ).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  it("persists and returns a real, honest NOT_AVAILABLE analysis when no AI provider is configured", async () => {
+    db.floorPlan.findFirst.mockResolvedValue(realFloorPlan as never);
+    db.floorPlanAnalysis.create.mockResolvedValue({
+      id: "analysis-1",
+    } as never);
+    mockGetAIProvider.mockReturnValue(
+      fakeProvider(() =>
+        Promise.reject(new Error("AI_PROVIDER_NOT_CONFIGURED")),
+      ) as never,
+    );
+
+    const result = await analyzeFloorPlan("floor-plan-1", "user-1");
+
+    expect(result.status).toBe("NOT_AVAILABLE");
+    expect(db.floorPlanAnalysis.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: "NOT_AVAILABLE" }),
+      }),
+    );
+    expect(db.floorPlanObservation.create).not.toHaveBeenCalled();
+  });
+
+  it("does not swallow a genuinely unexpected provider error - records it as a real FAILED analysis and re-throws", async () => {
+    db.floorPlan.findFirst.mockResolvedValue(realFloorPlan as never);
+    db.floorPlanAnalysis.create.mockResolvedValue({
+      id: "analysis-1",
+    } as never);
+    mockGetAIProvider.mockReturnValue(
+      fakeProvider(() =>
+        Promise.reject(new Error("SOME_OTHER_REAL_FAILURE")),
+      ) as never,
+    );
+
+    await expect(analyzeFloorPlan("floor-plan-1", "user-1")).rejects.toThrow(
+      "SOME_OTHER_REAL_FAILURE",
+    );
+
+    expect(db.floorPlanAnalysis.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: "FAILED" }),
+      }),
+    );
+  });
+
+  it("persists real, evidence-backed observations for a genuinely successful analysis", async () => {
+    db.floorPlan.findFirst.mockResolvedValue(realFloorPlan as never);
+    db.floorPlanAnalysis.create.mockResolvedValue({
+      id: "analysis-1",
+    } as never);
+    db.floorPlanObservation.create.mockResolvedValue({
+      id: "observation-1",
+      roomLabel: "Master Bedroom",
+      confidenceBps: 8500,
+      dimensions: { lengthFt: 12, widthFt: 10 },
+    } as never);
+    mockGetAIProvider.mockReturnValue(
+      fakeProvider(() =>
+        Promise.resolve({
+          providerJobId: "provider-job-1",
+          output: {
+            rooms: [
+              {
+                label: "Master Bedroom",
+                confidenceBps: 8500,
+                lengthFt: 12,
+                widthFt: 10,
+              },
+            ],
+          },
+        }),
+      ) as never,
+    );
+
+    const result = await analyzeFloorPlan("floor-plan-1", "user-1");
+
+    expect(result.status).toBe("ANALYZED");
+    if (result.status === "ANALYZED") {
+      expect(result.observations).toHaveLength(1);
+      expect(result.observations[0].roomLabel).toBe("Master Bedroom");
+    }
+    expect(db.floorPlanAnalysis.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: "ANALYZED" }),
+      }),
+    );
+  });
+});
+
+describe("matchObservationToRoom", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("rejects when the observation does not exist or belongs to a property the caller does not own", async () => {
+    db.floorPlanObservation.findFirst.mockResolvedValue(null);
+
+    await expect(
+      matchObservationToRoom("observation-1", "room-1", "user-1"),
+    ).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  it("rejects when the target room does not belong to the same property as the observation", async () => {
+    db.floorPlanObservation.findFirst.mockResolvedValue({
+      id: "observation-1",
+      analysis: {
+        floorPlan: {
+          propertyId: "property-1",
+          property: { ownerId: "user-1" },
+        },
+      },
+    } as never);
+    db.room.findFirst.mockResolvedValue(null);
+
+    await expect(
+      matchObservationToRoom("observation-1", "room-1", "user-1"),
+    ).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  it("records a real match only via this explicit action, never automatically", async () => {
+    db.floorPlanObservation.findFirst.mockResolvedValue({
+      id: "observation-1",
+      analysis: {
+        floorPlan: {
+          propertyId: "property-1",
+          property: { ownerId: "user-1" },
+        },
+      },
+    } as never);
+    db.room.findFirst.mockResolvedValue({
+      id: "room-1",
+      propertyId: "property-1",
+    } as never);
+
+    await matchObservationToRoom("observation-1", "room-1", "user-1");
+
+    expect(db.floorPlanObservation.update).toHaveBeenCalledWith({
+      where: { id: "observation-1" },
+      data: { matchedRoomId: "room-1" },
+    });
+  });
+});

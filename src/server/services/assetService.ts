@@ -25,6 +25,13 @@ export const assetService = {
       if (!context) throw new NotFoundError("AIJob");
       ownerId = context.project.ownerId;
       propertyId = context.project.propertyId;
+    } else if (input.propertyId) {
+      const property = await assetRepository.findPropertyContext(
+        input.propertyId,
+      );
+      if (!property) throw new NotFoundError("Property");
+      ownerId = property.ownerId;
+      propertyId = property.id;
     } else {
       throw new NotFoundError("Asset parent");
     }
@@ -46,15 +53,25 @@ export const assetService = {
           metadata,
           objectKey,
         })
-      : await assetRepository.createForJob({
-          jobId: input.jobId!,
-          type: input.type,
-          contentType: input.contentType,
-          sizeBytes,
-          checksum: input.checksum,
-          metadata,
-          objectKey,
-        });
+      : input.jobId
+        ? await assetRepository.createForJob({
+            jobId: input.jobId,
+            type: input.type,
+            contentType: input.contentType,
+            sizeBytes,
+            checksum: input.checksum,
+            metadata,
+            objectKey,
+          })
+        : await assetRepository.createForProperty({
+            propertyId: input.propertyId!,
+            type: input.type,
+            contentType: input.contentType,
+            sizeBytes,
+            checksum: input.checksum,
+            metadata,
+            objectKey,
+          });
 
     const grant = await storage.createUploadGrant({
       objectKey: asset.objectKey,

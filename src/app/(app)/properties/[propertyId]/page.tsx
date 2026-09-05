@@ -60,6 +60,12 @@ export default async function PropertyDetailPage({
           {property.address}
         </p>
       ) : null}
+      <Link
+        href={`/properties/${propertyId}/floor-plan`}
+        className="mt-3 inline-block font-body text-sm font-medium text-laterite hover:underline"
+      >
+        Upload floor plan →
+      </Link>
 
       <div className="mt-10">
         <h2 className="font-display text-lg font-semibold">Rooms</h2>
