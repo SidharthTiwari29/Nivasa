@@ -47,13 +47,10 @@ export default async function PropertyDetailPage({
   const { propertyId } = await params;
   const { userId } = await requireAuth();
   const property = await propertyService.get(propertyId, userId);
-  // Real, necessary conversion: Prisma returns targetBudgetMinor as a
-  // raw BigInt, and Next.js's server-rendering pipeline cannot safely
-  // carry a raw BigInt value through a Server Component - it's a well-
-  // known source of a hard, generic "server error occurred" crash.
-  // Converting immediately after fetching, before anything else touches
-  // this object, removes the risk at its source rather than hoping
-  // every later access happens to convert it first.
+  // propertyService.get() already converts targetBudgetMinor to a plain
+  // number (the real fix lives there now, applied once for every real
+  // caller) - this is just the normal display-time conversion from
+  // minor units to rupees, safe regardless.
   const targetBudgetRupees =
     property.targetBudgetMinor !== null &&
     property.targetBudgetMinor !== undefined
