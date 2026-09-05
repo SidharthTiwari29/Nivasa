@@ -1,3 +1,4 @@
+import { ConflictError } from "@/server/errors/AppError";
 import { budgetService } from "@/server/services/budgetService";
 import {
   rankSubstitutions,
@@ -75,6 +76,23 @@ export const whatIfService = {
   },
 
   async commit(propertyId: string, ownerId: string, input: WhatIfCommitInput) {
+    // A committed What-If is a durable financial record. If both prices are
+    // known, the persisted target delta must exactly match the same
+    // calculation returned by preview; otherwise a client could record a
+    // fabricated saving that does not correspond to the proposed price.
+    if (
+      input.currentPriceMinor !== null &&
+      input.proposedPriceMinor !== null
+    ) {
+      const expectedTargetDelta =
+        BigInt(input.proposedPriceMinor) - BigInt(input.currentPriceMinor);
+      if (BigInt(input.proposedTargetDeltaMinor) !== expectedTargetDelta) {
+        throw new ConflictError(
+          "Proposed target delta does not match the current and proposed prices",
+        );
+      }
+    }
+
     return budgetService.impact(propertyId, ownerId, {
       baseVersion: input.baseVersion,
       proposedLowDeltaMinor: input.proposedLowDeltaMinor,
