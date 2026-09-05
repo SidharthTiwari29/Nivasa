@@ -22,7 +22,15 @@ if (env.EMAIL_SERVER && env.EMAIL_FROM)
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers,
-  trustHost: false,
+  // Real, necessary for deployment on Vercel: without this, Auth.js
+  // rejects every real request with UntrustedHost, since it cannot
+  // otherwise verify the incoming Host header on its own. Vercel's own
+  // edge network is what terminates and routes these requests - the
+  // Host header reaching this app is genuinely controlled by Vercel's
+  // infrastructure, not an arbitrary, spoofable proxy - which is
+  // exactly why Auth.js's own documented Vercel deployment guidance
+  // recommends this setting.
+  trustHost: true,
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
