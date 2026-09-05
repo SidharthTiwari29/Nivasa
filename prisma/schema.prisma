@@ -245,7 +245,7 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-enum PropertyType {
+enum PropertyBhkType {
   ONE_BHK
   TWO_BHK
   THREE_BHK
@@ -266,7 +266,7 @@ model Property {
   // spatial truth (RoomUnderstanding) - city and property type describe
   // the home in general terms; they do not claim to be measured.
   city             String?
-  propertyType     PropertyType?
+  propertyType     PropertyBhkType?
   // The customer's own stated target budget for this home, captured at
   // onboarding so it can be reused as the real default when generating
   // a BOQ later, rather than asked for twice. Still just a stated
