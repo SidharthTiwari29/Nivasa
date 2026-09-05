@@ -147,9 +147,17 @@ export const procurementRepository = {
     orderId: string,
     ownerId: string,
     currentStatus:
-      "PLACED" | "CONFIRMED" | "DISPATCHED" | "DELIVERED" | "CANCELLED",
+      | "PLACED"
+      | "CONFIRMED"
+      | "DISPATCHED"
+      | "DELIVERED"
+      | "CANCELLED",
     nextStatus:
-      "PLACED" | "CONFIRMED" | "DISPATCHED" | "DELIVERED" | "CANCELLED",
+      | "PLACED"
+      | "CONFIRMED"
+      | "DISPATCHED"
+      | "DELIVERED"
+      | "CANCELLED",
   ) {
     return prisma.order.updateMany({
       where: {
