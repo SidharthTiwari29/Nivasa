@@ -1,14 +1,14 @@
 import { ConflictError, NotFoundError } from "@/server/errors/AppError";
-import { procurementRepository } from "@/server/repositories/procurementRepository";
-import { notificationService } from "@/server/services/notificationService";
-import { evaluateNegotiation } from "@/server/services/negotiationEngine";
-import { referralService } from "@/server/services/referralService";
 import { transitionOrder } from "@/server/execution/orderWorkflow";
+import { procurementRepository } from "@/server/repositories/procurementRepository";
+import { evaluateNegotiation } from "@/server/services/negotiationEngine";
+import { notificationService } from "@/server/services/notificationService";
+import { referralService } from "@/server/services/referralService";
+import type { OrderState } from "@/server/execution/orderWorkflow";
 import type {
   CreateProcurementRequestInput,
   SubmitQuoteInput,
 } from "@/server/validators/procurement";
-import type { OrderState } from "@/server/execution/orderWorkflow";
 
 export const procurementService = {
   async create(
@@ -169,7 +169,7 @@ export const procurementService = {
     );
     await notificationService.notify({
       userId: ownerId,
-      type: status === "SNAGGED" ? "SNAGGED" : "EXECUTION_STATUS_CHANGED",
+      type: "EXECUTION_STATUS_CHANGED",
       title:
         status === "SNAGGED"
           ? "Issue found during execution"
