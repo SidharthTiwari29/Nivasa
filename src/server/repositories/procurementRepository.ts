@@ -12,12 +12,6 @@ export const procurementRepository = {
     });
   },
 
-  // Procurement can only begin from a LOCKED budget (README §26:
-  // "APPROVED BUDGET" is the entry point). The real budget system
-  // (BudgetPlan/BudgetVersion) is queried via raw SQL, matching the
-  // convention already established in budgetRepository.ts - there is no
-  // typed Prisma model for it, so this reads the same tables that system
-  // itself writes to, rather than assuming a schema that doesn't exist.
   async findLockedBudgetPlanForOwner(propertyId: string, ownerId: string) {
     const plans = await prisma.$queryRaw<
       Array<{ id: string; status: string; lockedVersion: number | null }>
@@ -152,8 +146,18 @@ export const procurementRepository = {
   updateOrderStatus(
     orderId: string,
     ownerId: string,
-    currentStatus: "PLACED" | "CONFIRMED" | "DISPATCHED" | "DELIVERED" | "CANCELLED",
-    nextStatus: "PLACED" | "CONFIRMED" | "DISPATCHED" | "DELIVERED" | "CANCELLED",
+    currentStatus:
+      | "PLACED"
+      | "CONFIRMED"
+      | "DISPATCHED"
+      | "DELIVERED"
+      | "CANCELLED",
+    nextStatus:
+      | "PLACED"
+      | "CONFIRMED"
+      | "DISPATCHED"
+      | "DELIVERED"
+      | "CANCELLED",
   ) {
     return prisma.order.updateMany({
       where: {
@@ -187,7 +191,10 @@ export const procurementRepository = {
     snagNotes?: string,
   ) {
     return prisma.executionRecord.updateMany({
-      where: { executionId, order: { procurementRequest: { ownerId } } } as never,
+      where: {
+        id: executionId,
+        order: { procurementRequest: { ownerId } },
+      },
       data: {
         status: status as never,
         snagNotes,
