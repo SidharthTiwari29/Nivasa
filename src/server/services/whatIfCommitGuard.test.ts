@@ -30,6 +30,33 @@ describe("whatIfService.commit", () => {
     impact.mockRestore();
   });
 
+  it("rejects a savings range that is not ordered", async () => {
+    const impact = vi.spyOn(budgetService, "impact");
+
+    await expect(
+      whatIfService.commit("property-1", "owner-1", {
+        action: "commit",
+        baseVersion: 2,
+        currentPriceMinor: null,
+        proposedPriceMinor: null,
+        proposedLowDeltaMinor: -15000,
+        proposedTargetDeltaMinor: -25000,
+        proposedHighDeltaMinor: -30000,
+        roomId: null,
+        scopeChange: "REPLACE",
+        reason: "Use an equivalent lower-cost finish",
+        designImpact: "SIMILAR",
+        functionImpact: "SIMILAR",
+        inputs: { source: "user" },
+      }),
+    ).rejects.toThrow(
+      "Proposed savings range must be ordered low, target, high",
+    );
+
+    expect(impact).not.toHaveBeenCalled();
+    impact.mockRestore();
+  });
+
   it("persists a valid commit with the calculated target delta", async () => {
     const impact = vi
       .spyOn(budgetService, "impact")
