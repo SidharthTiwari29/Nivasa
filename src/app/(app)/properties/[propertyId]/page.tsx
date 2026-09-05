@@ -47,7 +47,37 @@ export default async function PropertyDetailPage({
   const { propertyId } = await params;
   const { userId } = await requireAuth();
   const property = await propertyService.get(propertyId, userId);
+  // Real, necessary conversion: Prisma returns targetBudgetMinor as a
+  // raw BigInt, and Next.js's server-rendering pipeline cannot safely
+  // carry a raw BigInt value through a Server Component - it's a well-
+  // known source of a hard, generic "server error occurred" crash.
+  // Converting immediately after fetching, before anything else touches
+  // this object, removes the risk at its source rather than hoping
+  // every later access happens to convert it first.
+  const targetBudgetRupees =
+    property.targetBudgetMinor !== null &&
+    property.targetBudgetMinor !== undefined
+      ? Number(property.targetBudgetMinor) / 100
+      : null;
   const rooms = await roomService.list(propertyId, userId);
+  // Same real serialization risk as targetBudgetMinor above, for the
+  // same reason: Prisma's Decimal type cannot safely cross into a
+  // Client Component prop (CreateDesignProjectForm, below) through
+  // Next.js's server/client boundary. Converting to a plain string
+  // immediately removes the risk before it reaches that boundary.
+  const roomsForClient = rooms.map(
+    (room: {
+      id: string;
+      name: string;
+      type: string;
+      areaSqFt: { toString(): string } | null;
+    }) => ({
+      id: room.id,
+      name: room.name,
+      type: room.type,
+      areaSqFt: room.areaSqFt ? room.areaSqFt.toString() : null,
+    }),
+  );
   const designProjects = await listDesignProjectsForProperty(
     propertyId,
     userId,
@@ -80,10 +110,9 @@ export default async function PropertyDetailPage({
               property.propertyType}
           </span>
         ) : null}
-        {property.targetBudgetMinor ? (
+        {targetBudgetRupees !== null ? (
           <span>
-            Target budget: ₹
-            {(Number(property.targetBudgetMinor) / 100).toLocaleString("en-IN")}
+            Target budget: ₹{targetBudgetRupees.toLocaleString("en-IN")}
           </span>
         ) : null}
       </div>
@@ -174,7 +203,10 @@ export default async function PropertyDetailPage({
           <h3 className="font-body text-sm font-semibold text-ink">
             Start a design
           </h3>
-          <CreateDesignProjectForm propertyId={propertyId} rooms={rooms} />
+          <CreateDesignProjectForm
+            propertyId={propertyId}
+            rooms={roomsForClient}
+          />
         </div>
       </div>
     </div>
