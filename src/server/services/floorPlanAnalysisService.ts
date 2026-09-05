@@ -1,6 +1,11 @@
 import { prisma } from "@/server/db/prisma";
 import { NotFoundError } from "@/server/errors/AppError";
 import { getAIProvider } from "@/server/ai/provider";
+import {
+  validateFloorPlanObservations,
+  type ValidationIssue,
+  type ObservationDimensions,
+} from "@/server/services/floorPlanGeometryValidationService";
 
 const PARSER_VERSION = "v1";
 
@@ -8,6 +13,7 @@ export type FloorPlanObservationOutput = {
   id: string;
   roomLabel: string;
   confidenceBps: number | null;
+  effectiveConfidenceBps: number | null;
   dimensions: Record<string, unknown> | null;
 };
 
@@ -16,6 +22,10 @@ export type FloorPlanAnalysisResult =
       status: "ANALYZED";
       analysisId: string;
       observations: FloorPlanObservationOutput[];
+      // Real, computed geometry issues - never a "fixed" version of
+      // what was detected, only a flagged list a human reviews
+      // alongside the raw observations themselves.
+      issues: ValidationIssue[];
     }
   | {
       status: "NOT_AVAILABLE";
@@ -106,9 +116,30 @@ export async function analyzeFloorPlan(
       data: { status: "ANALYZED", completedAt: new Date() },
     });
 
+    // Real geometry validation - runs on the exact same real,
+    // persisted observations just created, never a separate or
+    // reinterpreted copy of them.
+    const { issues, effectiveConfidenceBpsById } =
+      validateFloorPlanObservations(
+        observations.map(
+          (o: {
+            id: string;
+            roomLabel: string;
+            confidenceBps: number | null;
+            dimensions: unknown;
+          }) => ({
+            id: o.id,
+            roomLabel: o.roomLabel,
+            confidenceBps: o.confidenceBps,
+            dimensions: o.dimensions as ObservationDimensions | null,
+          }),
+        ),
+      );
+
     return {
       status: "ANALYZED",
       analysisId: analysis.id,
+      issues,
       observations: observations.map(
         (o: {
           id: string;
@@ -119,6 +150,7 @@ export async function analyzeFloorPlan(
           id: o.id,
           roomLabel: o.roomLabel,
           confidenceBps: o.confidenceBps,
+          effectiveConfidenceBps: effectiveConfidenceBpsById[o.id] ?? null,
           dimensions: o.dimensions as Record<string, unknown> | null,
         }),
       ),
@@ -239,5 +271,27 @@ export async function getLatestAnalysisForFloorPlan(
     include: { observations: { include: { matchedRoom: true } } },
   });
 
-  return { floorPlan, analysis };
+  // Validation is a pure function of the real, persisted observations -
+  // recomputed live here rather than stored, so the review workspace
+  // always reflects the current, correct result rather than a
+  // potentially-stale snapshot from whenever analysis first ran.
+  const { issues, effectiveConfidenceBpsById } = analysis
+    ? validateFloorPlanObservations(
+        analysis.observations.map(
+          (o: {
+            id: string;
+            roomLabel: string;
+            confidenceBps: number | null;
+            dimensions: unknown;
+          }) => ({
+            id: o.id,
+            roomLabel: o.roomLabel,
+            confidenceBps: o.confidenceBps,
+            dimensions: o.dimensions as ObservationDimensions | null,
+          }),
+        ),
+      )
+    : { issues: [], effectiveConfidenceBpsById: {} };
+
+  return { floorPlan, analysis, issues, effectiveConfidenceBpsById };
 }

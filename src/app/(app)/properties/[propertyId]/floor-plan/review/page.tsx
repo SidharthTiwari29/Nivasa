@@ -24,10 +24,8 @@ export default async function FloorPlanReviewPage({
   const floorPlan = floorPlans[0] ?? null;
   if (!floorPlan) notFound();
 
-  const { analysis } = await getLatestAnalysisForFloorPlan(
-    floorPlan.id,
-    userId,
-  );
+  const { analysis, issues, effectiveConfidenceBpsById } =
+    await getLatestAnalysisForFloorPlan(floorPlan.id, userId);
 
   const { downloadUrl } = await assetService.createDownloadUrl(
     floorPlan.assetId,
@@ -72,6 +70,8 @@ export default async function FloorPlanReviewPage({
                     id: o.id,
                     roomLabel: o.roomLabel,
                     confidenceBps: o.confidenceBps,
+                    effectiveConfidenceBps:
+                      effectiveConfidenceBpsById[o.id] ?? null,
                     dimensions:
                       (o.dimensions as Record<string, unknown> | null) ?? null,
                     matchedRoomId: o.matchedRoomId,
@@ -82,6 +82,7 @@ export default async function FloorPlanReviewPage({
               }
             : null
         }
+        issues={issues}
         rooms={rooms.map((r: { id: string; name: string }) => ({
           id: r.id,
           name: r.name,

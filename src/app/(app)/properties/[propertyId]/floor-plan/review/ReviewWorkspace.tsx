@@ -7,10 +7,18 @@ type Observation = {
   id: string;
   roomLabel: string;
   confidenceBps: number | null;
+  effectiveConfidenceBps: number | null;
   dimensions: Record<string, unknown> | null;
   matchedRoomId: string | null;
   matchedRoomName: string | null;
   rejected: boolean;
+};
+
+type Issue = {
+  observationId: string | null;
+  severity: "error" | "warning";
+  code: string;
+  message: string;
 };
 
 type RoomOption = { id: string; name: string };
@@ -19,6 +27,7 @@ export function ReviewWorkspace({
   propertyId,
   floorPlanImageUrl,
   analysis,
+  issues,
   rooms,
 }: {
   propertyId: string;
@@ -28,6 +37,7 @@ export function ReviewWorkspace({
     reason: string | null;
     observations: Observation[];
   } | null;
+  issues: Issue[];
   rooms: RoomOption[];
 }) {
   const router = useRouter();
@@ -129,51 +139,83 @@ export function ReviewWorkspace({
         </p>
 
         <ul className="mt-4 space-y-3">
-          {pending.map((obs) => (
-            <li
-              key={obs.id}
-              className="rounded-sm border border-paper-raised p-4"
-            >
-              <div className="flex items-center justify-between">
-                <p className="font-body text-sm font-medium text-ink">
-                  {obs.roomLabel}
+          {pending.map((obs) => {
+            const relatedIssues = issues.filter(
+              (i) => i.observationId === obs.id,
+            );
+            return (
+              <li
+                key={obs.id}
+                className="rounded-sm border border-paper-raised p-4"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="font-body text-sm font-medium text-ink">
+                    {obs.roomLabel}
+                  </p>
+                  {obs.effectiveConfidenceBps !== null ? (
+                    <span
+                      className={`font-mono text-xs ${
+                        relatedIssues.some((i) => i.severity === "error")
+                          ? "text-alert"
+                          : "text-ink-soft"
+                      }`}
+                    >
+                      {Math.round(obs.effectiveConfidenceBps / 100)}% confidence
+                      {obs.confidenceBps !== null &&
+                      obs.effectiveConfidenceBps < obs.confidenceBps
+                        ? ` (down from ${Math.round(obs.confidenceBps / 100)}%)`
+                        : ""}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="mt-1 font-mono text-xs text-ink-soft">
+                  {String(obs.dimensions?.lengthFt ?? "?")}ft ×{" "}
+                  {String(obs.dimensions?.widthFt ?? "?")}ft
                 </p>
-                {obs.confidenceBps ? (
-                  <span className="font-mono text-xs text-ink-soft">
-                    {Math.round(obs.confidenceBps / 100)}% confidence
-                  </span>
+                {relatedIssues.length > 0 ? (
+                  <ul className="mt-2 space-y-1">
+                    {relatedIssues.map((issue, i) => (
+                      <li
+                        key={i}
+                        className={`font-body text-xs ${
+                          issue.severity === "error"
+                            ? "text-alert"
+                            : "text-ink-soft"
+                        }`}
+                      >
+                        {issue.severity === "error" ? "⚠ " : "· "}
+                        {issue.message}
+                      </li>
+                    ))}
+                  </ul>
                 ) : null}
-              </div>
-              <p className="mt-1 font-mono text-xs text-ink-soft">
-                {String(obs.dimensions?.lengthFt ?? "?")}ft ×{" "}
-                {String(obs.dimensions?.widthFt ?? "?")}ft
-              </p>
-              <div className="mt-3 flex items-center gap-2">
-                <select
-                  disabled={busyId === obs.id}
-                  onChange={(e) => handleMatch(obs.id, e.target.value)}
-                  defaultValue=""
-                  className="flex-1 rounded-sm border border-ink/15 bg-white px-2 py-1.5 font-body text-sm"
-                >
-                  <option value="" disabled>
-                    This is which real room?
-                  </option>
-                  {rooms.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name}
+                <div className="mt-3 flex items-center gap-2">
+                  <select
+                    disabled={busyId === obs.id}
+                    onChange={(e) => handleMatch(obs.id, e.target.value)}
+                    defaultValue=""
+                    className="flex-1 rounded-sm border border-ink/15 bg-white px-2 py-1.5 font-body text-sm"
+                  >
+                    <option value="" disabled>
+                      This is which real room?
                     </option>
-                  ))}
-                </select>
-                <button
-                  onClick={() => handleReject(obs.id)}
-                  disabled={busyId === obs.id}
-                  className="font-body text-xs text-alert hover:underline"
-                >
-                  Not a real room
-                </button>
-              </div>
-            </li>
-          ))}
+                    {rooms.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => handleReject(obs.id)}
+                    disabled={busyId === obs.id}
+                    className="font-body text-xs text-alert hover:underline"
+                  >
+                    Not a real room
+                  </button>
+                </div>
+              </li>
+            );
+          })}
         </ul>
 
         {decided.length > 0 ? (
