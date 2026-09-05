@@ -85,6 +85,12 @@ export default async function PropertyDetailPage({
                       : ""}
                   </p>
                 </div>
+                <Link
+                  href={`/properties/${propertyId}/rooms/${room.id}/understanding`}
+                  className="font-body text-xs font-medium text-laterite hover:underline"
+                >
+                  Confirm dimensions
+                </Link>
               </li>
             ))}
           </ul>
