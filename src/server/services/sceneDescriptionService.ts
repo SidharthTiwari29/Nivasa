@@ -10,6 +10,11 @@ export type SceneOpening = {
   wall: WallSide;
   widthM: number;
   offsetM: number;
+  // Real room adjacency, carried through from the confirmed dimension
+  // record when a door genuinely connects to another known room -
+  // undefined for a window (windows don't connect rooms) or a door
+  // whose connection was never recorded.
+  connectsToRoomId?: string;
 };
 
 export type SceneRoom = {
@@ -61,7 +66,11 @@ function computeOpenings(
   dimensions: {
     lengthFt?: number;
     widthFt?: number;
-    doors?: Array<{ widthFt: number; wall?: WallSide }>;
+    doors?: Array<{
+      widthFt: number;
+      wall?: WallSide;
+      connectsToRoomId?: string;
+    }>;
     windows?: Array<{ widthFt: number; wall?: WallSide }>;
   },
   lengthM: number,
@@ -90,6 +99,7 @@ function computeOpenings(
       wall: door.wall ?? "SOUTH",
       widthM,
       offsetM,
+      connectsToRoomId: door.connectsToRoomId,
     });
   }
 
@@ -204,7 +214,11 @@ export async function generateSceneDescription(
     lengthFt?: number;
     widthFt?: number;
     heightFt?: number;
-    doors?: Array<{ widthFt: number; wall?: WallSide }>;
+    doors?: Array<{
+      widthFt: number;
+      wall?: WallSide;
+      connectsToRoomId?: string;
+    }>;
     windows?: Array<{ widthFt: number; wall?: WallSide }>;
   };
   const lengthM = feetToMeters(dims.lengthFt) ?? 0;

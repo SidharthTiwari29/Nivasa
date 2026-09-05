@@ -17,6 +17,11 @@ function confirmedUnderstanding(dimensions: {
   lengthFt: number;
   widthFt: number;
   heightFt?: number;
+  doors?: Array<{
+    widthFt: number;
+    wall?: "NORTH" | "SOUTH" | "EAST" | "WEST";
+    connectsToRoomId?: string;
+  }>;
 }) {
   return { dimensions } as never;
 }
@@ -75,8 +80,11 @@ describe("generateHomeScene", () => {
     const { scene, skipped } = await generateHomeScene("property-1", "user-1");
 
     expect(skipped).toEqual([]);
-    expect(scene.layoutIsAutoSequenced).toBe(true);
     expect(scene.rooms).toHaveLength(2);
+    // No real door connection was recorded between these two rooms, so
+    // both correctly fall back to the honest auto-sequenced placement.
+    expect(scene.rooms[0].positionSource).toBe("auto_sequenced");
+    expect(scene.rooms[1].positionSource).toBe("auto_sequenced");
 
     // Hand-verified: room 1 origin (0,0), width 4m -> room 2 origin
     // starts at x=4, both share y=0 - genuinely non-overlapping.
@@ -149,5 +157,112 @@ describe("generateHomeScene", () => {
 
     expect(scene.rooms).toHaveLength(1);
     expect(db.designProject.findFirst).toHaveBeenCalledTimes(1);
+  });
+
+  it("places rooms using real, recorded door connections instead of the auto-sequence fallback - hand-verified three-room chain with mixed wall directions", async () => {
+    db.property.findFirst.mockResolvedValue({ id: "property-1" } as never);
+    db.designProject.findMany.mockResolvedValue([
+      {
+        id: "project-entrance",
+        roomId: "room-entrance",
+        createdAt: new Date(),
+      },
+      { id: "project-living", roomId: "room-living", createdAt: new Date() },
+      { id: "project-kitchen", roomId: "room-kitchen", createdAt: new Date() },
+    ] as never);
+
+    db.designProject.findFirst
+      .mockResolvedValueOnce({
+        id: "project-entrance",
+        room: { id: "room-entrance", name: "Entrance", type: "OTHER" },
+        boqs: [],
+      } as never)
+      .mockResolvedValueOnce({
+        id: "project-living",
+        room: { id: "room-living", name: "Living Room", type: "LIVING_ROOM" },
+        boqs: [],
+      } as never)
+      .mockResolvedValueOnce({
+        id: "project-kitchen",
+        room: { id: "room-kitchen", name: "Kitchen", type: "KITCHEN" },
+        boqs: [],
+      } as never);
+
+    // Real door connections: Entrance's NORTH door leads to Living
+    // Room; Living Room's EAST door leads to Kitchen - matching the
+    // exact scenario hand-verified in Python before this was written.
+    db.roomUnderstanding.findFirst
+      .mockResolvedValueOnce(
+        confirmedUnderstanding({
+          lengthFt: 8.2021,
+          widthFt: 6.5617,
+          doors: [
+            {
+              widthFt: 3,
+              wall: "NORTH",
+              connectsToRoomId: "room-living",
+            },
+          ],
+        }),
+      )
+      .mockResolvedValueOnce(
+        confirmedUnderstanding({
+          lengthFt: 19.685,
+          widthFt: 16.4042,
+          doors: [
+            { widthFt: 3, wall: "EAST", connectsToRoomId: "room-kitchen" },
+          ],
+        }),
+      )
+      .mockResolvedValueOnce(
+        confirmedUnderstanding({ lengthFt: 11.4829, widthFt: 9.8425 }),
+      );
+
+    const { scene } = await generateHomeScene("property-1", "user-1");
+
+    const byName = Object.fromEntries(scene.rooms.map((r) => [r.name, r]));
+
+    expect(byName["Entrance"].originM).toEqual({ x: 0, y: 0 });
+    expect(byName["Entrance"].positionSource).toBe("auto_sequenced"); // the root has no incoming door to verify against
+
+    expect(byName["Living Room"].originM.x).toBeCloseTo(0, 1);
+    expect(byName["Living Room"].originM.y).toBeCloseTo(2.5, 1);
+    expect(byName["Living Room"].positionSource).toBe("real_adjacency");
+
+    expect(byName["Kitchen"].originM.x).toBeCloseTo(5.0, 1);
+    expect(byName["Kitchen"].originM.y).toBeCloseTo(2.5, 1);
+    expect(byName["Kitchen"].positionSource).toBe("real_adjacency");
+  });
+
+  it("falls back honestly for a room whose door connection points at a room outside this scene", async () => {
+    db.property.findFirst.mockResolvedValue({ id: "property-1" } as never);
+    db.designProject.findMany.mockResolvedValue([
+      { id: "project-a", roomId: "room-a", createdAt: new Date() },
+    ] as never);
+
+    db.designProject.findFirst.mockResolvedValueOnce({
+      id: "project-a",
+      room: { id: "room-a", name: "Room A", type: "OTHER" },
+      boqs: [],
+    } as never);
+
+    db.roomUnderstanding.findFirst.mockResolvedValueOnce(
+      confirmedUnderstanding({
+        lengthFt: 10,
+        widthFt: 10,
+        doors: [
+          {
+            widthFt: 3,
+            wall: "NORTH",
+            connectsToRoomId: "room-not-in-this-scene",
+          },
+        ],
+      }),
+    );
+
+    const { scene } = await generateHomeScene("property-1", "user-1");
+
+    expect(scene.rooms).toHaveLength(1);
+    expect(scene.rooms[0].positionSource).toBe("auto_sequenced");
   });
 });

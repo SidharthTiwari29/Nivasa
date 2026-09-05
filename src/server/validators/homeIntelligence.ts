@@ -55,6 +55,13 @@ export const roomUnderstandingSchema = z
             z.object({
               widthFt: z.number().positive().max(20),
               wall: z.enum(["NORTH", "SOUTH", "EAST", "WEST"]).optional(),
+              // Real room adjacency, captured at the one place a floor
+              // plan naturally records it: every interior door connects
+              // exactly two spaces. Optional and additive - existing
+              // recorded doors with no connection are unaffected, and
+              // this is the real fact this field exists to capture,
+              // not an inferred or assumed relationship.
+              connectsToRoomId: z.string().cuid().optional(),
             }),
           )
           .max(20)
